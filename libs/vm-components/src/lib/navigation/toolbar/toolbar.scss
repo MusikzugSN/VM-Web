@@ -1,0 +1,30 @@
+:host {
+  ::ng-deep {
+    .toolbar {
+      display: flex;
+      background: var(--primary-color);
+      color: whitesmoke;
+    }
+  }
+}
+
+.toolbar-items {
+  display: flex;
+  height: 100%;
+}
+
+.toolbar-item__wrapper {
+  display: flex;
+  height: 100%;
+
+  padding: 0 16px;
+}
+
+.toolbar-item__wrapper:hover {
+  background: var(--secondary-color);
+}
+
+.toolbar-item__selected {
+  background: var(--secondary-color);
+}
+
