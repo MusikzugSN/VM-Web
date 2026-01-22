@@ -27,8 +27,8 @@ export class AuthGuard implements CanActivate {
 
     const isLoginExpired = await firstValueFrom(this.#authService.isLoginExpired$());
     if (isLoginExpired) {
-      console.log('login expired - redirecting to loginExpired');
-      const loginExpiredPath = this.#router.parseUrl("/auth/loginExpired");
+      this.#authService.logout();
+      const loginExpiredPath = this.#router.parseUrl("/auth/login");
       return new RedirectCommand(loginExpiredPath, {skipLocationChange: false});
     }
 
