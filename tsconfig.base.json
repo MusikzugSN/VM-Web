@@ -8,8 +8,9 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "vm-components": ["libs/vm-components/src/index.ts"],
-      "vm-parts": ["libs/vm-parts/src/index.ts"]
+      "@vm-components": ["libs/vm-components/src/index.ts"],
+      "@vm-parts": ["libs/vm-parts/src/index.ts"],
+      "@vm-utils": ["libs/vm-utils/src/index.ts"]
     }
   }
 }

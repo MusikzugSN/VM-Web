@@ -1,7 +1,10 @@
 :root {
   --primary-color: #366972;
   --secondary-color: #2A8899;
-  --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-family: Helvetica, Arial, sans-serif;
+  --font-size__normal: 1rem;
+  --font-size__header: 2rem;
+
   --font-size-base: 16px;
   --spacing-unit: 8px;
 }

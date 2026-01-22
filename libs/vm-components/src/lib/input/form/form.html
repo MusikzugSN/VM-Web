@@ -1,0 +1,21 @@
+<form class="flex-column">
+  @let data = formData();
+  <label class="text-header">{{ data.header }}</label>
+  <span class="text-normal">{{ data.description }}</span>
+  @for (field of data.fields; track field.key) {
+    <mat-form-field>
+      <mat-label>{{ field.label }}</mat-label>
+      <input matInput
+             [type]="field.type"
+             [placeholder]="field.placeholder ?? ''"
+             [readonly]="field.readonly ?? false"
+             [required]="field.required ?? false"
+             (input)="onChange($event, field.key)"
+      />
+    </mat-form-field>
+  }
+  <vmc-button
+    style="margin-left: auto"
+    [label]="data.submitButton ?? 'Senden'"
+    (onClick)="this.submitClicked()"/>
+</form>

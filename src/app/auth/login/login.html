@@ -1,0 +1,26 @@
+<div class="login-page">
+  <div class="login-container">
+    <vmc-form [formData]="{
+      header: 'Anmeldung',
+      description: 'Bitte melde dich mit deinem Anmeldedaten an.',
+      submitButton: 'Anmelden',
+      fields: [
+        {
+          label: 'Username',
+          type: 'text',
+          placeholder: 'z.B. max.mustermann',
+          required: true,
+          key: 'username'
+        },
+        {
+          label: 'Password',
+          type: 'password',
+          required: true,
+          key: 'password'
+        }
+      ]
+    }"
+    (onSubmit)="loginClicked($event)"/>
+
+  </div>
+</div>

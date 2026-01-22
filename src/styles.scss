@@ -1,9 +1,11 @@
 @use '@angular/material' as mat;
 
 @import url('./variables.css');
-:root {
-  font-family: var(--font-family), serif;
+@import url('./tailwind.css');
+* {
+  font-family: var(--font-family), sans-serif !important;
 }
+
 html {
   height: 100%;
   @include mat.theme((
@@ -11,7 +13,6 @@ html {
       primary: mat.$azure-palette,
       tertiary: mat.$blue-palette,
     ),
-    typography: Roboto,
     density: 0,
   ));
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {IToolbarItem, Toolbar} from 'vm-components';
+import {IToolbarItem, Toolbar} from '@vm-components';
 
 @Component({
   selector: 'vmp-navbar',
@@ -12,8 +12,8 @@ import {IToolbarItem, Toolbar} from 'vm-components';
 export class Navbar {
 
   toolbarItems: IToolbarItem[] = [
-    { name: 'Mein Bereich', route: '/home', selected: true },
-    { name: 'Notenverwaltung', route: '/home' },
-    { name: 'Systemverwaltung', route: '/home' }
+    { name: 'Mein Bereich', route: '/me', selected: true },
+    { name: 'Notenverwaltung', route: '/notes' },
+    { name: 'Systemverwaltung', route: '/admin' }
   ];
 }
