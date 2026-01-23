@@ -16,8 +16,6 @@ RUN npm ci
 # Build the Angular app using the correct project name
 RUN npx nx build Vereinsmanager-Web --configuration=production
 
-RUN ls -R /workspace/dist
-
 # -----------------------------
 # Stage 2: Serve with Nginx
 # -----------------------------
