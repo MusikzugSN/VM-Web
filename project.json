@@ -19,7 +19,8 @@
         "assets": [
           {
             "glob": "**/*",
-            "input": "public"
+            "input": "public",
+            "output": "static"
           }
         ],
         "styles": [
@@ -64,7 +65,10 @@
           "buildTarget": "Vereinsmanager-Web:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "proxyConfig": "proxy.conf.json"
+      }
     },
     "test": {
       "executor": "@angular/build:unit-test"

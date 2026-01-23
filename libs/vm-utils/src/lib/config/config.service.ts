@@ -15,7 +15,7 @@ export class ConfigService {
   }
 
   async #load(): Promise<void> {
-    return fetch('/config.json').then(response => response.json()).then((config: AppConfig) => {
+    return fetch('static/config.json').then(response => response.json()).then((config: AppConfig) => {
       this.configSubject.next(config);
     }).catch(err => {
       console.error('Failed to load config.json', err);

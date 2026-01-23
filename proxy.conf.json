@@ -1,0 +1,12 @@
+{
+  "/static": {
+    "target": "http://localhost:4800",
+    "pathRewrite": {
+      "^/static": ""
+    },
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
+
