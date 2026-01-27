@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {VmcForm} from '@vm-components';
-import {AuthService} from '../auth.service';
+import {AuthService} from '@vm-utils';
 import {Dictionary} from '@vm-utils';
 import {Router} from '@angular/router';
 

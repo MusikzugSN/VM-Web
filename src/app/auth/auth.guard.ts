@@ -6,7 +6,7 @@ import {
   RedirectCommand, Router,
   RouterStateSnapshot
 } from '@angular/router';
-import {AuthService} from './auth.service';
+import {AuthService} from '@vm-utils';
 import {firstValueFrom} from 'rxjs';
 
 @Injectable({

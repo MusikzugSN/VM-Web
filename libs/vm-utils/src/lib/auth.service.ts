@@ -19,6 +19,8 @@ export class AuthService {
   readonly #httpClient = inject(HttpClient);
 
   #accessToken$: BehaviorSubject<string | null> = this.#getValueFromStorage$(accessTokenKey);
+  accessToken$ = this.#accessToken$.asObservable().pipe(shareReplay({ bufferSize: 1, refCount: false}));
+
   #decodedToken$: Observable<JwtPayload | null> = this.#getDecodedToken$()
     .pipe(distinctUntilChanged(),
       shareReplay({ bufferSize: 1, refCount: false}));
