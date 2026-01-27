@@ -9,12 +9,12 @@
 }
 
 .text-header {
-  font: var(--font-family);
-  font-size: var(--font-size__header);
+  font: var(--vm-font-family);
+  font-size: var(--vm-font-size__header);
   font-weight: bold;
 }
 
 .text-normal {
-  font: var(--font-family);
-  font-size: var(--font-size__normal);
+  font: var(--vm-font-family);
+  font-size: var(--vm-font-size__normal);
 }

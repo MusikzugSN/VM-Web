@@ -1,0 +1,64 @@
+:host {
+  display: flex;
+  height: 100%;
+
+  --btn-radius: 0.5rem;
+
+  ::ng-deep {
+    .mat-expansion-panel-header-title {
+      max-width: 0;
+    }
+
+    .mat-expansion-panel-header-description {
+      color: var(--vm-primary-color);
+    }
+
+    .mat-expansion-indicator svg {
+      fill: var(--vm-primary-color);
+    }
+  }
+}
+.sidebar__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  min-width: 300px;
+
+  padding: 1rem 1rem 0 1rem;
+
+  background-color: var(--vm-background-color-light);
+}
+
+.sidebar__group {
+  display: block;
+  width: 300px;
+}
+
+.sidebar__btn {
+  display: flex;
+  align-items: center;
+
+  height: 50px;
+
+  padding-left: 20px;
+  cursor: pointer;
+}
+
+.sidebar__btn:first-child {
+  border-radius: var(--btn-radius) var(--btn-radius) 0 0;
+}
+
+.sidebar__btn:last-child {
+  border-radius: 0 0 var(--btn-radius) var(--btn-radius);
+}
+
+.sidebar__btn:hover {
+  background-color: var(--vm-secondary-color-tonal);
+}
+
+
+.sidebar__btn__selected {
+  background-color: var(--vm-primary-color-tonal);
+}

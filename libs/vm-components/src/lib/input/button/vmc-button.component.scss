@@ -1,0 +1,22 @@
+:host {
+  ::ng-deep {
+    // filled button
+    .mat-mdc-unelevated-button:not(:disabled) {
+      color: var(--mat-button-filled-label-text-color, var(--mat-sys-on-primary));
+      background-color: var(--mat-button-filled-container-color, var(--vm-primary-color));
+    }
+
+    // elevated button
+    .mat-mdc-raised-button:not(:disabled) {
+      color: var(--mat-button-protected-label-text-color, var(--vm-primary-color));
+      background-color: var(--mat-button-protected-container-color, var(--mat-sys-surface));
+    }
+
+    // tonal button
+    .mat-tonal-button:not(:disabled) {
+      color: var(--mat-button-tonal-label-text-color, var(--mat-sys-on-secondary-container));
+      background-color: var(--mat-button-tonal-container-color, var(--vm-primary-color-tonal));
+    }
+
+  }
+}

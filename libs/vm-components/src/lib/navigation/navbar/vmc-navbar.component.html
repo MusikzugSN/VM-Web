@@ -1,0 +1,24 @@
+<mat-toolbar class="toolbar">
+  <span>{{ applicationName() }}</span>
+
+  <span style="margin-right: 3dvw"></span>
+
+  @if (showToolbarItems()) {
+    <div class="toolbar-items">
+      @for (toolbarItem of this.toolbarItems(); track $index) {
+        <div
+          [class.toolbar-item__selected]="toolbarItem.selected ?? false"
+          class="toolbar-item__wrapper"
+          (click)="redirect(toolbarItem.route)">
+          <span style="margin: auto">{{ toolbarItem.name }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  @if (showToolbarItems()) {
+    <div class="toolbar__container">
+      <ng-content />
+    </div>
+  }
+</mat-toolbar>

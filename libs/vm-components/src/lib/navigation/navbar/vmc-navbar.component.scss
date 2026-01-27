@@ -2,10 +2,14 @@
   ::ng-deep {
     .toolbar {
       display: flex;
-      background: var(--primary-color);
+      background: var(--vm-primary-color);
       color: whitesmoke;
     }
   }
+}
+
+.toolbar__container {
+  margin-left: auto;
 }
 
 .toolbar-items {
@@ -18,13 +22,15 @@
   height: 100%;
 
   padding: 0 16px;
+  cursor: pointer;
 }
 
 .toolbar-item__wrapper:hover {
-  background: var(--secondary-color);
+  background: var(--vm-secondary-color);
 }
 
 .toolbar-item__selected {
-  background: var(--secondary-color);
+  background: var(--vm-secondary-color);
+  text-decoration: underline;
 }
 

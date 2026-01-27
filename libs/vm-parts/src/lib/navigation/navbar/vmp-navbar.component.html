@@ -1,0 +1,8 @@
+<vmc-navbar
+  [showToolbarItems]="isLoggedIn()"
+  [applicationName]="'Musikzug Schloss Neuhaus'"
+  [toolbarItems]="(toolbarItems$ | async) ?? []">
+  <vmc-icon-button
+    [iconName]="'logout'"
+    (onClick)="onLogout.emit()"/>
+</vmc-navbar>

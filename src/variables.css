@@ -1,10 +1,18 @@
 :root {
-  --primary-color: #366972;
-  --secondary-color: #2A8899;
-  --font-family: Helvetica, Arial, sans-serif;
-  --font-size__normal: 1rem;
-  --font-size__header: 2rem;
+  --vm-primary-color: #366972;
+  --vm-primary-color-tonal: color-mix(in srgb, var(--vm-primary-color) 15%, white);
 
-  --font-size-base: 16px;
-  --spacing-unit: 8px;
+  --vm-secondary-color: #2A8899;
+  --vm-secondary-color-tonal: color-mix(in srgb, var(--vm-secondary-color) 15%, white);
+
+
+  --vm-background-color-light: color-mix(in srgb, var(--vm-primary-color) 5%, white);
+
+
+  --vm-font-family: Helvetica, Arial, sans-serif;
+  --vm-font-size__normal: 1rem;
+  --vm-font-size__header: 2rem;
+
+
+  --vm-iconColor-white: whitesmoke;
 }

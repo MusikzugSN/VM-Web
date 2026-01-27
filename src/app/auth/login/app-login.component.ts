@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {Form} from '@vm-components';
+import {VmcForm} from '@vm-components';
 import {AuthService} from '../auth.service';
 import {Dictionary} from '@vm-utils';
 import {Router} from '@angular/router';
@@ -7,13 +7,13 @@ import {Router} from '@angular/router';
 @Component({
   selector: 'app-login',
   imports: [
-    Form
+    VmcForm
   ],
-  templateUrl: './login.html',
-  styleUrl: './login.scss',
+  templateUrl: './app-login.component.html',
+  styleUrl: './app-login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Login {
+export class AppLogin {
   readonly #authService = inject(AuthService);
   readonly #router = inject(Router);
 

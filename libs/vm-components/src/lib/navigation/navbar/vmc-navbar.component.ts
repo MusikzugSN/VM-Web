@@ -10,18 +10,19 @@ export interface IToolbarItem {
 }
 
 @Component({
-  selector: 'vmc-toolbar',
+  selector: 'vmc-navbar',
   imports: [
     MatToolbar
   ],
-  templateUrl: './toolbar.html',
-  styleUrl: './toolbar.scss',
+  templateUrl: './vmc-navbar.component.html',
+  styleUrl: './vmc-navbar.component.scss',
 })
-export class Toolbar {
+export class VmcNavbar {
   readonly #router = inject(Router);
 
   applicationName: InputSignal<string> = input.required();
   toolbarItems: InputSignal<IToolbarItem[]> = input.required();
+  showToolbarItems: InputSignal<boolean> = input(false);
 
   async redirect(url: string) {
     await this.#router.navigate([url]);

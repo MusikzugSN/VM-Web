@@ -3,7 +3,7 @@
 @import url('./variables.css');
 @import url('./tailwind.css');
 * {
-  font-family: var(--font-family), sans-serif !important;
+  font-family: var(--vm-font-family), sans-serif !important;
 }
 
 html {

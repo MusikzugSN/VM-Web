@@ -1,17 +1,17 @@
 import {Component, input, InputSignal, output} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 
-type VmcButtonType = 'elevated' | 'filled' | 'tonal';
+export type VmcButtonType = 'elevated' | 'filled' | 'tonal';
 
 @Component({
   selector: 'vmc-button',
   imports: [
     MatButton
   ],
-  templateUrl: './button.html',
-  styleUrl: './button.scss',
+  templateUrl: './vmc-button.component.html',
+  styleUrl: './vmc-button.component.scss',
 })
-export class Button {
+export class VmcButton {
 
   label: InputSignal<string> = input.required<string>();
   type: InputSignal<VmcButtonType> = input<VmcButtonType>('elevated');

@@ -1,0 +1,16 @@
+<div class="sidebar__wrapper">
+  @for (group of sidebarItems(); track group.groupName) {
+    <vmc-extention-pannel
+      class="sidebar__group"
+      [extensionTitle]="group.groupName">
+      @for (item of group.items; track item.name) {
+        <div
+          class="sidebar__btn"
+          [class.sidebar__btn__selected]="item.selected"
+          (click)="redirect(item.route)">
+          {{ item.name }}
+        </div>
+      }
+    </vmc-extention-pannel>
+  }
+</div>

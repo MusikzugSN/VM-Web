@@ -1,0 +1,11 @@
+<mat-accordion >
+  <mat-expansion-panel [expanded]="expanded()" [hideToggle]="hideToggle()">
+    <mat-expansion-panel-header>
+      <!---/ Icon?? --->
+      <mat-panel-title></mat-panel-title>
+      <mat-panel-description> {{ extensionTitle() }} </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <ng-content></ng-content>
+  </mat-expansion-panel>
+</mat-accordion>

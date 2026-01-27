@@ -1,8 +1,11 @@
+import {VmcButtonType} from '../button/vmc-button.component';
+
 export interface VmForm {
   header: string;
   description?: string;
   fields: VmFormField[];
   submitButton?: string;
+  submitButtonType?: VmcButtonType;
 }
 
 interface VmFormField {

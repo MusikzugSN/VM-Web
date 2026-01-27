@@ -16,6 +16,7 @@
   }
   <vmc-button
     style="margin-left: auto"
+    [type]="data.submitButtonType ?? 'elevated'"
     [label]="data.submitButton ?? 'Senden'"
     (onClick)="this.submitClicked()"/>
 </form>

@@ -3,7 +3,7 @@ import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {Dictionary} from '@vm-utils';
 import {FormsModule} from '@angular/forms';
 import {VmForm} from './form.models';
-import {Button} from '../button/button';
+import {VmcButton} from '../button/vmc-button.component';
 
 @Component({
   selector: 'vmc-form',
@@ -12,13 +12,13 @@ import {Button} from '../button/button';
     MatLabel,
     MatInput,
     FormsModule,
-    Button
+    VmcButton
   ],
-  templateUrl: './form.html',
-  styleUrl: './form.scss',
+  templateUrl: './vmc-form.component.html',
+  styleUrl: './vmc-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Form {
+export class VmcForm {
 
   values: Dictionary<string> = {};
   formData: InputSignal<VmForm> = input.required();
