@@ -1,6 +1,7 @@
 import {Component, inject, input, InputSignal} from '@angular/core';
 import {Router} from '@angular/router';
 import {VmcExtentionPannel} from '../../layout/extentionPanel/vmc-extention-pannel.component';
+import {VmcToolbar} from '../../layout/toolbar/vmc-toolbar.component';
 
 export interface ISidebarGroup {
   groupName: string;
@@ -17,7 +18,8 @@ export interface ISidebarItem {
 @Component({
   selector: 'vmc-sidebar',
   imports: [
-    VmcExtentionPannel
+    VmcExtentionPannel,
+    VmcToolbar
   ],
   templateUrl: './vmc-sidebar.component.html',
   styleUrl: './vmc-sidebar.component.scss',
