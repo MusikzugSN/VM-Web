@@ -3,3 +3,9 @@
   flex-direction: column;
   height: 100dvh;
 }
+
+.content {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}

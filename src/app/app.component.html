@@ -1,4 +1,7 @@
 <vmp-navbar
   [isLoggedIn]="(authService.isLoggedIn$() | async) ?? false"
   (onLogout)="logout()"/>
-<router-outlet />
+
+<div class="content">
+  <router-outlet></router-outlet>
+</div>
