@@ -22,3 +22,9 @@ body {
   margin: 0;
   height: 100%;
 }
+
+vmc-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}

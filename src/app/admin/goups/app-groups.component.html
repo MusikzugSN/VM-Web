@@ -1,1 +1,9 @@
-
+<vmc-data-grid
+  [dataSource]="(data$ | async) ?? []"
+  [columns]="columns"
+  [rowActions]="[{
+    key: 'edit',
+    icon: 'edit'
+  }]"
+  (onAction)="logAction($event)"
+  />

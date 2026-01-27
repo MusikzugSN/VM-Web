@@ -1,3 +1,6 @@
+// Data
+export * from './lib/data/dataGrid/vmc-data-grid.component';
+
 // Essentials
 export * from './lib/essentials/icon/vmc-icon.component';
 

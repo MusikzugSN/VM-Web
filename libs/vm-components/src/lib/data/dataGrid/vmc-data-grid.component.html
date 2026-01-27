@@ -1,0 +1,41 @@
+@let _columns = columns();
+@let _displayColumns = displayedColumns();
+@let _rowActions = rowActions();
+
+@if (_columns.length > 0 && _displayColumns.length > 0) {
+  <div class="mat-elevation-z8">
+    <table [dataSource]="tableData()" mat-table>
+
+      @for (column of _columns; track column.key) {
+        <ng-container [matColumnDef]="column.key">
+          <th *matHeaderCellDef
+              class="col-header-{{ column.key }}"
+              mat-header-cell> {{ column.header }}</th>
+          <td *matCellDef="let row"
+              class="col-row-{{ column.key }}"
+              mat-cell> {{ row[column.field] }}</td>
+        </ng-container>
+      }
+
+      @if (_rowActions.length > 0) {
+        <ng-container [matColumnDef]="'actions'">
+          <th *matHeaderCellDef class="col-header-actions" mat-header-cell></th>
+
+          <td *matCellDef="let row" class="col-row-actions" mat-cell>
+            @for (action of _rowActions; track action.key) {
+              <vmc-icon-button
+                [iconName]="action.icon ?? 'hvac'"
+                (onClick)="onAction.emit({ key: action.key, rowData: row})"/>
+            }
+          </td>
+        </ng-container>
+      }
+
+      <tr *matHeaderRowDef="_displayColumns" mat-header-row></tr>
+      <tr *matRowDef="let _row; columns: _displayColumns" mat-row></tr>
+    </table>
+
+    <!--  maybe later! -->
+    <!--  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>-->
+  </div>
+}
