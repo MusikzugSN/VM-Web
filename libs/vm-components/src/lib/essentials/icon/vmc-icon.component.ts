@@ -12,5 +12,5 @@ import {MatIcon} from '@angular/material/icon';
 export class VmcIcon {
   iconName: InputSignal<string> = input.required();
   iconSize: InputSignal<string> = input('24px');
-  iconColor: InputSignal<string> = input('white');
+  iconColor: InputSignal<string> = input('black');
 }

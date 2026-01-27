@@ -16,5 +16,7 @@ export class VmcIconButton {
   iconSize: InputSignal<string> = input('24px');
   disabled: InputSignal<boolean> = input(false);
 
+  iconColor: InputSignal<string> = input('black');
+
   onClick = output();
 }

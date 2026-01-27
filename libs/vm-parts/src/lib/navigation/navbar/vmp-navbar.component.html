@@ -3,6 +3,7 @@
   [applicationName]="'Musikzug Schloss Neuhaus'"
   [toolbarItems]="(toolbarItems$ | async) ?? []">
   <vmc-icon-button
+    [iconColor]="'white'"
     [iconName]="'logout'"
     (onClick)="onLogout.emit()"/>
 </vmc-navbar>
