@@ -2,6 +2,11 @@
 
 @import url('./variables.css');
 @import url('./tailwind.css');
+:root {
+  --mdc-theme-primary: var(--vm-primary-color);
+  --mdc-theme-secondary: var(--vm-secondary-color);
+}
+
 * {
   font-family: var(--vm-font-family), sans-serif !important;
 }

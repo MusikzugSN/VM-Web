@@ -12,6 +12,7 @@ export * from './lib/navigation/sidebar/vmc-sidebar.component';
 export * from './lib/navigation/navbar/vmc-navbar.component';
 
 // Input
+export * from './lib/input/form.models';
 export * from './lib/input/form/vmc-form.component';
 export * from './lib/input/iconButton/vmc-icon-button.component';
 export * from './lib/input/button/vmc-button.component';

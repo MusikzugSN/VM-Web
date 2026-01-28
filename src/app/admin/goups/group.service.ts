@@ -18,6 +18,14 @@ export class GroupService {
 
   readonly #httpClient = inject(HttpClient);
 
+  changeGroup$(groupPatch: Partial<IGroup>): Observable<IGroup> {
+    return this.#httpClient.patch<IGroup>('group', groupPatch);
+  }
+
+  deleteGroup$(groupId: number): Observable<boolean> {
+    return this.#httpClient.delete<boolean>(`group/${groupId}`);
+  }
+
   loadGroups$(): Observable<IGroup[]> {
     return this.#httpClient.get<IGroup[]>('group');
   }

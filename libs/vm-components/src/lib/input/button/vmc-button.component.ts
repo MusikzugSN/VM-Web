@@ -1,7 +1,8 @@
-import {Component, input, InputSignal, output} from '@angular/core';
+import {Component, computed, input, InputSignal, output} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 
 export type VmcButtonType = 'elevated' | 'filled' | 'tonal';
+export type VmcButtonColor = 'primary' | 'error';
 
 @Component({
   selector: 'vmc-button',
@@ -17,6 +18,17 @@ export class VmcButton {
   type: InputSignal<VmcButtonType> = input<VmcButtonType>('elevated');
   disabled: InputSignal<boolean> = input<boolean>(false);
 
+  colorType: InputSignal<VmcButtonColor> = input<VmcButtonColor>('primary');
+  colorClass = computed(() => this.#mapColorTypeToClass(this.colorType()));
+
   onClick = output<void>();
 
+  #mapColorTypeToClass(colorType: VmcButtonColor): string {
+    switch (colorType) {
+      case 'error':
+        return 'vmc-button-error';
+      default:
+        return '';
+    }
+  }
 }

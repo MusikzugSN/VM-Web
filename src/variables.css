@@ -5,6 +5,7 @@
   --vm-secondary-color: #2A8899;
   --vm-secondary-color-tonal: color-mix(in srgb, var(--vm-secondary-color) 15%, white);
 
+  --vm-error-color: #F44336;
 
   --vm-background-color-light: color-mix(in srgb, var(--vm-primary-color) 5%, white);
 

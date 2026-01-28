@@ -1,4 +1,5 @@
 <button
+  [class]="colorClass()"
   [matButton]="type()"
   [disabled]="disabled()"
   (click)="onClick.emit()">{{ label() }}</button>

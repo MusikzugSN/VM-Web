@@ -1,14 +1,16 @@
 :host {
+  --vmc-button-color: var(--vm-primary-color);
+
   ::ng-deep {
     // filled button
     .mat-mdc-unelevated-button:not(:disabled) {
       color: var(--mat-button-filled-label-text-color, var(--mat-sys-on-primary));
-      background-color: var(--mat-button-filled-container-color, var(--vm-primary-color));
+      background-color: var(--vmc-button-color);
     }
 
     // elevated button
     .mat-mdc-raised-button:not(:disabled) {
-      color: var(--mat-button-protected-label-text-color, var(--vm-primary-color));
+      color: var(--vmc-button-color);
       background-color: var(--mat-button-protected-container-color, var(--mat-sys-surface));
     }
 
@@ -17,6 +19,9 @@
       color: var(--mat-button-tonal-label-text-color, var(--mat-sys-on-secondary-container));
       background-color: var(--mat-button-tonal-container-color, var(--vm-primary-color-tonal));
     }
-
   }
+}
+
+.vmc-button-error {
+  --vmc-button-color: var(--vm-error-color);
 }

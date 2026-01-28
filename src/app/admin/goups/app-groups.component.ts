@@ -4,6 +4,7 @@ import {GroupService, IGroup} from './group.service';
 import {BehaviorSubject, Observable, switchMap} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {EditGroupDiaogService} from './editDialog/edit-group-diaog.service';
+import {DeleteGroupDialogService} from './deleteDialog/delete-group-dialog.service';
 
 @Component({
   selector: 'app-groups',
@@ -17,6 +18,7 @@ import {EditGroupDiaogService} from './editDialog/edit-group-diaog.service';
 export class AppGroups {
   readonly #groupService = inject(GroupService)
   readonly #editGrouDialogService = inject(EditGroupDiaogService);
+  readonly #deleteGroupDialogService = inject(DeleteGroupDialogService);
 
   #reload = new BehaviorSubject(false);
 
@@ -27,7 +29,15 @@ export class AppGroups {
       if (reload) {
         this.#reload.next(true);
       }
+      return;
+    }
 
+    if (action.key === 'delete') {
+      const reload = await this.#deleteGroupDialogService.openEditGroupDialog(action.rowData);
+
+      if (reload) {
+        this.#reload.next(true);
+      }
     }
   }
 
