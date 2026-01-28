@@ -1,2 +1,5 @@
 <mat-toolbar class="toolbar">
+  @if (useNgContent()) {
+    <ng-content />
+  }
 </mat-toolbar>

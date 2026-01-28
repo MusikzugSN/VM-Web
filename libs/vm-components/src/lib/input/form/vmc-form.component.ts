@@ -2,17 +2,16 @@ import {ChangeDetectionStrategy, Component, input, InputSignal, output} from '@a
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {Dictionary} from '@vm-utils';
 import {FormsModule} from '@angular/forms';
-import {VmForm} from './form.models';
+import {VmForm} from '../form.models';
 import {VmcButton} from '../button/vmc-button.component';
+import {VmcInputField} from '../inputField/vmc-input-field.component';
 
 @Component({
   selector: 'vmc-form',
   imports: [
-    MatFormField,
-    MatLabel,
-    MatInput,
     FormsModule,
-    VmcButton
+    VmcButton,
+    VmcInputField
   ],
   templateUrl: './vmc-form.component.html',
   styleUrl: './vmc-form.component.scss',
@@ -25,8 +24,8 @@ export class VmcForm {
 
   onSubmit = output<Dictionary<string>>()
 
-  onChange(event: Event, key: string) {
-    this.values[key] = (event.target as HTMLInputElement).value;
+  onChange(newValue: string, key: string) {
+    this.values[key] = newValue;
   }
 
   submitClicked() {

@@ -1,8 +1,9 @@
 import {Component, inject} from '@angular/core';
-import {IColumn, IRowAction, VmcDataGrid} from '@vm-components';
+import {IColumn, IRowClickedEvent, VmcDataGrid} from '@vm-components';
 import {GroupService, IGroup} from './group.service';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable, switchMap} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
+import {EditGroupDiaogService} from './editDialog/edit-group-diaog.service';
 
 @Component({
   selector: 'app-groups',
@@ -15,12 +16,22 @@ import {AsyncPipe} from '@angular/common';
 })
 export class AppGroups {
   readonly #groupService = inject(GroupService)
+  readonly #editGrouDialogService = inject(EditGroupDiaogService);
 
-  logAction(action: IRowAction) {
-    console.log('Action triggered:', action);
+  #reload = new BehaviorSubject(false);
+
+  async execAction(action: IRowClickedEvent<IGroup>) {
+    if (action.key === 'edit') {
+      const reload = await this.#editGrouDialogService.openEditGroupDialog(action.rowData);
+
+      if (reload) {
+        this.#reload.next(true);
+      }
+
+    }
   }
 
-  data$: Observable<IGroup[]> = this.#groupService.loadGroups$();
+  data$: Observable<IGroup[]> = this.#reload.pipe(switchMap(x => this.#groupService.loadGroups$()));
 
   columns: IColumn<IGroup>[] = [
     { key: 'groupId',   header: '',             field: 'groupId' },

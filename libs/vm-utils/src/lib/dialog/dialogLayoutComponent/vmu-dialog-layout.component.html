@@ -1,0 +1,21 @@
+<vmc-toolbar [useNgContent]="true">
+  <span class="text-large">{{dialogConfig.title}}</span>
+  <vmc-icon-button
+    style="margin-left: auto"
+    [iconName]="'close'"
+    [iconColor]="'white'"
+    (onClick)="buttonClicked('close')"/>
+</vmc-toolbar>
+
+<mat-dialog-content>
+  @let _content = dialogConfig.content;
+  @if (_content) {
+    <ng-container *ngComponentOutlet="_content; injector: injectorForContent"></ng-container>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog__footer">
+  @for (button of dialogConfig.buttons; track button.key) {
+    <vmc-button [type]="button.type ?? 'elevated'" [label]="button.text" (onClick)="buttonClicked(button.key)"/>
+  }
+</mat-dialog-actions>

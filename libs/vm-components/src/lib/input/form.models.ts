@@ -1,4 +1,4 @@
-import {VmcButtonType} from '../button/vmc-button.component';
+import {VmcButtonType} from '@vm-components';
 
 export interface VmForm {
   header: string;
@@ -8,11 +8,11 @@ export interface VmForm {
   submitButtonType?: VmcButtonType;
 }
 
-interface VmFormField {
+export interface VmFormField {
   label: string;
-  type: 'text' | 'number' | 'email' | 'password'; // | 'checkbox' | 'radio' | 'select' | 'textarea';
+  type: 'color' | 'date' | 'datetime-local' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'time' | 'url'// | 'checkbox' | 'radio' | 'select' | 'textarea';
   key: string;
-  //value?: any; // geht aktuell nicht
+  value?: any;
   description?: string;
   placeholder?: string;
   required?: boolean;

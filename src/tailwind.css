@@ -18,3 +18,8 @@
   font: var(--vm-font-family);
   font-size: var(--vm-font-size__normal);
 }
+
+.text-large {
+  font: var(--vm-font-family);
+  font-size: var(--vm-font-size__large);
+}

@@ -15,3 +15,4 @@ export * from './lib/navigation/navbar/vmc-navbar.component';
 export * from './lib/input/form/vmc-form.component';
 export * from './lib/input/iconButton/vmc-icon-button.component';
 export * from './lib/input/button/vmc-button.component';
+export * from './lib/input/inputField/vmc-input-field.component';

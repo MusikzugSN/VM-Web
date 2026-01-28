@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, input, InputSignal} from '@angular/core';
 import {MatToolbar} from '@angular/material/toolbar';
 
 @Component({
@@ -9,4 +9,8 @@ import {MatToolbar} from '@angular/material/toolbar';
   templateUrl: './vmc-toolbar.component.html',
   styleUrl: './vmc-toolbar.component.scss',
 })
-export class VmcToolbar {}
+export class VmcToolbar {
+
+  useNgContent: InputSignal<boolean> = input<boolean>(false);
+
+}
