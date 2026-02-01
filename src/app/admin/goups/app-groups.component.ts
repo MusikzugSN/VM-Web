@@ -1,22 +1,18 @@
-import {Component, inject} from '@angular/core';
-import {IColumn, IRowClickedEvent, VmcDataGrid, VmcToolbar, IToolbarItem} from '@vm-components';
-import {GroupService, IGroup} from './group.service';
-import {BehaviorSubject, Observable, switchMap} from 'rxjs';
-import {AsyncPipe} from '@angular/common';
-import {GroupDialogService} from './group-dialog.service';
+import { Component, inject } from '@angular/core';
+import { IColumn, IRowClickedEvent, VmcDataGrid, VmcToolbar, IToolbarItem } from '@vm-components';
+import { GroupService, IGroup } from './group.service';
+import { BehaviorSubject, Observable, switchMap } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { GroupDialogService } from './group-dialog.service';
 
 @Component({
   selector: 'app-groups',
-  imports: [
-    VmcDataGrid,
-    AsyncPipe,
-    VmcToolbar
-  ],
+  imports: [VmcDataGrid, AsyncPipe, VmcToolbar],
   templateUrl: './app-groups.component.html',
   styleUrl: './app-groups.component.scss',
 })
 export class AppGroups {
-  readonly #groupService = inject(GroupService)
+  readonly #groupService = inject(GroupService);
   readonly #groupDataDialogService = inject(GroupDialogService);
 
   #reload = new BehaviorSubject(false);
@@ -27,10 +23,10 @@ export class AppGroups {
       icon: 'add',
       label: 'Neue Gruppe',
       acton: async (): Promise<void> => {
-        await this.#groupDataDialogService.openNewGroupDialog()
+        await this.#groupDataDialogService.openNewGroupDialog();
         this.#reload.next(true);
-      }
-    }
+      },
+    },
   ];
 
   async execAction(action: IRowClickedEvent<IGroup>): Promise<void> {
@@ -50,14 +46,16 @@ export class AppGroups {
     }
   }
 
-  data$: Observable<IGroup[]> = this.#reload.pipe(switchMap(_x => this.#groupService.loadGroups$()));
+  data$: Observable<IGroup[]> = this.#reload.pipe(
+    switchMap((_x) => this.#groupService.loadGroups$()),
+  );
 
   columns: IColumn<IGroup>[] = [
-    { key: 'groupId',   header: '',             field: 'groupId' },
-    { key: 'name',      header: 'Name',           field: 'name' },
-    { key: 'updatedAt', header: 'Geändert am',    field: 'updatedAt', type: 'date' },
-    { key: 'createdAt', header: 'Erstellt am',    field: 'createdAt', type: 'date' },
-    { key: 'updatedBy', header: 'Geändert von',   field: 'updatedBy' },
-    { key: 'createdBy', header: 'Erstellt von',   field: 'createdBy' },
+    { key: 'groupId', header: '', field: 'groupId' },
+    { key: 'name', header: 'Name', field: 'name' },
+    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },
+    { key: 'createdAt', header: 'Erstellt am', field: 'createdAt', type: 'date' },
+    { key: 'updatedBy', header: 'Geändert von', field: 'updatedBy' },
+    { key: 'createdBy', header: 'Erstellt von', field: 'createdBy' },
   ];
 }

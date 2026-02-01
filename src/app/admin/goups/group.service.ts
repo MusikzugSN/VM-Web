@@ -1,18 +1,17 @@
-import {inject, Injectable} from '@angular/core';
-import {map, Observable} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
-import {convertMetaDataFromDto, IMetaData} from '@vm-utils';
+import { inject, Injectable } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { convertMetaDataFromDto, IMetaData } from '@vm-utils';
 
-export interface IGroup extends IMetaData{
+export interface IGroup extends IMetaData {
   groupId: number;
   name: string;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GroupService {
-
   readonly #httpClient = inject(HttpClient);
 
   createGroup$(group: Partial<IGroup>): Observable<IGroup> {
@@ -28,8 +27,8 @@ export class GroupService {
   }
 
   loadGroups$(): Observable<IGroup[]> {
-    return this.#httpClient.get<IGroup[]>('group')
-      .pipe(map(groups => convertMetaDataFromDto(groups)));
+    return this.#httpClient
+      .get<IGroup[]>('group')
+      .pipe(map((groups) => convertMetaDataFromDto(groups)));
   }
-
 }

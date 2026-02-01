@@ -7,8 +7,8 @@
 ![SCSS](https://img.shields.io/badge/SCSS-CC6699.svg?style=for-the-badge&logo=sass&logoColor=white)
 
 # VM-Web
-Dieses Repository enthält das Web-Frontend der digitalen Verwaltungsplattform für deinen Musikverein. Die Anwendung basiert auf Angular und bietet allen Musikern sowie der Vereinsverwaltung einen modernen, intuitiven Zugang zu allen relevanten Funktionen.
 
+Dieses Repository enthält das Web-Frontend der digitalen Verwaltungsplattform für deinen Musikverein. Die Anwendung basiert auf Angular und bietet allen Musikern sowie der Vereinsverwaltung einen modernen, intuitiven Zugang zu allen relevanten Funktionen.
 
 ## 1. Lizenz
 
@@ -23,15 +23,22 @@ Mit Beiträgen zu diesem Projekt erklärst du dich einverstanden, dass deine Än
 - Die Software wird ohne Garantie bereitgestellt (siehe Lizenztext).
 
 ## 2. Funktionen
+
 - **Benutzerverwaltung**: Registrierung, Anmeldung und Profilverwaltung für Musiker und Vereinsadministratoren.
 - **Repertoireverwaltung**: Verwaltung von Musikstücken, Noten und Übungsmaterialien.
+
 ## 3. Installation und Einrichtung
+
 bald
 
 ## 4. Architektur
+
 bald
+
 ### Tech-Stack
+
 ### Projektstruktur (Web)
+
 - 'libs/': Gemeinsame Bibliotheken und Module.
 - 'libs/vm-components/': Wiederverwendbare UI-Komponenten für die Anwendung.
 - 'libs/vm-parts/': Teile der Anwendung, die spezifische Funktionalitäten kapseln.
@@ -40,26 +47,29 @@ bald
 - 'scr/app/': Hauptanwendungscode. (weitere Ordner werden nach den URL-Pfaden strukturiert)
 
 ## 5. Mitwirken
-   Beiträge zu diesem Projekt sind herzlich willkommen! Wenn du Fehler findest, neue Funktionen vorschlagen möchtest oder Code beisteuern willst, folge bitte diesen Schritten:
+
+Beiträge zu diesem Projekt sind herzlich willkommen! Wenn du Fehler findest, neue Funktionen vorschlagen möchtest oder Code beisteuern willst, folge bitte diesen Schritten:
 
 1. Forke das Repository.
 2. Erstelle einen neuen Branch für deine Änderungen.
-3. Führe deine Änderungen durch und teste sie gründlich. 
-4. Erstelle einen Pull Request mit einer Beschreibung deiner Änderungen. 
-5. Warte auf Feedback und mögliche Anpassungen. 
+3. Führe deine Änderungen durch und teste sie gründlich.
+4. Erstelle einen Pull Request mit einer Beschreibung deiner Änderungen.
+5. Warte auf Feedback und mögliche Anpassungen.
 6. Nach der Genehmigung wird dein Beitrag in das Hauptrepository integriert.
 
 ### Richtlinien für Beiträge
-1. Halte dich an den bestehenden Code-Stil und die Architektur. 
-2. Schreibe aussagekräftige Commit-Nachrichten. 
-3. Füge Tests für neue Funktionen oder Bugfixes hinzu. 
-4. Respektiere die Lizenzbedingungen (GPLv3). 
+
+1. Halte dich an den bestehenden Code-Stil und die Architektur.
+2. Schreibe aussagekräftige Commit-Nachrichten.
+3. Füge Tests für neue Funktionen oder Bugfixes hinzu.
+4. Respektiere die Lizenzbedingungen (GPLv3).
 5. Sei respektvoll und konstruktiv im Umgang mit anderen Mitwirkenden.
 
 #### Coderichtlinien
+
 - Verwende TypeScript und Angular Best Practices.
-- Nutze RxJS für asynchrone Programmierung. 
-- Schreibe modularen und wiederverwendbaren Code. 
+- Nutze RxJS für asynchrone Programmierung.
+- Schreibe modularen und wiederverwendbaren Code.
 - Dokumentiere deinen Code ausreichend.
 
 Dateinamen sollten aussagekräftig und konsistent sein (<was-die-datei-macht>.<service | guard | interceptor | ...>.<ts | scss | html>).
@@ -76,6 +86,7 @@ Private Felder werden mit einem Hashtag am Anfang gekennzeichnet (z. B. #mitgl
 Observable- und BehaviorSubject-Felder werden mit einem Dollarzeichen am Ende gekennzeichnet (z. B. mitgliedsBeitrag$).
 
 #### Gitworkflow
+
 Das Repository verwendet den Gitflow-Workflow.
 'main' enthält stets den stabilen, produktionsreifen Code.
 'develop' dient als Integrationszweig für neue Features und Bugfixes.
@@ -86,13 +97,14 @@ Release-Branches (von develop): release/<version>
 Hotfix-Branches (von main): hotfix/<bug-name>
 
 #### Sprache
-- Code und Bezeichner sind in Englisch. 
-- Kommentare im Code sind auf Deutsch. 
-- Texte der Benutzeroberfläche sind auf Deutsch. 
-- Die README-Datei ist auf Deutsch. 
+
+- Code und Bezeichner sind in Englisch.
+- Kommentare im Code sind auf Deutsch.
+- Texte der Benutzeroberfläche sind auf Deutsch.
+- Die README-Datei ist auf Deutsch.
 - Issues und Diskussionen können auf Deutsch oder Englisch geführt werden.
 
 ## Contributors
+
 - [Vexance] Florian A. (Haubtentwickler)
 - [heri410] Hendrik M. (Projektleitung)
-

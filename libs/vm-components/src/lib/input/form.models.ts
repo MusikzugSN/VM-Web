@@ -1,4 +1,4 @@
-import {VmcButtonType} from '@vm-components';
+import { VmcButtonType } from '@vm-components';
 
 export type VmcValidFormTypes = number | string | null;
 
@@ -12,7 +12,18 @@ export interface VmForm {
 
 export interface VmFormField {
   label: string;
-  type: 'color' | 'date' | 'datetime-local' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'time' | 'url'// | 'checkbox' | 'radio' | 'select' | 'textarea';
+  type:
+    | 'color'
+    | 'date'
+    | 'datetime-local'
+    | 'email'
+    | 'number'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'text'
+    | 'time'
+    | 'url'; // | 'checkbox' | 'radio' | 'select' | 'textarea';
   key: string;
   value?: VmcValidFormTypes;
   description?: string;

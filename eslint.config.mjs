@@ -4,7 +4,6 @@ import angular from '@angular-eslint/eslint-plugin';
 import angularTemplate from '@angular-eslint/eslint-plugin-template';
 
 export default [
-
   // Global ignores
   {
     ignores: ['dist/**', 'node_modules/**'],
@@ -43,9 +42,9 @@ export default [
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_'
-        }
-      ]
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
     },
-  }
+  },
 ];

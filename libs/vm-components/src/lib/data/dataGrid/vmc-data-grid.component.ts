@@ -1,18 +1,30 @@
-import {Component, computed, input, InputSignal, output, OutputEmitterRef, TemplateRef} from '@angular/core';
 import {
-  MatCell, MatCellDef,
+  Component,
+  computed,
+  input,
+  InputSignal,
+  output,
+  OutputEmitterRef,
+  TemplateRef,
+} from '@angular/core';
+import {
+  MatCell,
+  MatCellDef,
   MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
   MatHeaderRow,
   MatHeaderRowDef,
-  MatRow, MatRowDef,
-  MatTable, MatTableDataSource
+  MatRow,
+  MatRowDef,
+  MatTable,
+  MatTableDataSource,
 } from '@angular/material/table';
-import {VmcIconButton} from '../../input/iconButton/vmc-icon-button.component';
-import {DatePipe, NgTemplateOutlet} from '@angular/common';
-import {Dictionary} from '@vm-utils';
+import { VmcIconButton } from '../../input/iconButton/vmc-icon-button.component';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { Dictionary } from '@vm-utils';
 
-export type VmColumnType = 'text'| 'date' | 'template'; //| 'boolean' | 'number' ;
+export type VmColumnType = 'text' | 'date' | 'template'; //| 'boolean' | 'number' ;
 
 export interface IColumn<TElement> {
   key: string;
@@ -52,13 +64,12 @@ export interface IRowClickedEvent<TRow> {
     MatCellDef,
     VmcIconButton,
     DatePipe,
-    NgTemplateOutlet
+    NgTemplateOutlet,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
 })
 export class VmcDataGrid<TRow> {
-
   dataSource: InputSignal<TRow[]> = input.required();
   columns: InputSignal<IColumn<TRow>[]> = input.required();
   rowActions: InputSignal<IRowAction[]> = input<IRowAction[]>([]);
@@ -66,7 +77,7 @@ export class VmcDataGrid<TRow> {
 
   clickedAction: OutputEmitterRef<IRowClickedEvent<TRow>> = output();
 
-  tableData = computed(() => new MatTableDataSource(this.dataSource()))
+  tableData = computed(() => new MatTableDataSource(this.dataSource()));
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
   transformedTemplates = computed(() => this.#mapTemplates());
 
@@ -74,8 +85,8 @@ export class VmcDataGrid<TRow> {
     const templatesArray = this.templates();
     const templatesDict: Dictionary<TemplateRef<unknown>> = {};
 
-    templatesArray.forEach(t => {
-      t.keys.forEach(key => {
+    templatesArray.forEach((t) => {
+      t.keys.forEach((key) => {
         templatesDict[key] = t.templateRef;
       });
     });
@@ -88,9 +99,9 @@ export class VmcDataGrid<TRow> {
     const actions = this.rowActions();
 
     if (actions.length > 0) {
-      return [...columns.map(c => c.key), 'actions'];
+      return [...columns.map((c) => c.key), 'actions'];
     }
 
-    return columns.map(c => c.key);
+    return columns.map((c) => c.key);
   }
 }

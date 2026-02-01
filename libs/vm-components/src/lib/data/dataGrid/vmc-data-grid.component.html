@@ -6,15 +6,12 @@
 @if (_columns.length > 0 && _displayColumns.length > 0) {
   <div class="mat-elevation-z8">
     <table [dataSource]="tableData()" mat-table>
-
       @for (column of _columns; track column.key) {
         <ng-container [matColumnDef]="column.key">
-          <th *matHeaderCellDef
-              class="col-header-{{ column.key }}"
-              mat-header-cell> {{ column.header }}</th>
-          <td *matCellDef="let row"
-              class="col-row-{{ column.key }}"
-              mat-cell>
+          <th *matHeaderCellDef class="col-header-{{ column.key }}" mat-header-cell>
+            {{ column.header }}
+          </th>
+          <td *matCellDef="let row" class="col-row-{{ column.key }}" mat-cell>
             @if (column.type === undefined || column.type === 'text') {
               {{ row[column.field] }}
             } @else if (column.type === 'date') {
@@ -23,7 +20,11 @@
               @let template = _templates[column.key];
               @if (template !== undefined) {
                 <ng-container
-                  *ngTemplateOutlet="template; context: { rowData: row[column.field], column: column }" />
+                  *ngTemplateOutlet="
+                    template;
+                    context: { rowData: row[column.field], column: column }
+                  "
+                />
               }
             }
           </td>
@@ -38,7 +39,8 @@
             @for (action of _rowActions; track action.key) {
               <vmc-icon-button
                 [iconName]="action.icon ?? 'hvac'"
-                (buttonClicked)="clickedAction.emit({ key: action.key, rowData: row})"/>
+                (buttonClicked)="clickedAction.emit({ key: action.key, rowData: row })"
+              />
             }
           </td>
         </ng-container>

@@ -1,6 +1,6 @@
-import {Component, inject, input, InputSignal} from '@angular/core';
-import {MatToolbar} from '@angular/material/toolbar';
-import {Router} from '@angular/router';
+import { Component, inject, input, InputSignal } from '@angular/core';
+import { MatToolbar } from '@angular/material/toolbar';
+import { Router } from '@angular/router';
 
 export interface INavbarItem {
   name: string;
@@ -10,9 +10,7 @@ export interface INavbarItem {
 
 @Component({
   selector: 'vmc-navbar',
-  imports: [
-    MatToolbar
-  ],
+  imports: [MatToolbar],
   templateUrl: './vmc-navbar.component.html',
   styleUrl: './vmc-navbar.component.scss',
 })

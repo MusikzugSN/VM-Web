@@ -1,14 +1,14 @@
-import {Component, inject, Injector, Type} from '@angular/core';
+import { Component, inject, Injector, Type } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogContent,
-  MatDialogRef
+  MatDialogRef,
 } from '@angular/material/dialog';
-import {NgComponentOutlet} from '@angular/common';
-import {VmcButton, VmcIconButton, VmcToolbar} from '@vm-components';
-import {BehaviorSubject} from 'rxjs';
-import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, IDialogButtonConfig} from '@vm-utils';
+import { NgComponentOutlet } from '@angular/common';
+import { VmcButton, VmcIconButton, VmcToolbar } from '@vm-components';
+import { BehaviorSubject } from 'rxjs';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, IDialogButtonConfig } from '@vm-utils';
 
 export interface IVmDialogConfig<TData> {
   title: string;
@@ -25,14 +25,14 @@ export interface IVmDialogConfig<TData> {
     MatDialogActions,
     VmcButton,
     VmcToolbar,
-    VmcIconButton
+    VmcIconButton,
   ],
   templateUrl: './vmu-dialog-layout.component.html',
   styleUrl: './vmu-dialog-layout.component.scss',
 })
 export class VmuDialogLayoutComponent<TData> {
   readonly #injector = inject(Injector);
-  readonly dialogRef = inject(MatDialogRef<VmuDialogLayoutComponent<TData>>)
+  readonly dialogRef = inject(MatDialogRef<VmuDialogLayoutComponent<TData>>);
 
   readonly dialogConfig: IVmDialogConfig<TData> = inject<IVmDialogConfig<TData>>(MAT_DIALOG_DATA);
 
@@ -42,9 +42,9 @@ export class VmuDialogLayoutComponent<TData> {
     providers: [
       { provide: DIALOG_DATA, useValue: this.dialogConfig.data },
       { provide: MatDialogRef, useValue: this.dialogRef },
-      { provide: DIALOG_BUTTON_CLICKS, useValue: this.buttonClickEvents$.asObservable() }
+      { provide: DIALOG_BUTTON_CLICKS, useValue: this.buttonClickEvents$.asObservable() },
     ],
-    parent: this.#injector
+    parent: this.#injector,
   });
 
   buttonClicked(key: string): void {

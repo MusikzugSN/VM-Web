@@ -1,8 +1,3 @@
-<button matIconButton
-        [disabled]="disabled()"
-        (click)="buttonClicked.emit(true)">
-  <vmc-icon
-    [iconName]="iconName()"
-    [iconSize]="iconSize()"
-    [iconColor]="iconColor()"/>
+<button matIconButton [disabled]="disabled()" (click)="buttonClicked.emit(true)">
+  <vmc-icon [iconName]="iconName()" [iconSize]="iconSize()" [iconColor]="iconColor()" />
 </button>

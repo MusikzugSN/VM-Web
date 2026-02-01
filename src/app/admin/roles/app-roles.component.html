@@ -1,15 +1,16 @@
-<vmc-toolbar [items]="items"/>
+<vmc-toolbar [items]="items" />
 <vmc-data-grid
   [dataSource]="(roles$ | async) ?? []"
   [columns]="columns"
-  [rowActions]="[{
+  [rowActions]="[
+    {
       key: 'edit',
-      icon: 'edit'
+      icon: 'edit',
     },
     {
       key: 'delete',
-      icon: 'delete'
-    }
+      icon: 'delete',
+    },
   ]"
   (clickedAction)="execAction($event)"
 />

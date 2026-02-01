@@ -1,8 +1,8 @@
-import {Component, inject} from '@angular/core';
-import {GroupService, IGroup} from '../group.service';
-import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils';
-import {firstValueFrom, Observable} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { Component, inject } from '@angular/core';
+import { GroupService, IGroup } from '../group.service';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils';
+import { firstValueFrom, Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-delete-group-dialog',
@@ -19,17 +19,14 @@ export class AppDeleteGroupDialog extends DialogBase<boolean> {
 
   constructor() {
     super();
-    this.#buttonClickEvents$
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (x) => {
-        if (x === 'delete') {
-          await firstValueFrom(this.#groupService.deleteGroup$(this.#data.groupId));
+    this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
+      if (x === 'delete') {
+        await firstValueFrom(this.#groupService.deleteGroup$(this.#data.groupId));
 
-          super.closeDialog(true);
-
-        } else if (x === 'close') {
-          super.closeDialog(false);
-        }
-      });
+        super.closeDialog(true);
+      } else if (x === 'close') {
+        super.closeDialog(false);
+      }
+    });
   }
 }

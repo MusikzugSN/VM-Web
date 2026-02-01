@@ -9,7 +9,8 @@
         <div
           [class.toolbar-item__selected]="toolbarItem.selected ?? false"
           class="toolbar-item__wrapper"
-          (click)="redirect(toolbarItem.route)">
+          (click)="redirect(toolbarItem.route)"
+        >
           <span style="margin: auto">{{ toolbarItem.name }}</span>
         </div>
       }

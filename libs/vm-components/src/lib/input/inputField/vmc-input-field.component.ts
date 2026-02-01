@@ -1,16 +1,11 @@
-import {Component, effect, input, InputSignal, output} from '@angular/core';
-import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
-import {VmcValidFormTypes, VmFormField} from '../form.models';
-import {FormsModule} from '@angular/forms';
+import { Component, effect, input, InputSignal, output } from '@angular/core';
+import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import { VmcValidFormTypes, VmFormField } from '../form.models';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'vmc-input-field',
-  imports: [
-    MatInput,
-    MatLabel,
-    MatFormField,
-    FormsModule
-  ],
+  imports: [MatInput, MatLabel, MatFormField, FormsModule],
   templateUrl: './vmc-input-field.component.html',
   styleUrl: './vmc-input-field.component.scss',
 })
@@ -18,7 +13,7 @@ export class VmcInputField {
   formField: InputSignal<VmFormField> = input.required();
   shouldInitChange: InputSignal<boolean> = input(true);
 
-  inputChnaged = output<VmcValidFormTypes>()
+  inputChnaged = output<VmcValidFormTypes>();
 
   constructor() {
     // Das ist nicht gut...

@@ -1,7 +1,7 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
-import {convertMetaDataFromDto, IMetaData} from '@vm-utils';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+import { convertMetaDataFromDto, IMetaData } from '@vm-utils';
 
 export interface IPermissionGroup {
   name: string;
@@ -18,7 +18,7 @@ export enum PermissionCategory {
   Read = 1,
   Create = 2,
   Update = 3,
-  Delete = 4
+  Delete = 4,
 }
 
 export interface IPermission {
@@ -26,14 +26,14 @@ export interface IPermission {
   value: number;
 }
 
-export interface IRole extends IMetaData{
+export interface IRole extends IMetaData {
   roleId: number;
   name: string;
   permissions: IPermission[];
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RolesService {
   readonly #httpClient = inject(HttpClient);
@@ -43,8 +43,7 @@ export class RolesService {
   }
 
   getRoles$(): Observable<IRole[]> {
-    return this.#httpClient.get<IRole[]>('role')
-      .pipe(map(role => convertMetaDataFromDto(role)));
+    return this.#httpClient.get<IRole[]>('role').pipe(map((role) => convertMetaDataFromDto(role)));
   }
 
   deleteRole$(roleId: number): Observable<boolean> {

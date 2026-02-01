@@ -2,19 +2,17 @@
   --vm-primary-color: #366972;
   --vm-primary-color-tonal: color-mix(in srgb, var(--vm-primary-color) 15%, white);
 
-  --vm-secondary-color: #2A8899;
+  --vm-secondary-color: #2a8899;
   --vm-secondary-color-tonal: color-mix(in srgb, var(--vm-secondary-color) 15%, white);
 
-  --vm-error-color: #F44336;
+  --vm-error-color: #f44336;
 
   --vm-background-color-light: color-mix(in srgb, var(--vm-primary-color) 5%, white);
-
 
   --vm-font-family: Helvetica, Arial, sans-serif;
   --vm-font-size__normal: 1rem;
   --vm-font-size__large: 1.2rem;
   --vm-font-size__header: 2rem;
-
 
   --vm-iconColor-white: whitesmoke;
   --vm-iconColor-black: black;

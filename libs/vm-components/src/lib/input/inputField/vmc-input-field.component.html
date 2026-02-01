@@ -1,12 +1,13 @@
 @let field = formField();
 <mat-form-field class="vm-imput">
   <mat-label>{{ field.label }}</mat-label>
-  <input matInput
-         [type]="field.type"
-         [placeholder]="field.placeholder ?? ''"
-         [readonly]="field.readonly ?? false"
-         [required]="field.required ?? false"
-         [ngModel]="field.value ?? ''"
-         (input)="callChangeEvent($event)"
+  <input
+    matInput
+    [type]="field.type"
+    [placeholder]="field.placeholder ?? ''"
+    [readonly]="field.readonly ?? false"
+    [required]="field.required ?? false"
+    [ngModel]="field.value ?? ''"
+    (input)="callChangeEvent($event)"
   />
 </mat-form-field>
