@@ -25,24 +25,21 @@
   gap: 1rem;
 
   height: 100%;
-
-  min-width: 300px;
-
-  padding: 1rem 1rem 0 1rem;
+  padding: 1rem 1rem 0 0.5rem;
 
   background-color: var(--vm-background-color-light);
 }
 
 .sidebar__group {
   display: block;
-  width: 300px;
+  width: 230px;
 }
 
 .sidebar__btn {
   display: flex;
   align-items: center;
 
-  height: 50px;
+  height: 40px;
 
   padding-left: 20px;
   cursor: pointer;

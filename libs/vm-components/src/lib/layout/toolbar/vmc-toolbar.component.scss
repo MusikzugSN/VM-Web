@@ -9,3 +9,22 @@
     }
   }
 }
+
+.toolbar-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-right: 16px;
+  cursor: pointer;
+
+  padding: 8px 12px;
+  border-radius: 5px;
+
+  gap: 2px;
+
+  background: var(--vm-secondary-color);
+}
+
+.toolbar-item:hover {
+  background: var(--vm-primary-color);
+}

@@ -1,4 +1,5 @@
 :host {
   display: flex;
-  height: 100%;
+  height: calc(100dvh - 64px);
+  width: 100dvw;
 }

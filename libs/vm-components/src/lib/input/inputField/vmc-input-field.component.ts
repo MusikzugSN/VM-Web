@@ -16,6 +16,7 @@ import {FormsModule} from '@angular/forms';
 })
 export class VmcInputField {
   formField: InputSignal<VmFormField> = input.required();
+  shouldInitChange: InputSignal<boolean> = input(true);
 
   onChange = output<string>()
 
@@ -24,7 +25,7 @@ export class VmcInputField {
     // Ich mache das damit die values in vmc-form immer aktuell sind.
     effect(() => {
       const field = this.formField();
-      if (field?.value) {
+      if (field?.value && this.shouldInitChange()) {
         this.onChange.emit(field.value);
       }
     });

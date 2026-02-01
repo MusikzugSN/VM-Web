@@ -13,20 +13,20 @@ const groupNameKey = nameOf<IGroup>('name');
   imports: [
     VmcInputField
   ],
-  templateUrl: './app-edit-group-dialog.component.html',
-  styleUrl: './app-edit-group-dialog.component.scss',
+  templateUrl: './app-group-data-dialog.component.html',
+  styleUrl: './app-group-data-dialog.component.scss',
 })
-export class AppEditGroupDialog extends DialogBase<boolean> {
+export class AppGroupDataDialog extends DialogBase<boolean> {
 
-  readonly #data = inject<IGroup>(DIALOG_DATA);
+  readonly #data = inject<IGroup | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #groupService = inject(GroupService);
 
   formField: VmFormField = {
     type: 'text',
-    key: 'groupName',
+    key: 'name',
     label: 'Gruppenname',
-    value: this.#data.name
+    value: this.#data?.name ?? ''
   };
 
   changedValues: Dictionary<string> = {}
@@ -36,15 +36,21 @@ export class AppEditGroupDialog extends DialogBase<boolean> {
     this.#buttonClickEvents$
       .pipe(takeUntilDestroyed())
       .subscribe(async (x) => {
+        const patch = convertToPatch<IGroup>(this.changedValues);
         if (x === 'save') {
-          const patch = convertToPatch<IGroup>(this.changedValues);
-          patch.groupId = this.#data.groupId;
-
+          patch.groupId = this.#data?.groupId;
           await firstValueFrom(this.#groupService.changeGroup$(patch));
-
           super.closeDialog(true);
+          return;
+        }
 
-        } else if (x === 'close') {
+        if (x === 'create') {
+          await firstValueFrom(this.#groupService.createGroup$(patch));
+          super.closeDialog(true);
+          return;
+        }
+
+        if (x === 'close') {
           super.closeDialog(false);
         }
       });
@@ -54,6 +60,5 @@ export class AppEditGroupDialog extends DialogBase<boolean> {
     this.changedValues[key] = newValue;
   }
 
-  protected readonly nameOf = nameOf;
   protected readonly groupNameKey = groupNameKey;
 }

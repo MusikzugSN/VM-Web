@@ -1,4 +1,4 @@
-import {Component, computed, input, InputSignal, output, OutputEmitterRef} from '@angular/core';
+import {Component, computed, input, InputSignal, output, OutputEmitterRef, TemplateRef} from '@angular/core';
 import {
   MatCell, MatCellDef,
   MatColumnDef,
@@ -9,11 +9,21 @@ import {
   MatTable, MatTableDataSource
 } from '@angular/material/table';
 import {VmcIconButton} from '../../input/iconButton/vmc-icon-button.component';
+import {DatePipe, NgTemplateOutlet} from '@angular/common';
+import {Dictionary} from '@vm-utils';
+
+export type VmColumnType = 'text'| 'date' | 'template'; //| 'boolean' | 'number' ;
 
 export interface IColumn<TElement> {
   key: string;
   header: string;
   field: keyof TElement & string;
+  type?: VmColumnType;
+}
+
+export interface ITemplate {
+  keys: string[];
+  templateRef: TemplateRef<any>;
 }
 
 export interface IRowAction {
@@ -40,7 +50,9 @@ export interface IRowClickedEvent<TRow> {
     MatRowDef,
     MatHeaderCellDef,
     MatCellDef,
-    VmcIconButton
+    VmcIconButton,
+    DatePipe,
+    NgTemplateOutlet
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
@@ -50,12 +62,26 @@ export class VmcDataGrid<TRow> {
   dataSource: InputSignal<TRow[]> = input.required();
   columns: InputSignal<IColumn<TRow>[]> = input.required();
   rowActions: InputSignal<IRowAction[]> = input<IRowAction[]>([]);
+  templates: InputSignal<ITemplate[]> = input<ITemplate[]>([]);
 
   onAction: OutputEmitterRef<IRowClickedEvent<TRow>> = output();
 
   tableData = computed(() => new MatTableDataSource(this.dataSource()))
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
+  transformedTemplates = computed(() => this.#mapTemplates());
 
+  #mapTemplates(): Dictionary<TemplateRef<any>> {
+    const templatesArray = this.templates();
+    const templatesDict: Dictionary<TemplateRef<any>> = {};
+
+    templatesArray.forEach(t => {
+      t.keys.forEach(key => {
+        templatesDict[key] = t.templateRef;
+      });
+    });
+
+    return templatesDict;
+  }
 
   #mapColumnsToDisplay() {
     const columns = this.columns();
@@ -67,5 +93,4 @@ export class VmcDataGrid<TRow> {
 
     return columns.map(c => c.key);
   }
-
 }

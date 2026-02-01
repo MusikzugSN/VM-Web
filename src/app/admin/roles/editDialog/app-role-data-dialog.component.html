@@ -1,0 +1,26 @@
+<vmc-input-field
+  [formField]="nameField"
+  [shouldInitChange]="false"
+  (onChange)="storeChangedValue($event, roleNameKey)" />
+
+@let _structure = (structure$ | async) ?? [];
+<vmc-data-grid
+  [columns]="columns"
+  [dataSource]="_structure"
+  [templates]="[{
+    keys: ['0', '1', '2', '3', '4'],
+    templateRef: permissionCheckbox
+  }]"/>
+
+<ng-template #permissionCheckbox let-rowDataRaw="rowData" let-columnRaw="column">
+  @let column = columnRaw | as: ColumnType;
+  @let rowData = rowDataRaw | as: RowDataType;
+  @let index = column.key | as: NumberType;
+
+  @let permissionType = rowData[index]?.permissionType;
+  @let shouldBeDisabled = permissionType === undefined || permissionType === null;
+  @let checked = !shouldBeDisabled && permissions[permissionType.toString()];
+
+  <mat-checkbox [ngModel]="checked" [disabled]="shouldBeDisabled" (change)="storePermissionChange(permissionType ?? -1, $event.checked)"/>
+</ng-template>
+

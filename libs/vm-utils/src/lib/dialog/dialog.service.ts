@@ -31,7 +31,7 @@ export class VmDialogService {
     contentComponent: Type<TComponent>,
     options?: {
       title?: string;
-      data?: TData;
+      data?: TData | undefined;
       buttons?: IDialogButtonConfig[];
       dialogConfig?: MatDialogConfig;
     }

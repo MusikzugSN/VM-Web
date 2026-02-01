@@ -1,6 +1,7 @@
 @let _columns = columns();
 @let _displayColumns = displayedColumns();
 @let _rowActions = rowActions();
+@let _templates = transformedTemplates();
 
 @if (_columns.length > 0 && _displayColumns.length > 0) {
   <div class="mat-elevation-z8">
@@ -13,7 +14,19 @@
               mat-header-cell> {{ column.header }}</th>
           <td *matCellDef="let row"
               class="col-row-{{ column.key }}"
-              mat-cell> {{ row[column.field] }}</td>
+              mat-cell>
+            @if (column.type === undefined || column.type === 'text') {
+              {{ row[column.field] }}
+            } @else if (column.type === 'date') {
+              {{ row[column.field] | date: 'dd.MM.yyyy HH:mm' }}
+            } @else if (column.type === 'template') {
+              @let template = _templates[column.key];
+              @if (template !== undefined) {
+                <ng-container
+                  *ngTemplateOutlet="template; context: { rowData: row[column.field], column: column }" />
+              }
+            }
+          </td>
         </ng-container>
       }
 

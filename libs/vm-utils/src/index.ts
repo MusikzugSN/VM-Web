@@ -11,3 +11,7 @@ export * from './lib/dialog/dialog-base';
 // Types
 export * from './lib/types/dictionary';
 export * from './lib/types/nameOf';
+export * from './lib/types/meta-data.type';
+
+// Pipes
+export * from './lib/pipes/as.pipe'

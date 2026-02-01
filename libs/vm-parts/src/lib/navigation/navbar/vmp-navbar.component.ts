@@ -1,5 +1,5 @@
 import {Component, inject, input, InputSignal, output} from '@angular/core';
-import {IToolbarItem, VmcIconButton, VmcNavbar} from '@vm-components';
+import {INavbarItem, VmcIconButton, VmcNavbar} from '@vm-components';
 import {map, Observable} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {CurrentRouteService} from '@vm-utils';
@@ -20,7 +20,7 @@ export class VmpNavbar {
   isLoggedIn: InputSignal<boolean> = input(false);
   onLogout = output();
 
-  toolbarItems$: Observable<IToolbarItem[]> = this.#currentRouteService.route$.pipe(map(route => {
+  toolbarItems$: Observable<INavbarItem[]> = this.#currentRouteService.route$.pipe(map(route => {
     return [
       this.#createToolbarItem('Mein Bereich', '/me', route),
       this.#createToolbarItem('Systemverwaltung', '/admin', route),
@@ -28,7 +28,7 @@ export class VmpNavbar {
   }));
 
 
-  #createToolbarItem(name: string, route: string, currentRoute: string): IToolbarItem {
+  #createToolbarItem(name: string, route: string, currentRoute: string): INavbarItem {
     return {
       name: name,
       route: route,

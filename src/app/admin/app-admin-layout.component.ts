@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {ISidebarGroup, VmcSidebar, VmcToolbar} from "@vm-components";
+import {ISidebarGroup} from "@vm-components";
 import {RouterOutlet} from '@angular/router';
 import {VmpSidebar} from '@vm-parts';
 
@@ -7,8 +7,7 @@ import {VmpSidebar} from '@vm-parts';
   selector: 'app-admin-layout',
   imports: [
     RouterOutlet,
-    VmpSidebar,
-    VmcToolbar
+    VmpSidebar
   ],
   templateUrl: './app-admin-layout.component.html',
   styleUrl: './app-admin-layout.component.scss',
