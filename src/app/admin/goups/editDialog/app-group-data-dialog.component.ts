@@ -56,7 +56,7 @@ export class AppGroupDataDialog extends DialogBase<boolean> {
       });
   }
 
-  storeChangedValue(newValue: string, key: string) {
+  storeChangedValue(newValue: string, key: string): void {
     this.changedValues[key] = newValue;
   }
 

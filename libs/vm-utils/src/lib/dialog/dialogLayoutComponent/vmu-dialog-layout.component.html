@@ -4,7 +4,7 @@
     style="margin-left: auto"
     [iconName]="'close'"
     [iconColor]="'white'"
-    (onClick)="buttonClicked('close')"/>
+    (buttonClicked)="buttonClicked('close')"/>
 </vmc-toolbar>
 
 <mat-dialog-content>
@@ -20,6 +20,6 @@
       [type]="button.type ?? 'elevated'"
       [label]="button.text"
       [colorType]="button.color ?? 'primary'"
-      (onClick)="buttonClicked(button.key)"/>
+      (buttonClicked)="buttonClicked(button.key)"/>
   }
 </mat-dialog-actions>

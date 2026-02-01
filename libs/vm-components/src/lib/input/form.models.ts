@@ -1,5 +1,7 @@
 import {VmcButtonType} from '@vm-components';
 
+export type VmcValidFormTypes = number | string | null;
+
 export interface VmForm {
   header: string;
   description?: string;
@@ -12,7 +14,7 @@ export interface VmFormField {
   label: string;
   type: 'color' | 'date' | 'datetime-local' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'time' | 'url'// | 'checkbox' | 'radio' | 'select' | 'textarea';
   key: string;
-  value?: any;
+  value?: VmcValidFormTypes;
   description?: string;
   placeholder?: string;
   required?: boolean;
@@ -21,6 +23,7 @@ export interface VmFormField {
   //validation?: VmFormFieldValidation;
 }
 
+/*
 interface VmFormFieldValidation {
   minLength?: number;
   maxLength?: number;
@@ -28,3 +31,4 @@ interface VmFormFieldValidation {
   min?: number; // For number type
   max?: number; // For number type
 }
+*/

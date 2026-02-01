@@ -28,11 +28,11 @@ export class AppRoleDataDialog extends DialogBase<boolean> {
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #roleService = inject(RolesService);
 
-  // @ts-ignore
+  // @ts-expect-error
   ColumnType: IColumn<IRole>;
-  // @ts-ignore
+  // @ts-expect-error
   RowDataType: IPermissionValue[];
-  // @ts-ignore
+  // @ts-expect-error
   NumberType: number;
 
 
@@ -113,11 +113,11 @@ export class AppRoleDataDialog extends DialogBase<boolean> {
       });
   }
 
-  storeChangedValue(newValue: string | IPermission[], key: string) {
+  storeChangedValue(newValue: string | IPermission[], key: string): void {
     this.changedValues[key] = newValue;
   }
 
-  storePermissionChange(permissionType: number, value: boolean) {
+  storePermissionChange(permissionType: number, value: boolean): void {
     this.changedPermissions[permissionType.toString()] = value;
     this.storeChangedValue(this.#mapChangedPermissionsToArray(), nameOf<IRole>('permissions'));
   }

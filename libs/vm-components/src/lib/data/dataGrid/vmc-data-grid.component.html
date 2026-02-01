@@ -38,7 +38,7 @@
             @for (action of _rowActions; track action.key) {
               <vmc-icon-button
                 [iconName]="action.icon ?? 'hvac'"
-                (onClick)="onAction.emit({ key: action.key, rowData: row})"/>
+                (buttonClicked)="clickedAction.emit({ key: action.key, rowData: row})"/>
             }
           </td>
         </ng-container>

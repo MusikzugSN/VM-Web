@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import {VmcSidebar} from '@vm-components';
 
 @Component({
   selector: 'app-general',
@@ -7,4 +6,5 @@ import {VmcSidebar} from '@vm-components';
   templateUrl: './app-general.component.html',
   styleUrl: './app-general.component.scss',
 })
+/* eslint-disable-next-line @typescript-eslint/no-extraneous-class */
 export class AppGeneral {}

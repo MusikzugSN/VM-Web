@@ -10,7 +10,7 @@ import {AppDeleteGroupDialog} from './deleteDialog/app-delete-group-dialog.compo
 export class GroupDialogService {
   readonly #dialogService = inject(VmDialogService)
 
-  async openDeleteGroupDialog(data: IGroup) {
+  async openDeleteGroupDialog(data: IGroup): Promise<boolean | undefined> {
     return this.#dialogService.open(AppDeleteGroupDialog, {
       data: data,
       title: 'Gruppe löschen',
@@ -21,7 +21,7 @@ export class GroupDialogService {
     });
   }
 
-  async openEditGroupDialog(data: IGroup) {
+  async openEditGroupDialog(data: IGroup): Promise<boolean | undefined> {
     return this.#dialogService.open(AppGroupDataDialog, {
       data: data,
       title: 'Gruppe bearbeiten',
@@ -32,7 +32,7 @@ export class GroupDialogService {
     })
   }
 
-  async openNewGroupDialog() {
+  async openNewGroupDialog(): Promise<boolean | undefined> {
     return this.#dialogService.open(AppGroupDataDialog, {
       data: undefined,
       title: 'Gruppe erstellen',

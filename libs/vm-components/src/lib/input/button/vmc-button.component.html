@@ -2,4 +2,4 @@
   [class]="colorClass()"
   [matButton]="type()"
   [disabled]="disabled()"
-  (click)="onClick.emit()">{{ label() }}</button>
+  (click)="buttonClicked.emit(true)">{{ label() }}</button>

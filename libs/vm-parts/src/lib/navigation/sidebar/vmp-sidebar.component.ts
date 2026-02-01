@@ -1,7 +1,7 @@
 import {Component, inject, input, InputSignal} from '@angular/core';
 import {ISidebarGroup, VmcSidebar} from '@vm-components';
 import {CurrentRouteService} from '@vm-utils';
-import {combineLatest, combineLatestWith, map, Observable} from 'rxjs';
+import {combineLatest, map, Observable} from 'rxjs';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
 

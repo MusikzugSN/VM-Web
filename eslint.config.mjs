@@ -1,42 +1,51 @@
-import nx from '@nx/eslint-plugin';
+// eslint.config.mjs
+import tseslint from 'typescript-eslint';
+import angular from '@angular-eslint/eslint-plugin';
+import angularTemplate from '@angular-eslint/eslint-plugin-template';
 
 export default [
-  ...nx.configs['flat/base'],
-  ...nx.configs['flat/typescript'],
-  ...nx.configs['flat/javascript'],
+
+  // Global ignores
   {
-    ignores: ['**/dist', '**/out-tsc'],
+    ignores: ['dist/**', 'node_modules/**'],
   },
+
+  // TypeScript linting
+  ...tseslint.configs.strict,
+
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        project: ['./tsconfig.base.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: {
+      '@angular-eslint': angular,
+    },
     rules: {
-      '@nx/enforce-module-boundaries': [
+      // Angular recommended rules (manuell statt extends)
+      ...angular.configs.recommended.rules,
+
+      // TypeScript strict rules (manuell statt extends)
+      ...tseslint.configs.strict[1].rules,
+
+      // Deine eigenen Regeln
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@angular-eslint/use-lifecycle-interface': 'warn',
+      '@angular-eslint/no-empty-lifecycle-method': 'warn',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
-          depConstraints: [
-            {
-              sourceTag: '*',
-              onlyDependOnLibsWithTags: ['*'],
-            },
-          ],
-        },
-      ],
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_'
+        }
+      ]
     },
-  },
-  {
-    files: [
-      '**/*.ts',
-      '**/*.tsx',
-      '**/*.cts',
-      '**/*.mts',
-      '**/*.js',
-      '**/*.jsx',
-      '**/*.cjs',
-      '**/*.mjs',
-    ],
-    // Override or add rules here
-    rules: {},
-  },
+  }
 ];

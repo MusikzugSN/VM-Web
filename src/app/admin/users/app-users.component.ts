@@ -6,4 +6,5 @@ import { Component } from '@angular/core';
   templateUrl: './app-users.component.html',
   styleUrl: './app-users.component.scss',
 })
+/* eslint-disable-next-line @typescript-eslint/no-extraneous-class */
 export class AppUsers {}

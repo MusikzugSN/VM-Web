@@ -6,7 +6,10 @@
     "start": "nx serve",
     "build": "nx build",
     "watch": "nx build --watch --configuration development",
-    "test": "nx test"
+    "test": "nx test",
+    "lintAll": "nx run-many --target=lint --all",
+    "lintAll:fix": "nx run-many --target=lint --all --fix",
+    "format": "nx format:write"
   },
   "prettier": {
     "printWidth": 100,

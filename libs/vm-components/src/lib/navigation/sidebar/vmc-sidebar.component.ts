@@ -29,7 +29,7 @@ export class VmcSidebar {
 
   sidebarItems: InputSignal<ISidebarGroup[]> = input.required();
 
-  async redirect(url: string) {
+  async redirect(url: string): Promise<void> {
     await this.#router.navigate([url]);
   }
 }

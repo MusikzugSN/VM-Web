@@ -18,7 +18,7 @@ export class VmpNavbar {
   readonly #currentRouteService = inject(CurrentRouteService)
 
   isLoggedIn: InputSignal<boolean> = input(false);
-  onLogout = output();
+  logoutClicked = output<boolean>();
 
   toolbarItems$: Observable<INavbarItem[]> = this.#currentRouteService.route$.pipe(map(route => {
     return [

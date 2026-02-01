@@ -6,7 +6,7 @@ import {ConfigService} from '../config/config.service';
 export function baseUrlInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn,): Observable<HttpEvent<unknown>> {
   const configService = inject(ConfigService);
   return configService.config$.pipe(filter(cfg => !!cfg), take(1), switchMap(cfg => {
-    const apiReq = req.clone({url: `${cfg!.backedApiUrl}/api/v1/${req.url}`});
+    const apiReq = req.clone({url: `${cfg.backedApiUrl}/api/v1/${req.url}`});
     return next(apiReq);
   }));
 }

@@ -18,5 +18,5 @@ export class VmcIconButton {
 
   iconColor: InputSignal<string> = input('black');
 
-  onClick = output();
+  buttonClicked = output<boolean>();
 }

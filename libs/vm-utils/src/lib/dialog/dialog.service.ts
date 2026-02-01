@@ -26,7 +26,7 @@ export class VmDialogService {
   * @returns a promise that resolves when the dialog is closed
   *           => undefined if the dialog was closed without a result
   * */
-  open<TResult = any, TData = any,
+  open<TResult = unknown, TData = unknown,
     TComponent extends DialogBase<TResult> = DialogBase<TResult>>(
     contentComponent: Type<TComponent>,
     options?: {

@@ -40,7 +40,7 @@ export class AuthService {
     return { success: false, message: 'Placeholder' };
   }
 
-  logout() {
+  logout(): void {
     storage.removeItem(accessTokenKey);
     this.#accessToken$.next(null);
   }

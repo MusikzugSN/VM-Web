@@ -1,6 +1,6 @@
 <button matIconButton
         [disabled]="disabled()"
-        (click)="onClick.emit()">
+        (click)="buttonClicked.emit(true)">
   <vmc-icon
     [iconName]="iconName()"
     [iconSize]="iconSize()"

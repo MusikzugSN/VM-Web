@@ -23,7 +23,7 @@ export interface IColumn<TElement> {
 
 export interface ITemplate {
   keys: string[];
-  templateRef: TemplateRef<any>;
+  templateRef: TemplateRef<undefined>;
 }
 
 export interface IRowAction {
@@ -64,15 +64,15 @@ export class VmcDataGrid<TRow> {
   rowActions: InputSignal<IRowAction[]> = input<IRowAction[]>([]);
   templates: InputSignal<ITemplate[]> = input<ITemplate[]>([]);
 
-  onAction: OutputEmitterRef<IRowClickedEvent<TRow>> = output();
+  clickedAction: OutputEmitterRef<IRowClickedEvent<TRow>> = output();
 
   tableData = computed(() => new MatTableDataSource(this.dataSource()))
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
   transformedTemplates = computed(() => this.#mapTemplates());
 
-  #mapTemplates(): Dictionary<TemplateRef<any>> {
+  #mapTemplates(): Dictionary<TemplateRef<unknown>> {
     const templatesArray = this.templates();
-    const templatesDict: Dictionary<TemplateRef<any>> = {};
+    const templatesDict: Dictionary<TemplateRef<unknown>> = {};
 
     templatesArray.forEach(t => {
       t.keys.forEach(key => {
@@ -83,7 +83,7 @@ export class VmcDataGrid<TRow> {
     return templatesDict;
   }
 
-  #mapColumnsToDisplay() {
+  #mapColumnsToDisplay(): string[] {
     const columns = this.columns();
     const actions = this.rowActions();
 

@@ -1,6 +1,6 @@
 import {Component, effect, input, InputSignal, output} from '@angular/core';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
-import {VmFormField} from '../form.models';
+import {VmcValidFormTypes, VmFormField} from '../form.models';
 import {FormsModule} from '@angular/forms';
 
 @Component({
@@ -18,7 +18,7 @@ export class VmcInputField {
   formField: InputSignal<VmFormField> = input.required();
   shouldInitChange: InputSignal<boolean> = input(true);
 
-  onChange = output<string>()
+  inputChnaged = output<VmcValidFormTypes>()
 
   constructor() {
     // Das ist nicht gut...
@@ -26,12 +26,12 @@ export class VmcInputField {
     effect(() => {
       const field = this.formField();
       if (field?.value && this.shouldInitChange()) {
-        this.onChange.emit(field.value);
+        this.inputChnaged.emit(field.value);
       }
     });
   }
 
-  callChangeEvent(event: Event) {
-    this.onChange.emit((event.target as HTMLInputElement).value);
+  callChangeEvent(event: Event): void {
+    this.inputChnaged.emit((event.target as HTMLInputElement).value);
   }
 }

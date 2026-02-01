@@ -9,7 +9,7 @@ import {AppRoleDataDialog} from './editDialog/app-role-data-dialog.component';
 export class RoleDialogService {
   readonly #dialogService = inject(VmDialogService);
 
-  async openCreateRoleDialog() {
+  async openCreateRoleDialog(): Promise<boolean | undefined> {
     return this.#dialogService.open(AppRoleDataDialog, {
       title: 'Rolle erstellen',
       buttons: [
@@ -19,7 +19,7 @@ export class RoleDialogService {
     });
   }
 
-  async openEditRoleDialog(data: IRole) {
+  async openEditRoleDialog(data: IRole): Promise<boolean | undefined> {
     return this.#dialogService.open(AppRoleDataDialog, {
       data: data,
       title: 'Rolle bearbeiten',
@@ -33,7 +33,7 @@ export class RoleDialogService {
     })
   }
 
-  async openDeleteRoleDialog(data: IRole) {
+  async openDeleteRoleDialog(data: IRole): Promise<boolean | undefined> {
     return this.#dialogService.open(AppDeleteRoleDialog, {
       data: data,
       title: 'Rolle löschen',

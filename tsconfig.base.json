@@ -1,16 +1,36 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "strictNullChecks": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "es2022",
+    "useDefineForClassFields": false,
+    "baseUrl": ".",
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "ES2022",
-    "module": "preserve",
-    "skipLibCheck": true,
-    "baseUrl": ".",
     "paths": {
       "@vm-components": ["libs/vm-components/src/index.ts"],
       "@vm-parts": ["libs/vm-parts/src/index.ts"],
       "@vm-utils": ["libs/vm-utils/src/index.ts"]
     }
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictInjectionParameters": true,
+    "strictInputTypes": true,
+    "strictOutputEventTypes": true,
+    "strictDomEventTypes": true,
+    "enableI18nLegacyMessageIdFormat": false
   }
 }

@@ -17,10 +17,10 @@ export class AuthGuard implements CanActivate {
   readonly #router = inject(Router)
 
   async canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Promise<GuardResult> {
-    const isLogedIn = await firstValueFrom(this.#authService.isLoggedIn$());
-    if (!isLogedIn) {
+    _route: ActivatedRouteSnapshot,
+    _state: RouterStateSnapshot): Promise<GuardResult> {
+    const isLoggedIn = await firstValueFrom(this.#authService.isLoggedIn$());
+    if (!isLoggedIn) {
       const loginPath = this.#router.parseUrl("/auth/login");
       return new RedirectCommand(loginPath, {skipLocationChange: false});
     }

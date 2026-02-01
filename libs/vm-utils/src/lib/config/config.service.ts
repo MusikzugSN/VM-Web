@@ -11,7 +11,9 @@ export class ConfigService {
   config$ = this.configSubject.asObservable();
 
   constructor() {
-    this.#load().then(r => console.log('Config loaded!'));
+    this.#load()
+      .then(_r => console.log('Config loaded!'))
+      .catch(console.error);
   }
 
   async #load(): Promise<void> {

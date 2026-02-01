@@ -1,7 +1,7 @@
 import { MatDialogRef} from '@angular/material/dialog';
 import {inject} from '@angular/core';
 
-export class DialogBase<TResult = any> {
+export class DialogBase<TResult> {
 
   readonly #dialogRef: MatDialogRef<DialogBase<TResult>> = inject(MatDialogRef);
 

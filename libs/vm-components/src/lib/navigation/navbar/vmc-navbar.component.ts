@@ -23,7 +23,7 @@ export class VmcNavbar {
   toolbarItems: InputSignal<INavbarItem[]> = input.required();
   showToolbarItems: InputSignal<boolean> = input(false);
 
-  async redirect(url: string) {
+  async redirect(url: string): Promise<void> {
     await this.#router.navigate([url]);
   }
 }

@@ -12,7 +12,7 @@ import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, IDialogButtonConfig} from '@vm-utils'
 
 export interface IVmDialogConfig<TData> {
   title: string;
-  content: Type<any>;
+  content: Type<unknown>;
   data: TData;
   buttons?: IDialogButtonConfig[];
 }
@@ -47,7 +47,7 @@ export class VmuDialogLayoutComponent<TData> {
     parent: this.#injector
   });
 
-  buttonClicked(key: string) {
+  buttonClicked(key: string): void {
     this.buttonClickEvents$.next(key);
   }
 }

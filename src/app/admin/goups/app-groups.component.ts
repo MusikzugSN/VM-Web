@@ -26,14 +26,14 @@ export class AppGroups {
       key: 'addGroup',
       icon: 'add',
       label: 'Neue Gruppe',
-      acton: async () => {
+      acton: async (): Promise<void> => {
         await this.#groupDataDialogService.openNewGroupDialog()
         this.#reload.next(true);
       }
     }
   ];
 
-  async execAction(action: IRowClickedEvent<IGroup>) {
+  async execAction(action: IRowClickedEvent<IGroup>): Promise<void> {
     if (action.key === 'edit') {
       const reload = await this.#groupDataDialogService.openEditGroupDialog(action.rowData);
       if (reload) {
@@ -50,7 +50,7 @@ export class AppGroups {
     }
   }
 
-  data$: Observable<IGroup[]> = this.#reload.pipe(switchMap(x => this.#groupService.loadGroups$()));
+  data$: Observable<IGroup[]> = this.#reload.pipe(switchMap(_x => this.#groupService.loadGroups$()));
 
   columns: IColumn<IGroup>[] = [
     { key: 'groupId',   header: '',             field: 'groupId' },

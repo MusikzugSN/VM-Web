@@ -20,21 +20,21 @@ export class AppRoles {
   readonly #roleDialogService = inject(RoleDialogService);
 
   #reload = new BehaviorSubject(false);
-  roles$ = this.#reload.pipe(switchMap(x => this.#roleService.getRoles$()));
+  roles$ = this.#reload.pipe(switchMap(_x => this.#roleService.getRoles$()));
 
   items: IToolbarItem[] = [
     {
       key: 'addRole',
       icon: 'add',
       label: 'Neue Role',
-      acton: async () => {
+      acton: async (): Promise<void> => {
         await this.#roleDialogService.openCreateRoleDialog()
         this.#reload.next(true);
       }
     }
   ];
 
-  async execAction(action: IRowClickedEvent<IRole>) {
+  async execAction(action: IRowClickedEvent<IRole>): Promise<void> {
     if (action.key === 'edit') {
       const reload = await this.#roleDialogService.openEditRoleDialog(action.rowData);
       if (reload) {

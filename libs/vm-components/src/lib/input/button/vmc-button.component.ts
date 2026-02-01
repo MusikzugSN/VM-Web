@@ -21,7 +21,7 @@ export class VmcButton {
   colorType: InputSignal<VmcButtonColor> = input<VmcButtonColor>('primary');
   colorClass = computed(() => this.#mapColorTypeToClass(this.colorType()));
 
-  onClick = output<void>();
+  buttonClicked = output<boolean>();
 
   #mapColorTypeToClass(colorType: VmcButtonColor): string {
     switch (colorType) {

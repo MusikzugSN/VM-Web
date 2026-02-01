@@ -2,7 +2,6 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map, Observable} from 'rxjs';
 import {convertMetaDataFromDto, IMetaData} from '@vm-utils';
-import {IGroup} from '../goups/group.service';
 
 export interface IPermissionGroup {
   name: string;

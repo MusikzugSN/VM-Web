@@ -14,8 +14,8 @@ export class App {
   readonly authService = inject(AuthService);
   readonly #router = inject(Router);
 
-  logout() {
+  async logout(): Promise<void> {
     this.authService.logout()
-    this.#router.navigate(['auth','login']);
+    await this.#router.navigate(['auth','login']);
   }
 }

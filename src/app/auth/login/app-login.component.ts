@@ -17,8 +17,15 @@ export class AppLogin {
   readonly #authService = inject(AuthService);
   readonly #router = inject(Router);
 
-  async loginClicked(data: Dictionary<string>) {
-    const result = await this.#authService.login(data['username'], data['password']);
+  async loginClicked(data: Dictionary<string>): Promise<void> {
+    const username = data['username'];
+    const password = data['password'];
+
+    if (username === undefined || password === undefined) {
+      return;
+    }
+
+    const result = await this.#authService.login(username, password);
     if (result.success) {
       await this.#router.navigate(['/']);
     } else {
