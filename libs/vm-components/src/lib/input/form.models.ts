@@ -1,6 +1,6 @@
 import { VmcButtonType } from '@vm-components';
 
-export type VmcValidFormTypes = number | string | null;
+export type VmcValidFormTypes = number | string;
 
 export interface VmForm {
   header: string;

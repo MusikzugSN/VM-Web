@@ -9,7 +9,7 @@ import {
 } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { VmcInputField } from '@vm-components';
+import {VmcInputField, VmcValidFormTypes} from '@vm-components';
 import { VmFormField } from '@vm-components';
 import { GroupService, IGroup } from '../group.service';
 
@@ -58,8 +58,8 @@ export class AppGroupDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: string, key: string): void {
-    this.changedValues[key] = newValue;
+  storeChangedValue(newValue: VmcValidFormTypes, key: string): void {
+    this.changedValues[key] = newValue as string;
   }
 
   protected readonly groupNameKey = groupNameKey;

@@ -9,7 +9,7 @@ import {
   nameOf,
 } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
-import { IColumn, VmcDataGrid, VmcInputField, VmFormField } from '@vm-components';
+import {IColumn, VmcDataGrid, VmcInputField, VmcValidFormTypes, VmFormField} from '@vm-components';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   IPermission,
@@ -91,15 +91,15 @@ export class AppRoleDataDialog extends DialogBase<boolean> {
     value: this.#data?.name ?? '',
   };
 
-  changedValues: Dictionary<string | IPermission[]> = {};
+  changedValues: Dictionary<VmcValidFormTypes | IPermission[]> = {};
   changedPermissions: Dictionary<boolean> = {};
 
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<IRole>(this.changedValues);
+      const patch = convertToPatch<IRole, VmcValidFormTypes | IPermission[]>(this.changedValues);
       if (x === 'save') {
-        patch.roleId = this.#data?.roleId;
+        patch.roleId = this.#data?.roleId ?? -1;
         await firstValueFrom(this.#roleService.changeRole$(patch));
         super.closeDialog(true);
         return;
@@ -117,7 +117,7 @@ export class AppRoleDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: string | IPermission[], key: string): void {
+  storeChangedValue(newValue: VmcValidFormTypes | IPermission[], key: string): void {
     this.changedValues[key] = newValue;
   }
 

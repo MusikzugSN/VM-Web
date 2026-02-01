@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { VmcForm } from '@vm-components';
+import {VmcForm, VmcValidFormTypes} from '@vm-components';
 import { AuthService } from '@vm-utils';
 import { Dictionary } from '@vm-utils';
 import { Router } from '@angular/router';
@@ -15,9 +15,9 @@ export class AppLogin {
   readonly #authService = inject(AuthService);
   readonly #router = inject(Router);
 
-  async loginClicked(data: Dictionary<string>): Promise<void> {
-    const username = data['username'];
-    const password = data['password'];
+  async loginClicked(data: Dictionary<VmcValidFormTypes>): Promise<void> {
+    const username = data['username'] as string;
+    const password = data['password'] as string;
 
     if (username === undefined || password === undefined) {
       return;
