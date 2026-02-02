@@ -18,7 +18,7 @@
 
 <ng-template #permissionCheckbox let-rowDataRaw="rowData" let-columnRaw="column">
   @let column = columnRaw | as: ColumnType;
-  @let rowData = rowDataRaw | as: RowDataType;
+  @let rowData = (rowDataRaw | as: RowDataType).permissionValues;
   @let index = column.key | as: NumberType;
 
   @let permissionType = rowData[index]?.permissionType;

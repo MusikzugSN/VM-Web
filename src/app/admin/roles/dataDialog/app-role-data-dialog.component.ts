@@ -14,7 +14,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   IPermission,
   IPermissionGroup,
-  IPermissionValue,
   IRole,
   RolesService,
 } from '../roles.service';
@@ -38,7 +37,7 @@ export class AppRoleDataDialog extends DialogBase<boolean> {
   // @ts-expect-error
   ColumnType: IColumn<IRole>;
   // @ts-expect-error
-  RowDataType: IPermissionValue[];
+  RowDataType: IPermissionGroup;
   // @ts-expect-error
   NumberType: number;
 

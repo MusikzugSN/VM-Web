@@ -29,7 +29,7 @@ export type VmColumnType = 'text' | 'date' | 'template'; //| 'boolean' | 'number
 export interface IColumn<TElement> {
   key: string;
   header: string;
-  field: keyof TElement & string;
+  field?: keyof TElement & string;
   type?: VmColumnType;
 }
 
