@@ -100,13 +100,13 @@ export class AppRoleDataDialog extends DialogBase<boolean> {
       const patch = convertToPatch<IRole, VmcValidFormTypes | IPermission[]>(this.changedValues);
       if (x === 'save') {
         patch.roleId = this.#data?.roleId ?? -1;
-        await firstValueFrom(this.#roleService.changeRole$(patch));
+        await firstValueFrom(this.#roleService.change$(patch, patch.roleId));
         super.closeDialog(true);
         return;
       }
 
       if (x === 'create') {
-        await firstValueFrom(this.#roleService.createRole$(patch));
+        await firstValueFrom(this.#roleService.create$(patch));
         super.closeDialog(true);
         return;
       }

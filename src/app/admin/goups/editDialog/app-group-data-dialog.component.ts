@@ -41,13 +41,13 @@ export class AppGroupDataDialog extends DialogBase<boolean> {
       const patch = convertToPatch<IGroup, string>(this.changedValues);
       if (x === 'save') {
         patch.groupId = this.#data?.groupId ?? -1;
-        await firstValueFrom(this.#groupService.changeGroup$(patch));
+        await firstValueFrom(this.#groupService.change$(patch, patch.groupId));
         super.closeDialog(true);
         return;
       }
 
       if (x === 'create') {
-        await firstValueFrom(this.#groupService.createGroup$(patch));
+        await firstValueFrom(this.#groupService.create$(patch));
         super.closeDialog(true);
         return;
       }

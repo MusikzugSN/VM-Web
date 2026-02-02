@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
-import { convertMetaDataFromDto, IMetaData } from '@vm-utils';
+import { Observable } from 'rxjs';
+import {BaseCrudService, IMetaData} from '@vm-utils';
 
 export interface IPermissionGroup {
   name: string;
@@ -35,26 +35,11 @@ export interface IRole extends IMetaData {
 @Injectable({
   providedIn: 'root',
 })
-export class RolesService {
+export class RolesService extends BaseCrudService<IRole>{
+  override url: string = 'role';
   readonly #httpClient = inject(HttpClient);
 
   getPermissionStructure$(): Observable<IPermissionGroup[]> {
     return this.#httpClient.get<IPermissionGroup[]>('role/permissionValues');
-  }
-
-  getRoles$(): Observable<IRole[]> {
-    return this.#httpClient.get<IRole[]>('role').pipe(map((role) => convertMetaDataFromDto(role)));
-  }
-
-  deleteRole$(roleId: number): Observable<boolean> {
-    return this.#httpClient.delete<boolean>(`role/${roleId}`);
-  }
-
-  createRole$(role: Partial<IRole>): Observable<IRole> {
-    return this.#httpClient.post<IRole>('role', role);
-  }
-
-  changeRole$(rolePatch: Partial<IRole>): Observable<IRole> {
-    return this.#httpClient.patch<IRole>(`role/${rolePatch.roleId}`, rolePatch);
   }
 }

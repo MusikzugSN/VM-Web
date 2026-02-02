@@ -16,7 +16,7 @@ export class AppRoles {
   readonly #roleDialogService = inject(RoleDialogService);
 
   #reload = new BehaviorSubject(false);
-  roles$ = this.#reload.pipe(switchMap((_x) => this.#roleService.getRoles$()));
+  roles$ = this.#reload.pipe(switchMap((_x) => this.#roleService.load$()));
 
   items: IToolbarItem[] = [
     {

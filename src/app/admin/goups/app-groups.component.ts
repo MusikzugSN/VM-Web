@@ -47,7 +47,7 @@ export class AppGroups {
   }
 
   data$: Observable<IGroup[]> = this.#reload.pipe(
-    switchMap((_x) => this.#groupService.loadGroups$()),
+    switchMap((_x) => this.#groupService.load$()),
   );
 
   columns: IColumn<IGroup>[] = [

@@ -21,7 +21,7 @@ export class AppDeleteRoleDialog extends DialogBase<boolean> {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
       if (x === 'delete') {
-        await firstValueFrom(this.#roleService.deleteRole$(this.#data.roleId));
+        await firstValueFrom(this.#roleService.delete$(this.#data.roleId));
 
         super.closeDialog(true);
       } else if (x === 'close') {

@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
-import { AppGroupDataDialog } from './editDialog/app-group-data-dialog.component';
 import { IGroup } from './group.service';
 import { AppDeleteGroupDialog } from './deleteDialog/app-delete-group-dialog.component';
+import {AppGroupDataDialog} from './editDialog/app-group-data-dialog.component';
 
 @Injectable({
   providedIn: 'root',

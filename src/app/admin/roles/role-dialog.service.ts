@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
 import { IRole } from './roles.service';
 import { AppDeleteRoleDialog } from './deleteDialog/app-delete-role-dialog.component';
-import { AppRoleDataDialog } from './editDialog/app-role-data-dialog.component';
+import {AppRoleDataDialog} from './editDialog/app-role-data-dialog.component';
 @Injectable({
   providedIn: 'root',
 })
@@ -16,6 +16,9 @@ export class RoleDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'create', text: 'Erstellen', type: 'filled' },
       ],
+      dialogConfig: {
+        minWidth: 1200,
+      },
     });
   }
 

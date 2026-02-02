@@ -21,7 +21,7 @@ export class AppDeleteGroupDialog extends DialogBase<boolean> {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
       if (x === 'delete') {
-        await firstValueFrom(this.#groupService.deleteGroup$(this.#data.groupId));
+        await firstValueFrom(this.#groupService.delete$(this.#data.groupId));
 
         super.closeDialog(true);
       } else if (x === 'close') {
