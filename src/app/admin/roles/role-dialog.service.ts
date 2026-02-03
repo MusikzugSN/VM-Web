@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
-import { IRole } from './roles.service';
+import { Role } from './roles.service';
 import { AppDeleteRoleDialog } from './deleteDialog/app-delete-role-dialog.component';
 import {AppRoleDataDialog} from './dataDialog/app-role-data-dialog.component';
 @Injectable({
@@ -22,7 +22,7 @@ export class RoleDialogService {
     });
   }
 
-  async openEditRoleDialog(data: IRole): Promise<boolean | undefined> {
+  async openEditRoleDialog(data: Role): Promise<boolean | undefined> {
     return this.#dialogService.open(AppRoleDataDialog, {
       data: data,
       title: 'Rolle bearbeiten',
@@ -36,7 +36,7 @@ export class RoleDialogService {
     });
   }
 
-  async openDeleteRoleDialog(data: IRole): Promise<boolean | undefined> {
+  async openDeleteRoleDialog(data: Role): Promise<boolean | undefined> {
     return this.#dialogService.open(AppDeleteRoleDialog, {
       data: data,
       title: 'Rolle löschen',

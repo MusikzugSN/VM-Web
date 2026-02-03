@@ -22,7 +22,7 @@
                 <ng-container
                   *ngTemplateOutlet="
                     template;
-                    context: { rowData: row, column: column }
+                    context: { rowData: row, column: column, index: $index }
                   "
                 />
               }
@@ -37,10 +37,14 @@
 
           <td *matCellDef="let row" class="col-row-actions" mat-cell>
             @for (action of _rowActions; track action.key) {
-              <vmc-icon-button
-                [iconName]="action.icon ?? 'hvac'"
-                (buttonClicked)="clickedAction.emit({ key: action.key, rowData: row })"
-              />
+              <button matIconButton (click)="clickedAction.emit({ key: action.key, rowData: row })">
+                <mat-icon
+                  class="icon"
+                  [style.font-size]="'24px'"
+                >
+                  {{ action.icon ?? 'hvac' }}
+                </mat-icon>
+              </button>
             }
           </td>
         </ng-container>

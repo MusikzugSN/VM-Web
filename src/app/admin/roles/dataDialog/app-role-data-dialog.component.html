@@ -10,18 +10,16 @@
   [dataSource]="_structure"
   [templates]="[
     {
-      keys: ['0', '1', '2', '3', '4'],
+      keys: ['permissionStart', 'permissionRead', 'permissionCreate', 'permissionEdit', 'permissionDelete'],
       templateRef: permissionCheckbox,
     },
   ]"
 />
 
-<ng-template #permissionCheckbox let-rowDataRaw="rowData" let-columnRaw="column">
-  @let column = columnRaw | as: ColumnType;
+<ng-template #permissionCheckbox let-rowDataRaw="rowData"  let-index="index">
   @let rowData = (rowDataRaw | as: RowDataType).permissionValues;
-  @let index = column.key | as: NumberType;
 
-  @let permissionType = rowData[index]?.permissionType;
+  @let permissionType = rowData[index-1]?.permissionType;
   @let shouldBeDisabled = permissionType === undefined || permissionType === null;
   @let checked = !shouldBeDisabled && permissions[permissionType.toString()];
 

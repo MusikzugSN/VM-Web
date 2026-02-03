@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, InputSignal, output } from '@angular/core';
 import { Dictionary } from '@vm-utils';
 import { FormsModule } from '@angular/forms';
-import { VmcValidFormTypes, VmForm } from '../form.models';
+import { VmValidFormTypes, VmForm } from '../form.models';
 import { VmcButton } from '../button/vmc-button.component';
 import { VmcInputField } from '../inputField/vmc-input-field.component';
 
@@ -13,12 +13,12 @@ import { VmcInputField } from '../inputField/vmc-input-field.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VmcForm {
-  values: Dictionary<VmcValidFormTypes> = {};
+  values: Dictionary<VmValidFormTypes> = {};
   formData: InputSignal<VmForm> = input.required();
 
-  formSubmitted = output<Dictionary<VmcValidFormTypes>>();
+  formSubmitted = output<Dictionary<VmValidFormTypes>>();
 
-  onChange(newValue: VmcValidFormTypes, key: string): void {
+  onChange(newValue: VmValidFormTypes, key: string): void {
     this.values[key] = newValue;
   }
 

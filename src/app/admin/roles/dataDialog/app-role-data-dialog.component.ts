@@ -9,19 +9,19 @@ import {
   nameOf,
 } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
-import {IColumn, VmcDataGrid, VmcInputField, VmcValidFormTypes, VmFormField} from '@vm-components';
+import {VmColumn, VmcDataGrid, VmcInputField, VmValidFormTypes, VmFormField} from '@vm-components';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  IPermission,
-  IPermissionGroup,
-  IRole,
+  Permission,
+  PermissionGroup,
+  Role,
   RolesService,
 } from '../roles.service';
 import { AsyncPipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 
-const roleNameKey = nameOf<IRole>('name');
+const roleNameKey = nameOf<Role>('name');
 
 @Component({
   selector: 'app-role-data-dialog',
@@ -30,73 +30,69 @@ const roleNameKey = nameOf<IRole>('name');
   styleUrl: './app-role-data-dialog.component.scss',
 })
 export class AppRoleDataDialog extends DialogBase<boolean> {
-  readonly #data = inject<IRole | undefined>(DIALOG_DATA);
+  readonly #data = inject<Role | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #roleService = inject(RolesService);
 
   // @ts-expect-error
-  ColumnType: IColumn<IRole>;
-  // @ts-expect-error
-  RowDataType: IPermissionGroup;
-  // @ts-expect-error
-  NumberType: number;
+  RowDataType: PermissionGroup;
 
   permissions = this.#mapPermissionTypeToValue(this.#data?.permissions ?? []);
 
   structure$ = this.#roleService.getPermissionStructure$();
-  columns: IColumn<IPermissionGroup>[] = [
+  columns: VmColumn<PermissionGroup>[] = [
     {
       key: 'groupDescription',
       header: 'Beschreibung',
-      field: nameOf<IPermissionGroup>('name'),
+      field: nameOf<PermissionGroup>('name'),
       type: 'text',
     },
     {
-      key: '0', //'permissionStart',
+      key: 'permissionStart',
       header: 'Starten',
-      field: nameOf<IPermissionGroup>('permissionValues'),
+      field: nameOf<PermissionGroup>('permissionValues'),
       type: 'template',
     },
     {
-      key: '1', //'permissionRead',
+      key: 'permissionRead',
       header: 'Lesen',
-      field: nameOf<IPermissionGroup>('permissionValues'),
+      field: nameOf<PermissionGroup>('permissionValues'),
       type: 'template',
     },
     {
-      key: '2', //'permissionCreate',
+      key: 'permissionCreate',
       header: 'Erstellen',
-      field: nameOf<IPermissionGroup>('permissionValues'),
+      field: nameOf<PermissionGroup>('permissionValues'),
       type: 'template',
     },
     {
-      key: '3', //'permissionEdit',
+      key: 'permissionEdit',
       header: 'Bearbeiten',
-      field: nameOf<IPermissionGroup>('permissionValues'),
+      field: nameOf<PermissionGroup>('permissionValues'),
       type: 'template',
     },
     {
-      key: '4', //'permissionDelete',
+      key: 'permissionDelete',
       header: 'Löschen',
-      field: nameOf<IPermissionGroup>('permissionValues'),
+      field: nameOf<PermissionGroup>('permissionValues'),
       type: 'template',
     },
   ];
 
   nameField: VmFormField = {
     type: 'text',
-    key: nameOf<IRole>('name'),
+    key: nameOf<Role>('name'),
     label: 'Gruppenname',
     value: this.#data?.name ?? '',
   };
 
-  changedValues: Dictionary<VmcValidFormTypes | IPermission[]> = {};
-  changedPermissions: Dictionary<boolean> = {};
+  #changedValues: Dictionary<VmValidFormTypes | Permission[]> = {};
+  #changedPermissions: Dictionary<boolean> = {};
 
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<IRole, VmcValidFormTypes | IPermission[]>(this.changedValues);
+      const patch = convertToPatch<Role, VmValidFormTypes | Permission[]>(this.#changedValues);
       if (x === 'save') {
         patch.roleId = this.#data?.roleId ?? -1;
         await firstValueFrom(this.#roleService.change$(patch, patch.roleId));
@@ -116,27 +112,27 @@ export class AppRoleDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: VmcValidFormTypes | IPermission[], key: string): void {
-    this.changedValues[key] = newValue;
+  storeChangedValue(newValue: VmValidFormTypes | Permission[], key: string): void {
+    this.#changedValues[key] = newValue;
   }
 
   storePermissionChange(permissionType: number, value: boolean): void {
-    this.changedPermissions[permissionType.toString()] = value;
-    this.storeChangedValue(this.#mapChangedPermissionsToArray(), nameOf<IRole>('permissions'));
+    this.#changedPermissions[permissionType.toString()] = value;
+    this.storeChangedValue(this.#mapChangedPermissionsToArray(), nameOf<Role>('permissions'));
   }
 
-  #mapChangedPermissionsToArray(): IPermission[] {
-    const permissions: IPermission[] = [];
-    for (const key of Object.keys(this.changedPermissions)) {
+  #mapChangedPermissionsToArray(): Permission[] {
+    const permissions: Permission[] = [];
+    for (const key of Object.keys(this.#changedPermissions)) {
       permissions.push({
         type: parseInt(key, 10),
-        value: this.changedPermissions[key] ? 1 : 0,
+        value: this.#changedPermissions[key] ? 1 : 0,
       });
     }
     return permissions;
   }
 
-  #mapPermissionTypeToValue(permissions: IPermission[]): Dictionary<boolean> {
+  #mapPermissionTypeToValue(permissions: Permission[]): Dictionary<boolean> {
     const map: Dictionary<boolean> = {};
     for (const permission of permissions) {
       map[permission.type.toString()] = permission.value > 0;

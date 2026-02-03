@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
-import { IGroup } from './group.service';
+import { Group } from './group.service';
 import { AppDeleteGroupDialog } from './deleteDialog/app-delete-group-dialog.component';
 import {AppGroupDataDialog} from './dataDialog/app-group-data-dialog.component';
 
@@ -10,7 +10,7 @@ import {AppGroupDataDialog} from './dataDialog/app-group-data-dialog.component';
 export class GroupDialogService {
   readonly #dialogService = inject(VmDialogService);
 
-  async openDeleteGroupDialog(data: IGroup): Promise<boolean | undefined> {
+  async openDeleteGroupDialog(data: Group): Promise<boolean | undefined> {
     return this.#dialogService.open(AppDeleteGroupDialog, {
       data: data,
       title: 'Gruppe löschen',
@@ -21,7 +21,7 @@ export class GroupDialogService {
     });
   }
 
-  async openEditGroupDialog(data: IGroup): Promise<boolean | undefined> {
+  async openEditGroupDialog(data: Group): Promise<boolean | undefined> {
     return this.#dialogService.open(AppGroupDataDialog, {
       data: data,
       title: 'Gruppe bearbeiten',

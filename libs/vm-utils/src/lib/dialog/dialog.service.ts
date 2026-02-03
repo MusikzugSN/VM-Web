@@ -3,11 +3,11 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { VmuDialogLayoutComponent } from './dialogLayoutComponent/vmu-dialog-layout.component';
 import { firstValueFrom } from 'rxjs';
 import { DialogBase } from './dialog-base';
-import { VmcButtonColor, VmcButtonType } from '@vm-components';
+import { VmButtonColor, VmButtonType } from '@vm-components';
 
-export interface IDialogButtonConfig {
-  type?: VmcButtonType;
-  color?: VmcButtonColor;
+export interface VmDialogButtonConfig {
+  type?: VmButtonType;
+  color?: VmButtonColor;
   text: string;
   key: string;
 }
@@ -35,7 +35,7 @@ export class VmDialogService {
     options?: {
       title?: string;
       data?: TData | undefined;
-      buttons?: IDialogButtonConfig[];
+      buttons?: VmDialogButtonConfig[];
       dialogConfig?: MatDialogConfig;
     },
   ): Promise<TResult | undefined> {

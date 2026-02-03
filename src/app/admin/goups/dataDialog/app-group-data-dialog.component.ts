@@ -9,11 +9,11 @@ import {
 } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {VmcInputField, VmcValidFormTypes} from '@vm-components';
+import {VmcInputField, VmValidFormTypes} from '@vm-components';
 import { VmFormField } from '@vm-components';
-import { GroupService, IGroup } from '../group.service';
+import { GroupService, Group } from '../group.service';
 
-const groupNameKey = nameOf<IGroup>('name');
+const groupNameKey = nameOf<Group>('name');
 
 @Component({
   selector: 'app-edit-group-dialog',
@@ -22,7 +22,7 @@ const groupNameKey = nameOf<IGroup>('name');
   styleUrl: './app-group-data-dialog.component.scss',
 })
 export class AppGroupDataDialog extends DialogBase<boolean> {
-  readonly #data = inject<IGroup | undefined>(DIALOG_DATA);
+  readonly #data = inject<Group | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #groupService = inject(GroupService);
 
@@ -38,7 +38,7 @@ export class AppGroupDataDialog extends DialogBase<boolean> {
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<IGroup, string>(this.changedValues);
+      const patch = convertToPatch<Group, string>(this.changedValues);
       if (x === 'save') {
         patch.groupId = this.#data?.groupId ?? -1;
         await firstValueFrom(this.#groupService.change$(patch, patch.groupId));
@@ -58,7 +58,7 @@ export class AppGroupDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: VmcValidFormTypes, key: string): void {
+  storeChangedValue(newValue: VmValidFormTypes, key: string): void {
     this.changedValues[key] = newValue as string;
   }
 

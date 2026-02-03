@@ -1,17 +1,30 @@
-import { VmcButtonType } from '@vm-components';
+import { VmButtonType } from '@vm-components';
 
-export type VmcValidFormTypes = number | string;
+export type VmCheckboxValues = 'checked' | 'unchecked' | 'indeterminate';
+
+export type VmValidFormTypes = number | string;
 
 export interface VmForm {
   header: string;
   description?: string;
   fields: VmFormField[];
   submitButton?: string;
-  submitButtonType?: VmcButtonType;
+  submitButtonType?: VmButtonType;
 }
 
-export interface VmFormField {
+export type VmFormField =
+  | VmInputField
+  | VmCheckboxField;
+
+export interface VmBaseField {
   label: string;
+  key: string;
+  description?: string;
+  required?: boolean;
+  readonly?: boolean;
+}
+
+export interface VmInputField extends VmBaseField {
   type:
     | 'color'
     | 'date'
@@ -23,16 +36,16 @@ export interface VmFormField {
     | 'tel'
     | 'text'
     | 'time'
-    | 'url'; // | 'checkbox' | 'radio' | 'select' | 'textarea';
-  key: string;
-  value?: VmcValidFormTypes;
-  description?: string;
+    | 'url';
+  value?: VmValidFormTypes;
   placeholder?: string;
-  required?: boolean;
-  readonly?: boolean;
-  //options?: string[]; // For select and radio types
-  //validation?: VmFormFieldValidation;
 }
+
+export interface VmCheckboxField extends VmBaseField {
+  type: 'checkbox';
+  value?: VmCheckboxValues;
+}
+
 
 /*
 interface VmFormFieldValidation {

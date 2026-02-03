@@ -3,12 +3,12 @@ import { Router } from '@angular/router';
 import { VmcExtentionPannel } from '../../layout/extentionPanel/vmc-extention-pannel.component';
 import { VmcToolbar } from '../../layout/toolbar/vmc-toolbar.component';
 
-export interface ISidebarGroup {
+export interface VmSidebarGroup {
   groupName: string;
-  items: ISidebarItem[];
+  items: VmSidebarItem[];
 }
 
-export interface ISidebarItem {
+export interface VmSidebarItem {
   name: string;
   route: string;
   icon?: string;
@@ -24,7 +24,7 @@ export interface ISidebarItem {
 export class VmcSidebar {
   readonly #router = inject(Router);
 
-  sidebarItems: InputSignal<ISidebarGroup[]> = input.required();
+  sidebarItems: InputSignal<VmSidebarGroup[]> = input.required();
 
   async redirect(url: string): Promise<void> {
     await this.#router.navigate([url]);

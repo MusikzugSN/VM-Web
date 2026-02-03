@@ -3,16 +3,16 @@ import {HttpClient} from '@angular/common/http';
 import {map, Observable} from 'rxjs';
 import {convertMetaDataFromDto, IMetaData} from '@vm-utils';
 
-export abstract class BaseCrudService<TDto extends IMetaData> {
+export abstract class BaseCrudService<TDto extends IMetaData, TChangeDto = TDto> {
   readonly #httpClient = inject(HttpClient);
 
   abstract url:string;
 
-  create$(group: Partial<TDto>): Observable<TDto> {
+  create$(group: Partial<TChangeDto>): Observable<TDto> {
     return this.#httpClient.post<TDto>(this.url, group);
   }
 
-  change$(groupPatch: Partial<TDto>, dtoId: number): Observable<TDto> {
+  change$(groupPatch: Partial<TChangeDto>, dtoId: number): Observable<TDto> {
     return this.#httpClient.patch<TDto>(`${this.url}/${dtoId}`, groupPatch);
   }
 

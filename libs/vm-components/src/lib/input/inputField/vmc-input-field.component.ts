@@ -1,11 +1,12 @@
 import { Component, effect, input, InputSignal, output } from '@angular/core';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
-import { VmcValidFormTypes, VmFormField } from '../form.models';
+import { VmValidFormTypes, VmFormField } from '../form.models';
 import { FormsModule } from '@angular/forms';
+import {MatCheckbox} from '@angular/material/checkbox';
 
 @Component({
   selector: 'vmc-input-field',
-  imports: [MatInput, MatLabel, MatFormField, FormsModule],
+  imports: [MatInput, MatLabel, MatFormField, FormsModule, MatCheckbox],
   templateUrl: './vmc-input-field.component.html',
   styleUrl: './vmc-input-field.component.scss',
 })
@@ -13,7 +14,7 @@ export class VmcInputField {
   formField: InputSignal<VmFormField> = input.required();
   shouldInitChange: InputSignal<boolean> = input(true);
 
-  inputChnaged = output<VmcValidFormTypes>();
+  inputChnaged = output<VmValidFormTypes>();
 
   constructor() {
     // Das ist nicht gut...
@@ -26,7 +27,11 @@ export class VmcInputField {
     });
   }
 
-  callChangeEvent(event: Event): void {
+  checkboxCallChangeEvent(checked: boolean): void {
+    this.inputChnaged.emit(checked ? 'checked' : 'unchecked');
+  }
+
+  genericCallChangeEvent(event: Event): void {
     this.inputChnaged.emit((event.target as HTMLInputElement).value);
   }
 }

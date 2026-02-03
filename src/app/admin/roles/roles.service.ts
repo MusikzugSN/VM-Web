@@ -3,12 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {BaseCrudService, IMetaData} from '@vm-utils';
 
-export interface IPermissionGroup {
+export interface PermissionGroup {
   name: string;
-  permissionValues: IPermissionValue[];
+  permissionValues: PermissionValue[];
 }
 
-export interface IPermissionValue {
+export interface PermissionValue {
   permissionType: number;
   description: PermissionCategory;
 }
@@ -21,25 +21,25 @@ export enum PermissionCategory {
   Delete = 4,
 }
 
-export interface IPermission {
+export interface Permission {
   type: number;
   value: number;
 }
 
-export interface IRole extends IMetaData {
+export interface Role extends IMetaData {
   roleId: number;
   name: string;
-  permissions: IPermission[];
+  permissions: Permission[];
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class RolesService extends BaseCrudService<IRole>{
+export class RolesService extends BaseCrudService<Role>{
   override url: string = 'role';
   readonly #httpClient = inject(HttpClient);
 
-  getPermissionStructure$(): Observable<IPermissionGroup[]> {
-    return this.#httpClient.get<IPermissionGroup[]>('role/permissionValues');
+  getPermissionStructure$(): Observable<PermissionGroup[]> {
+    return this.#httpClient.get<PermissionGroup[]>('role/permissionValues');
   }
 }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ISidebarGroup } from '@vm-components';
+import { VmSidebarGroup } from '@vm-components';
 import { RouterOutlet } from '@angular/router';
 import { VmpSidebar } from '@vm-parts';
 
@@ -10,7 +10,7 @@ import { VmpSidebar } from '@vm-parts';
   styleUrl: './app-admin-layout.component.scss',
 })
 export class AppAdminLayout {
-  sidebarItems: ISidebarGroup[] = [
+  sidebarItems: VmSidebarGroup[] = [
     {
       groupName: 'Grundeinstellungen',
       items: [

@@ -20,31 +20,32 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import { VmcIconButton } from '../../input/iconButton/vmc-icon-button.component';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Dictionary } from '@vm-utils';
+import {MatIconButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
 
 export type VmColumnType = 'text' | 'date' | 'template'; //| 'boolean' | 'number' ;
 
-export interface IColumn<TElement> {
+export interface VmColumn<TElement> {
   key: string;
   header: string;
   field?: keyof TElement & string;
   type?: VmColumnType;
 }
 
-export interface ITemplate {
+export interface VmGridTemplate {
   keys: string[];
   templateRef: TemplateRef<undefined>;
 }
 
-export interface IRowAction {
+export interface VmRowAction {
   key: string;
   name?: string;
   icon?: string;
 }
 
-export interface IRowClickedEvent<TRow> {
+export interface VmRowClickedEvent<TRow> {
   key: string;
   rowData: TRow;
 }
@@ -62,20 +63,21 @@ export interface IRowClickedEvent<TRow> {
     MatRowDef,
     MatHeaderCellDef,
     MatCellDef,
-    VmcIconButton,
     DatePipe,
     NgTemplateOutlet,
+    MatIconButton,
+    MatIcon,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
 })
 export class VmcDataGrid<TRow> {
   dataSource: InputSignal<TRow[]> = input.required();
-  columns: InputSignal<IColumn<TRow>[]> = input.required();
-  rowActions: InputSignal<IRowAction[]> = input<IRowAction[]>([]);
-  templates: InputSignal<ITemplate[]> = input<ITemplate[]>([]);
+  columns: InputSignal<VmColumn<TRow>[]> = input.required();
+  rowActions: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
+  templates: InputSignal<VmGridTemplate[]> = input<VmGridTemplate[]>([]);
 
-  clickedAction: OutputEmitterRef<IRowClickedEvent<TRow>> = output();
+  clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
 
   tableData = computed(() => new MatTableDataSource(this.dataSource()));
   displayedColumns = computed(() => this.#mapColumnsToDisplay());

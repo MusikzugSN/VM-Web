@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { IColumn, IRowClickedEvent, VmcDataGrid, VmcToolbar, IToolbarItem } from '@vm-components';
-import { GroupService, IGroup } from './group.service';
+import { VmColumn, VmRowClickedEvent, VmcDataGrid, VmcToolbar, VmToolbarItem } from '@vm-components';
+import { GroupService, Group } from './group.service';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { GroupDialogService } from './group-dialog.service';
@@ -17,7 +17,7 @@ export class AppGroups {
 
   #reload = new BehaviorSubject(false);
 
-  items: IToolbarItem[] = [
+  items: VmToolbarItem[] = [
     {
       key: 'addGroup',
       icon: 'add',
@@ -29,7 +29,7 @@ export class AppGroups {
     },
   ];
 
-  async execAction(action: IRowClickedEvent<IGroup>): Promise<void> {
+  async execAction(action: VmRowClickedEvent<Group>): Promise<void> {
     if (action.key === 'edit') {
       const reload = await this.#groupDataDialogService.openEditGroupDialog(action.rowData);
       if (reload) {
@@ -46,11 +46,11 @@ export class AppGroups {
     }
   }
 
-  data$: Observable<IGroup[]> = this.#reload.pipe(
+  data$: Observable<Group[]> = this.#reload.pipe(
     switchMap((_x) => this.#groupService.load$()),
   );
 
-  columns: IColumn<IGroup>[] = [
+  columns: VmColumn<Group>[] = [
     { key: 'groupId', header: '', field: 'groupId' },
     { key: 'name', header: 'Name', field: 'name' },
     { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },

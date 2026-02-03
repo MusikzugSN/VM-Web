@@ -2,7 +2,7 @@ import { Component, inject, input, InputSignal } from '@angular/core';
 import { MatToolbar } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 
-export interface INavbarItem {
+export interface VmNavbarItem {
   name: string;
   route: string;
   selected?: boolean;
@@ -18,7 +18,7 @@ export class VmcNavbar {
   readonly #router = inject(Router);
 
   applicationName: InputSignal<string> = input.required();
-  toolbarItems: InputSignal<INavbarItem[]> = input.required();
+  toolbarItems: InputSignal<VmNavbarItem[]> = input.required();
   showToolbarItems: InputSignal<boolean> = input(false);
 
   async redirect(url: string): Promise<void> {

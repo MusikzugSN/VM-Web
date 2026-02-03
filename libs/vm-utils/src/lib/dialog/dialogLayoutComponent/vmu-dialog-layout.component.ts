@@ -8,13 +8,13 @@ import {
 import { NgComponentOutlet } from '@angular/common';
 import { VmcButton, VmcIconButton, VmcToolbar } from '@vm-components';
 import { BehaviorSubject } from 'rxjs';
-import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, IDialogButtonConfig } from '@vm-utils';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, VmDialogButtonConfig } from '@vm-utils';
 
-export interface IVmDialogConfig<TData> {
+export interface VmDialogConfig<TData> {
   title: string;
   content: Type<unknown>;
   data: TData;
-  buttons?: IDialogButtonConfig[];
+  buttons?: VmDialogButtonConfig[];
 }
 
 @Component({
@@ -34,7 +34,7 @@ export class VmuDialogLayoutComponent<TData> {
   readonly #injector = inject(Injector);
   readonly dialogRef = inject(MatDialogRef<VmuDialogLayoutComponent<TData>>);
 
-  readonly dialogConfig: IVmDialogConfig<TData> = inject<IVmDialogConfig<TData>>(MAT_DIALOG_DATA);
+  readonly dialogConfig: VmDialogConfig<TData> = inject<VmDialogConfig<TData>>(MAT_DIALOG_DATA);
 
   buttonClickEvents$ = new BehaviorSubject<string | undefined>(undefined);
 

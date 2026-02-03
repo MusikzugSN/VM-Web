@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { GroupService, IGroup } from '../group.service';
+import { GroupService, Group } from '../group.service';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,7 +11,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrl: './app-delete-group-dialog.component.scss',
 })
 export class AppDeleteGroupDialog extends DialogBase<boolean> {
-  readonly #data = inject<IGroup>(DIALOG_DATA);
+  readonly #data = inject<Group>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #groupService = inject(GroupService);
 

@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { IRole, RolesService } from './roles.service';
+import { Role, RolesService } from './roles.service';
 import { BehaviorSubject, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { IColumn, IRowClickedEvent, IToolbarItem, VmcDataGrid, VmcToolbar } from '@vm-components';
+import { VmColumn, VmRowClickedEvent, VmToolbarItem, VmcDataGrid, VmcToolbar } from '@vm-components';
 import { RoleDialogService } from './role-dialog.service';
 
 @Component({
@@ -16,9 +16,10 @@ export class AppRoles {
   readonly #roleDialogService = inject(RoleDialogService);
 
   #reload = new BehaviorSubject(false);
-  roles$ = this.#reload.pipe(switchMap((_x) => this.#roleService.load$()));
+  roles$ = this.#reload
+    .pipe(switchMap((_x) => this.#roleService.load$()));
 
-  items: IToolbarItem[] = [
+  items: VmToolbarItem[] = [
     {
       key: 'addRole',
       icon: 'add',
@@ -30,7 +31,7 @@ export class AppRoles {
     },
   ];
 
-  async execAction(action: IRowClickedEvent<IRole>): Promise<void> {
+  async execAction(action: VmRowClickedEvent<Role>): Promise<void> {
     if (action.key === 'edit') {
       const reload = await this.#roleDialogService.openEditRoleDialog(action.rowData);
       if (reload) {
@@ -47,7 +48,7 @@ export class AppRoles {
     }
   }
 
-  columns: IColumn<IRole>[] = [
+  columns: VmColumn<Role>[] = [
     { key: 'groupId', header: '', field: 'roleId' },
     { key: 'name', header: 'Name', field: 'name' },
     { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },
