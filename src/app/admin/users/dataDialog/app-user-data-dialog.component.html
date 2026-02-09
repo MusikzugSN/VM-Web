@@ -1,4 +1,4 @@
-<vmc-input-field [formField]="nameField" [shouldInitChange]="false"/>
-<vmc-input-field [formField]="passwordField" [shouldInitChange]="false"/>
-<vmc-input-field [formField]="isAdminField" [shouldInitChange]="false"/>
-<vmc-input-field [formField]="isEnabledField" [shouldInitChange]="false"/>
+<vmc-input-field [formField]="nameField" [shouldInitChange]="false" (inputChnaged)="storeChangedValue($event, 'username')"/>
+<vmc-input-field [formField]="passwordField" [shouldInitChange]="false" (inputChnaged)="storeChangedValue($event, 'password')"/>
+<vmc-input-field [formField]="isAdminField" [shouldInitChange]="false" (inputChnaged)="storeChangedValue($event, 'isAdmin')"/>
+<vmc-input-field [formField]="isEnabledField" [shouldInitChange]="false" (inputChnaged)="storeChangedValue($event, 'isEnabled')"/>

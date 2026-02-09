@@ -56,7 +56,8 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<User, VmValidFormTypes | VmCheckboxValues>(this.#changedValues);
+      const normalizedValues = this.normalizeValues(this.#changedValues);
+      const patch = convertToPatch<User, VmValidFormTypes | boolean>(normalizedValues);
       if (x === 'save') {
         patch.userId = this.#data?.userId ?? -1;
         await firstValueFrom(this.#userService.change$(patch, patch.userId));
@@ -79,4 +80,35 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   storeChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
     this.#changedValues[key] = newValue;
   }
+
+  normalizeValues(
+    dict: Dictionary<VmValidFormTypes | VmCheckboxValues>
+  ): Dictionary<VmValidFormTypes | boolean> {
+    const result: Dictionary<VmValidFormTypes | boolean> = {};
+
+    for (const key in dict) {
+      const value = dict[key];
+
+      if (value === undefined) {
+        continue;
+      }
+
+      if (
+        value === "checked" ||
+        value === "unchecked" ||
+        value === "indeterminate"
+      ) {
+        result[key] = this.checkboxToBool(value);
+      } else {
+        result[key] = value;
+      }
+    }
+
+    return result;
+  }
+
+  checkboxToBool(value: string): boolean {
+    return value === "checked";
+  }
+
 }
