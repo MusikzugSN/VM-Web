@@ -39,6 +39,7 @@ import {Role, RoleService} from '../../roles/role.service';
 export class AppUserDataDialog extends DialogBase<boolean> {
   readonly #data = inject<User | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
+
   readonly #userService = inject(UserService);
   readonly #groupService = inject(GroupService);
   readonly #roleService = inject(RoleService);
@@ -113,12 +114,14 @@ export class AppUserDataDialog extends DialogBase<boolean> {
       header: 'Gruppen ID',
       field: nameOf<UserGroupTeaser>('groupId'),
       type: 'text',
+      footerAsTemplate: true,
     },
     {
       key: 'roleId',
       header: 'Rollen ID',
       field: nameOf<UserGroupTeaser>('roleId'),
       type: 'text',
+      footerAsTemplate: true,
     },
   ];
 

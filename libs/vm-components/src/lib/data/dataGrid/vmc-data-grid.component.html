@@ -1,5 +1,6 @@
 @let _columns = columns();
 @let _displayColumns = displayedColumns();
+@let _displayFooter = displayFooter();
 @let _rowActions = rowActions();
 @let _templates = transformedTemplates();
 
@@ -22,7 +23,7 @@
                 <ng-container
                   *ngTemplateOutlet="
                     template;
-                    context: { rowData: row, column: column, index: $index }
+                    context: { rowData: row, column: column, indexOfColumn: $index }
                   "
                 />
               }
@@ -31,14 +32,17 @@
 
           @if(column.footerAsTemplate) {
             <td mat-footer-cell *matFooterCellDef class="col-footer-{{column.key}}">
-              @let template = _templates[column.key + 'Footer'];
-              <ng-container
-                *ngTemplateOutlet="
-                    template;
-                  "
-              />
+              @let footerTemplate = _templates[column.key + 'Footer'];
+              @if (footerTemplate !== undefined) {
+                <ng-container
+                  *ngTemplateOutlet="
+                      footerTemplate;
+                    "
+                />
+              }
             </td>
           }
+
         </ng-container>
       }
 
@@ -63,7 +67,7 @@
 
       <tr *matHeaderRowDef="_displayColumns" mat-header-row></tr>
       <tr *matRowDef="let _row; columns: _displayColumns" mat-row></tr>
-      <tr *matFooterRowDef="_displayColumns" mat-footer-row></tr>
+      <tr *matFooterRowDef="_displayFooter" mat-footer-row></tr>
     </table>
 
     <!--  maybe later! -->

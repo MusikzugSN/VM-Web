@@ -86,6 +86,7 @@ export class VmcDataGrid<TRow> {
 
   tableData = computed(() => new MatTableDataSource(this.dataSource()));
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
+  displayFooter = computed(() => this.#mapColumnsWithFooter());
   transformedTemplates = computed(() => this.#mapTemplates());
 
   #mapTemplates(): Dictionary<TemplateRef<unknown>> {
@@ -110,5 +111,13 @@ export class VmcDataGrid<TRow> {
     }
 
     return columns.map((c) => c.key);
+  }
+
+  #mapColumnsWithFooter(): string[] {
+    const columns = this.columns();
+
+    return columns
+      .filter((x) => x.footerAsTemplate)
+      .map((x) => x.key);
   }
 }

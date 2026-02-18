@@ -33,6 +33,14 @@
       {
         keys: ['roleId'],
         templateRef: roleTemplate,
+      },
+      {
+        keys: ['groupIdFooter'],
+        templateRef: groupFooterTemplate,
+      },
+      {
+        keys: ['roleIdFooter'],
+        templateRef: roleFooterTemplate,
       }
     ]"
     (clickedAction)="execActionFromRow($event)"/>
@@ -47,6 +55,14 @@
     @let groups = groupsById();
     @let rowData = rowDataRaw | as: NumberType;
     {{ groups[rowData] ?? 'N/A'}}
+  </ng-template>
+
+  <ng-template #roleFooterTemplate>
+    roles
+  </ng-template>
+
+  <ng-template #groupFooterTemplate>
+    groups
   </ng-template>
 </div>
 
