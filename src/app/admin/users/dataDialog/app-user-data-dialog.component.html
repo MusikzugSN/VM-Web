@@ -1,5 +1,5 @@
 <div class="flex-column">
-  <div style="display: flex; flex-direction: row; gap: 20px;">
+  <div class="data-container">
     <vmc-input-field
       [formField]="nameField"
       [shouldInitChange]="false"
@@ -10,7 +10,7 @@
       (inputChanged)="storeChangedValue($event, 'password')"/>
   </div>
 
-  <div style="display: flex; flex-direction: row; gap: 20px;">
+  <div class="data-container">
     <vmc-input-field
       [formField]="isAdminField"
       [shouldInitChange]="false"

@@ -201,6 +201,11 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   }
 
   #storeNewGroupValue(newValue: UserGroupTeaser): void {
+    const currentValues = this.userGroupData$.getValue();
+    if (currentValues.find(x => x.groupId === newValue.groupId && x.roleId === newValue.roleId)) {
+      return;
+    }
+
     this.#changedGroupValues.push(newValue);
     this.#storeChangedGroupValues();
   }
@@ -218,11 +223,11 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   }
 
   storeNewGroupChange(value: VmValidFormTypes) {
-    this.#newUserGroup.groupId = value as number;
+    this.#newUserGroup.groupId = parseInt(value as string);
   }
 
   storeNewRoleChange(value: VmValidFormTypes) {
-    this.#newUserGroup.roleId = value as number;
+    this.#newUserGroup.roleId = parseInt(value as string);
   }
 
   execActionFromRow(event: VmRowClickedEvent<UserGroupTeaser>) {

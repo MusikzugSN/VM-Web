@@ -32,7 +32,7 @@ export interface VmColumn<TElement> {
   header: string;
   field?: keyof TElement & string;
   type?: VmColumnType;
-  footerAsTemplate?: boolean; // das Template muss über -- key + 'Header' -- bereitgestellt werden
+  footerAsTemplate?: boolean; // das Template muss über -- key + 'Footer' -- bereitgestellt werden
 }
 
 export interface VmGridTemplate {
