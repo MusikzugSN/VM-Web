@@ -1,7 +1,7 @@
 <vmc-input-field
   [formField]="nameField"
   [shouldInitChange]="false"
-  (inputChnaged)="storeChangedValue($event, roleNameKey)"
+  (inputChanged)="storeChangedValue($event, roleNameKey)"
 />
 
 @let _structure = (structure$ | async) ?? [];

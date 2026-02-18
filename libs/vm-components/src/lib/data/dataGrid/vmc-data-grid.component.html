@@ -28,6 +28,17 @@
               }
             }
           </td>
+
+          @if(column.footerAsTemplate) {
+            <td mat-footer-cell *matFooterCellDef class="col-footer-{{column.key}}">
+              @let template = _templates[column.key + 'Footer'];
+              <ng-container
+                *ngTemplateOutlet="
+                    template;
+                  "
+              />
+            </td>
+          }
         </ng-container>
       }
 
@@ -52,6 +63,7 @@
 
       <tr *matHeaderRowDef="_displayColumns" mat-header-row></tr>
       <tr *matRowDef="let _row; columns: _displayColumns" mat-row></tr>
+      <tr *matFooterRowDef="_displayColumns" mat-footer-row></tr>
     </table>
 
     <!--  maybe later! -->

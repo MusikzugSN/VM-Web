@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Role, RolesService } from './roles.service';
+import { Role, RoleService } from './role.service';
 import { BehaviorSubject, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { VmColumn, VmRowClickedEvent, VmToolbarItem, VmcDataGrid, VmcToolbar } from '@vm-components';
@@ -12,7 +12,7 @@ import { RoleDialogService } from './role-dialog.service';
   styleUrl: './app-roles.component.scss',
 })
 export class AppRoles {
-  readonly #roleService = inject(RolesService);
+  readonly #roleService = inject(RoleService);
   readonly #roleDialogService = inject(RoleDialogService);
 
   #reload = new BehaviorSubject(false);

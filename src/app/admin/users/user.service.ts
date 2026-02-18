@@ -21,6 +21,7 @@ export interface UserUpdate {
 export interface UserGroupTeaser {
   groupId: number;
   roleId: number;
+  deleted?: boolean;
 }
 
 @Injectable({

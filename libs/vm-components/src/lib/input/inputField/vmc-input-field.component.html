@@ -1,24 +1,26 @@
 @let field = formField();
 
-  @if (field.type === 'checkbox') {
+@if (field.type === 'checkbox') {
+  <mat-checkbox
+    [checked]="field.value === 'checked'"
+    [indeterminate]="field.value === 'indeterminate'"
+    [disabled]="field.readonly ?? false"
+    [labelPosition]="'after'"
+    (change)="checkboxCallChangeEvent($event.checked)">
+    {{ field.label }}
+  </mat-checkbox>
+} @else {
+  <mat-form-field class="vm-imput">
     <mat-label>{{ field.label }}</mat-label>
-    <mat-checkbox
-      [checked]="field.value === 'checked'"
-      [indeterminate]="field.value === 'indeterminate'"
-      [disabled]="field.readonly ?? false"
-      (change)="checkboxCallChangeEvent($event.checked)"/>
-  } @else {
-    <mat-form-field class="vm-imput">
-      <mat-label>{{ field.label }}</mat-label>
-      <input
-        matInput
-        [type]="field.type"
-        [placeholder]="field.placeholder ?? ''"
-        [readonly]="field.readonly ?? false"
-        [required]="field.required ?? false"
-        [ngModel]="field.value ?? ''"
-        (input)="genericCallChangeEvent($event)"
-      />
-    </mat-form-field>
-  }
+    <input
+      matInput
+      [type]="field.type"
+      [placeholder]="field.placeholder ?? ''"
+      [readonly]="field.readonly ?? false"
+      [required]="field.required ?? false"
+      [ngModel]="field.value ?? ''"
+      (input)="genericCallChangeEvent($event)"
+    />
+  </mat-form-field>
+}
 

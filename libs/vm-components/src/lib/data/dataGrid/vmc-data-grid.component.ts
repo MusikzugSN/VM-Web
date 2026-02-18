@@ -10,7 +10,7 @@ import {
 import {
   MatCell,
   MatCellDef,
-  MatColumnDef,
+  MatColumnDef, MatFooterCell, MatFooterCellDef, MatFooterRow, MatFooterRowDef,
   MatHeaderCell,
   MatHeaderCellDef,
   MatHeaderRow,
@@ -32,6 +32,7 @@ export interface VmColumn<TElement> {
   header: string;
   field?: keyof TElement & string;
   type?: VmColumnType;
+  footerAsTemplate?: boolean; // das Template muss über -- key + 'Header' -- bereitgestellt werden
 }
 
 export interface VmGridTemplate {
@@ -67,6 +68,10 @@ export interface VmRowClickedEvent<TRow> {
     NgTemplateOutlet,
     MatIconButton,
     MatIcon,
+    MatFooterRowDef,
+    MatFooterCell,
+    MatFooterRow,
+    MatFooterCellDef,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
