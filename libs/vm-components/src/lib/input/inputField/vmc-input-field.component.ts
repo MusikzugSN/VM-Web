@@ -3,10 +3,11 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { VmValidFormTypes, VmFormField } from '../form.models';
 import { FormsModule } from '@angular/forms';
 import {MatCheckbox} from '@angular/material/checkbox';
+import {MatOption, MatSelect} from '@angular/material/select';
 
 @Component({
   selector: 'vmc-input-field',
-  imports: [MatInput, MatLabel, MatFormField, FormsModule, MatCheckbox],
+  imports: [MatInput, MatLabel, MatFormField, FormsModule, MatCheckbox, MatSelect, MatOption],
   templateUrl: './vmc-input-field.component.html',
   styleUrl: './vmc-input-field.component.scss',
 })

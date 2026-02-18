@@ -14,7 +14,8 @@ export interface VmForm {
 
 export type VmFormField =
   | VmInputField
-  | VmCheckboxField;
+  | VmCheckboxField
+  | VmSelect;
 
 export interface VmBaseField {
   label: string;
@@ -45,8 +46,14 @@ export interface VmCheckboxField extends VmBaseField {
   type: 'checkbox';
   value?: VmCheckboxValues;
 }
-
-
+export interface VmSelect extends VmBaseField {
+  type: 'select';
+  options: VmSelectOption[];
+}
+export interface VmSelectOption {
+  label: string;
+  value: string;
+}
 /*
 interface VmFormFieldValidation {
   minLength?: number;
