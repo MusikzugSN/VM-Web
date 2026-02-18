@@ -22,8 +22,9 @@
   </div>
 
   <vmc-data-grid
-    [columns]="userGroupColums"
+    [columns]="userGroupColumns"
     [rowActions]="userGroupActions"
+    [footerActions]="footerActions"
     [dataSource]="(userGroupData$ | async) ?? []"
     [templates]="[
       {
@@ -41,28 +42,38 @@
       {
         keys: ['roleIdFooter'],
         templateRef: roleFooterTemplate,
-      }
+      },
     ]"
     (clickedAction)="execActionFromRow($event)"/>
 
   <ng-template #roleTemplate let-rowDataRaw="rowData">
     @let roles = rolesById();
-    @let rowData = rowDataRaw | as: NumberType;
-    {{ roles[rowData] ?? 'N/A'}}
+    @let rowData = rowDataRaw | as: RoleType;
+    {{ roles[rowData.roleId]?.name ?? 'N/A'}}
   </ng-template>
 
   <ng-template #groupTemplate let-rowDataRaw="rowData">
     @let groups = groupsById();
-    @let rowData = rowDataRaw | as: NumberType;
-    {{ groups[rowData] ?? 'N/A'}}
+    @let rowData = rowDataRaw | as: GroupType;
+    {{ groups[rowData.groupId]?.name ?? 'N/A'}}
   </ng-template>
 
   <ng-template #roleFooterTemplate>
-    roles
+    <vmc-input-field [formField]="{
+      label: 'Rolle',
+      key: 'roleId',
+      type: 'select',
+      options: roleOptions(),
+    }" (inputChanged)="storeNewRoleChange($event)"/>
   </ng-template>
 
   <ng-template #groupFooterTemplate>
-    groups
+    <vmc-input-field [formField]="{
+      label: 'Gruppe',
+      key: 'groupId',
+      type: 'select',
+      options: groupOptions(),
+    }" (inputChanged)="storeNewGroupChange($event)"/>
   </ng-template>
 </div>
 

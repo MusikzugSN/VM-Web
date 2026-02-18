@@ -2,6 +2,7 @@
 @let _displayColumns = displayedColumns();
 @let _displayFooter = displayFooter();
 @let _rowActions = rowActions();
+@let _footerActions = footerActions();
 @let _templates = transformedTemplates();
 
 @if (_columns.length > 0 && _displayColumns.length > 0) {
@@ -62,6 +63,22 @@
               </button>
             }
           </td>
+
+          @if (_footerActions) {
+            <td mat-footer-cell *matFooterCellDef class="col-footer-actionsFooter">
+              @for (footerAction of _footerActions; track footerAction.key) {
+                <button matIconButton (click)="clickedAction.emit({ key: footerAction.key, rowData: null })">
+                  <mat-icon
+                    class="icon"
+                    [style.font-size]="'24px'"
+                  >
+                    {{ footerAction.icon ?? 'hvac' }}
+                  </mat-icon>
+                </button>
+              }
+            </td>
+          }
+
         </ng-container>
       }
 

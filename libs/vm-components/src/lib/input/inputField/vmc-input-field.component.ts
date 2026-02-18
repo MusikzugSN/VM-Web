@@ -35,7 +35,7 @@ export class VmcInputField {
   }
 
   selectCallChangeEvent(event: MatSelectChange): void {
-    this.inputChnaged.emit(event.value);
+    this.inputChanged.emit(event.value);
   }
 
   genericCallChangeEvent(event: Event): void {

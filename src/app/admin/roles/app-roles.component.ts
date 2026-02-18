@@ -33,7 +33,7 @@ export class AppRoles {
 
   async execAction(action: VmRowClickedEvent<Role>): Promise<void> {
     if (action.key === 'edit') {
-      const reload = await this.#roleDialogService.openEditRoleDialog(action.rowData);
+      const reload = await this.#roleDialogService.openEditRoleDialog(action.rowData!);
       if (reload) {
         this.#reload.next(true);
       }
@@ -41,7 +41,7 @@ export class AppRoles {
     }
 
     if (action.key === 'delete') {
-      const reload = await this.#roleDialogService.openDeleteRoleDialog(action.rowData);
+      const reload = await this.#roleDialogService.openDeleteRoleDialog(action.rowData!);
       if (reload) {
         this.#reload.next(true);
       }

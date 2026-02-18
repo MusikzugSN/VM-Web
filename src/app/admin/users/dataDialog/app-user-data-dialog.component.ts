@@ -15,7 +15,7 @@ import {
   VmcInputField,
   VmColumn,
   VmFormField,
-  VmRowAction, VmRowClickedEvent,
+  VmRowAction, VmRowClickedEvent, VmSelectOption,
   VmValidFormTypes
 } from '@vm-components';
 import {BehaviorSubject, firstValueFrom, map, Observable} from 'rxjs';
@@ -44,7 +44,16 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   readonly #groupService = inject(GroupService);
   readonly #roleService = inject(RoleService);
 
-  #rolesById$: Observable<NumDictionary<Role>> = this.#roleService.load$()
+  #roles$: Observable<Role[]> = this.#roleService.load$();
+
+  #roleOptions$: Observable<VmSelectOption[]> = this.#roles$
+    .pipe(map(x => x.map(group => ({label: group.name, value: group.roleId.toString()}))));
+
+  roleOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#roleOptions$, {
+    initialValue: [],
+  });
+
+  #rolesById$: Observable<NumDictionary<Role>> = this.#roles$
     .pipe(map(x => x
       .reduce((acc, role) => ({...acc, [role.roleId]: role}),
         {} as NumDictionary<Role>)
@@ -55,7 +64,16 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     initialValue: {},
   });
 
-  #groupsById$: Observable<NumDictionary<Group>> = this.#groupService.load$()
+  #groups$: Observable<Group[]> =  this.#groupService.load$();
+
+  #groupOptions$: Observable<VmSelectOption[]> = this.#groups$
+    .pipe(map(x => x.map(group => ({label: group.name, value: group.groupId.toString()}))));
+
+  groupOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#groupOptions$, {
+    initialValue: [],
+  });
+
+  #groupsById$: Observable<NumDictionary<Group>> = this.#groups$
     .pipe(map(x => x
         .reduce((acc, group) => ({...acc, [group.groupId]: group}),
           {} as NumDictionary<Group>)
@@ -67,10 +85,12 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   });
 
   // @ts-expect-error
-  NumberType: number;
+  RoleType: Role;
+  // @ts-expect-error
+  GroupType: Group;
 
   // Datasource für die UserGroupTeaser, damit Änderungen direkt in der Tabelle sichtbar sind
-  userGroupData$: BehaviorSubject<UserGroupTeaser[]> = new BehaviorSubject<UserGroupTeaser[]>(this.#data?.userGroupTeasers ?? []);
+  userGroupData$: BehaviorSubject<UserGroupTeaser[]> = new BehaviorSubject<UserGroupTeaser[]>(this.#data?.roles ?? []);
 
   // Hier werden alle geänderten Werte zwischengespeichert, damit sie beim Speichern in einem Patch-Objekt zusammengefasst werden können
   #changedValues: Dictionary<VmValidFormTypes | boolean | UserGroupTeaser[]> = {};
@@ -108,19 +128,19 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     value: this.#data?.isEnabled ? 'checked' : 'unchecked',
   }
 
-  userGroupColums: VmColumn<UserGroupTeaser>[] = [
+  userGroupColumns: VmColumn<UserGroupTeaser>[] = [
     {
       key: 'groupId',
       header: 'Gruppen ID',
       field: nameOf<UserGroupTeaser>('groupId'),
-      type: 'text',
+      type: 'template',
       footerAsTemplate: true,
     },
     {
       key: 'roleId',
       header: 'Rollen ID',
       field: nameOf<UserGroupTeaser>('roleId'),
-      type: 'text',
+      type: 'template',
       footerAsTemplate: true,
     },
   ];
@@ -132,6 +152,17 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     },
   ];
 
+  footerActions: VmRowAction[] = [
+    {
+      key: 'add',
+      icon: 'add',
+    },
+  ];
+
+  #newUserGroup: UserGroupTeaser = {
+    groupId: -1,
+    roleId: -1,
+  };
 
   constructor() {
     super();
@@ -165,11 +196,11 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   }
 
   #storeChangedGroupValues(): void {
-    this.storeChangedValue(this.#changedGroupValues, nameOf<User>('userGroupTeasers'));
+    this.storeChangedValue(this.#changedGroupValues, nameOf<User>('roles'));
     this.userGroupData$.next(this.#changedGroupValues.filter(x => !x.deleted));
   }
 
-  storeNewGroupValue(newValue: UserGroupTeaser): void {
+  #storeNewGroupValue(newValue: UserGroupTeaser): void {
     this.#changedGroupValues.push(newValue);
     this.#storeChangedGroupValues();
   }
@@ -186,9 +217,21 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     this.#storeChangedGroupValues();
   }
 
+  storeNewGroupChange(value: VmValidFormTypes) {
+    this.#newUserGroup.groupId = value as number;
+  }
+
+  storeNewRoleChange(value: VmValidFormTypes) {
+    this.#newUserGroup.roleId = value as number;
+  }
+
   execActionFromRow(event: VmRowClickedEvent<UserGroupTeaser>) {
     if (event.key === 'delete') {
-      this.#storeDeletedGroupValue(event.rowData);
+      this.#storeDeletedGroupValue(event.rowData!);
+    } else if (event.key === 'add') {
+      if (this.#newUserGroup.groupId !== -1 && this.#newUserGroup.roleId !== -1) {
+        this.#storeNewGroupValue(this.#newUserGroup);
+      } // todo far: handle error
     }
   }
 

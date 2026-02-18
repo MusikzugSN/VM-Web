@@ -6,7 +6,7 @@ export interface User extends IMetaData {
   username: string;
   isAdmin: boolean;
   isEnabled: boolean;
-  userGroupTeasers: UserGroupTeaser[];
+  roles: UserGroupTeaser[];
 }
 
 export interface UserUpdate {
@@ -15,7 +15,7 @@ export interface UserUpdate {
   password?: string;
   isAdmin: boolean;
   isEnabled: boolean;
-  userGroupTeasers: UserGroupTeaser[];
+  roles: UserGroupTeaser[];
 }
 
 export interface UserGroupTeaser {
