@@ -22,8 +22,10 @@ export class VmcInputField {
     // Ich mache das damit die values in vmc-form immer aktuell sind.
     effect(() => {
       const field = this.formField();
-      if (field?.value && this.shouldInitChange()) {
-        this.inputChnaged.emit(field.value);
+      if (field.type !== 'select') {
+        if (field?.value && this.shouldInitChange()) {
+          this.inputChnaged.emit(field.value);
+        }
       }
     });
   }
