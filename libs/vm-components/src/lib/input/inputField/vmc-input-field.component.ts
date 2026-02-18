@@ -3,10 +3,11 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { VmValidFormTypes, VmFormField } from '../form.models';
 import { FormsModule } from '@angular/forms';
 import {MatCheckbox} from '@angular/material/checkbox';
+import {MatOption, MatSelect, MatSelectChange} from '@angular/material/select';
 
 @Component({
   selector: 'vmc-input-field',
-  imports: [MatInput, MatLabel, MatFormField, FormsModule, MatCheckbox],
+  imports: [MatInput, MatLabel, MatFormField, FormsModule, MatCheckbox, MatSelect, MatOption],
   templateUrl: './vmc-input-field.component.html',
   styleUrl: './vmc-input-field.component.scss',
 })
@@ -21,14 +22,20 @@ export class VmcInputField {
     // Ich mache das damit die values in vmc-form immer aktuell sind.
     effect(() => {
       const field = this.formField();
-      if (field?.value && this.shouldInitChange()) {
-        this.inputChnaged.emit(field.value);
+      if (field.type !== 'select') {
+        if (field?.value && this.shouldInitChange()) {
+          this.inputChnaged.emit(field.value);
+        }
       }
     });
   }
 
   checkboxCallChangeEvent(checked: boolean): void {
     this.inputChnaged.emit(checked ? 'checked' : 'unchecked');
+  }
+
+  selectCallChangeEvent(event: MatSelectChange): void {
+    this.inputChnaged.emit(event.value);
   }
 
   genericCallChangeEvent(event: Event): void {
