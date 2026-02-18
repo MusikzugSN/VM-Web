@@ -3,7 +3,7 @@ import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import { VmValidFormTypes, VmFormField } from '../form.models';
 import { FormsModule } from '@angular/forms';
 import {MatCheckbox} from '@angular/material/checkbox';
-import {MatOption, MatSelect} from '@angular/material/select';
+import {MatOption, MatSelect, MatSelectChange} from '@angular/material/select';
 
 @Component({
   selector: 'vmc-input-field',
@@ -32,6 +32,10 @@ export class VmcInputField {
 
   checkboxCallChangeEvent(checked: boolean): void {
     this.inputChnaged.emit(checked ? 'checked' : 'unchecked');
+  }
+
+  selectCallChangeEvent(event: MatSelectChange): void {
+    this.inputChnaged.emit(event.value);
   }
 
   genericCallChangeEvent(event: Event): void {
