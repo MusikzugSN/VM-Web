@@ -7,8 +7,7 @@
       [indeterminate]="field.value === 'indeterminate'"
       [disabled]="field.readonly ?? false"
       (change)="checkboxCallChangeEvent($event.checked)"/>
-  }
-    @else if (field.type === 'select') {
+  } @else if (field.type === 'select') {
     <mat-form-field>
       <mat-label>{{ field.label }}</mat-label>
       <mat-select (selectionChange)="selectCallChangeEvent($event)">
@@ -17,8 +16,7 @@
         }
       </mat-select>
     </mat-form-field>
-  }
-    @else {
+  } @else {
     <mat-form-field class="vm-imput">
       <mat-label>{{ field.label }}</mat-label>
       <input
