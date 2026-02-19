@@ -206,7 +206,10 @@ export class AppUserDataDialog extends DialogBase<boolean> {
       return;
     }
 
-    this.#changedGroupValues.push(newValue);
+    this.#changedGroupValues.push({
+      groupId: newValue.groupId,
+      roleId: newValue.roleId,
+    });
     this.#storeChangedGroupValues();
   }
 
