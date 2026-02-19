@@ -6,7 +6,7 @@
 
 @if (_columns.length > 0 && _displayColumns.length > 0) {
   <div class="mat-elevation-z8">
-    <table [dataSource]="tableData" mat-table>
+    <table [dataSource]="tableData" mat-table matSort (matSortChange)="announceSortChange($event)">
       @if (_selectionMode !== 'none') {
         @let _selectionKey = selectionKey();
         @let _isAllSelected = isAllSelected();
@@ -39,9 +39,16 @@
 
       @for (column of _columns; track column.key) {
         <ng-container [matColumnDef]="column.key">
-          <th *matHeaderCellDef class="col-header-{{ column.key }}" mat-header-cell>
-            {{ column.header }}
-          </th>
+          @let sortable = column.sortable ?? false;
+          @if (sortable) {
+            <th *matHeaderCellDef mat-header-cell mat-sort-header sortActionDescription="Sortierung von {{column.header}}" class="col-header-{{ column.key }}">
+              {{ column.header }}
+            </th>
+          } @else {
+            <th *matHeaderCellDef mat-header-cell class="col-header-{{ column.key }}">
+              {{ column.header }}
+            </th>
+          }
           <td *matCellDef="let row" class="col-row-{{ column.key }}" mat-cell>
             @if (column.type === undefined || column.type === 'text') {
               {{ row[column.field] }}

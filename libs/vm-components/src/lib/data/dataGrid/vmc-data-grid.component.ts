@@ -1,11 +1,11 @@
 import {
   Component,
-  computed, effect,
+  computed, effect, inject,
   input,
   InputSignal,
   output,
   OutputEmitterRef, Signal,
-  TemplateRef,
+  TemplateRef, viewChild,
 } from '@angular/core';
 import {
   MatCell,
@@ -27,6 +27,8 @@ import {MatIcon} from '@angular/material/icon';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {BehaviorSubject} from 'rxjs';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
+import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
+import {LiveAnnouncer} from '@angular/cdk/a11y';
 
 export type VmColumnType = 'text' | 'date' | 'template'; //| 'boolean' | 'number' ;
 export type VmSelectType = 'multi' | 'single' | 'none';
@@ -35,6 +37,7 @@ export interface VmColumn<TElement> {
   key: string;
   header: string;
   filterable?: boolean;
+  sortable?: boolean;
   field?: keyof TElement & string;
   type?: VmColumnType;
 }
@@ -73,11 +76,16 @@ export interface VmRowClickedEvent<TRow> {
     MatIconButton,
     MatIcon,
     MatCheckbox,
+    MatSortHeader,
+    MatSort,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
 })
 export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
+  readonly #liveAnnouncer = inject(LiveAnnouncer);
+  readonly sortElement = viewChild(MatSort);
+
   dataSource: InputSignal<TRow[]> = input.required();
   columns: InputSignal<VmColumn<TRow>[]> = input.required();
   rowActions: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
@@ -94,7 +102,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   selectionDict: Signal<Dictionary<boolean>> = computed<Dictionary<boolean>>(() => this.#convertSelectionToDictionary());
   isAllSelected = computed(() => this.#convertAllSelected());
 
-  tableData = new MatTableDataSource();
+  tableData = new MatTableDataSource<TRow>();
 
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
   transformedTemplates = computed(() => this.#mapTemplates());
@@ -106,7 +114,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
         this.selectionChanged.emit(x);
       });
 
-    // Customfilter für DataGrid
+    // custom filter für DataGrid
     this.tableData.filterPredicate = (row: unknown, filter: string) => {
       const data = row as TRow;
       const filterTerm = filter.toLowerCase();
@@ -120,6 +128,14 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
         });
     }
 
+    // custom sorting für DataGrid
+    this.tableData.sortingDataAccessor = (row: TRow, columnId: string) => {
+      const col = this.columns().find(c => c.key === columnId);
+      if (!col?.field) return '';
+      return row[col.field] as unknown as string;
+    };
+
+
     effect(() => {
       this.tableData.data = this.dataSource() ?? [];
     });
@@ -127,6 +143,14 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     effect(() => {
       this.tableData.filter = this.filterTerm() ?? '';
     });
+
+    effect(() => {
+      const sort = this.sortElement();
+      if (sort) {
+        this.tableData.sort = sort;
+      }
+    });
+
   }
 
   toggleRowSelection(row: TRow) {
@@ -207,5 +231,18 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     }
 
     return columnsKeys;
+  }
+
+  /** Announce the change in sort state for assistive technology. */
+  announceSortChange(sortState: Sort) {
+    // This example uses English messages. If your application supports
+    // multiple language, you would internationalize these strings.
+    // Furthermore, you can customize the message to add additional
+    // details about the values being sorted.
+    if (sortState.direction) {
+      this.#liveAnnouncer.announce(`Sortierung ${sortState.direction}beendet`);
+    } else {
+      this.#liveAnnouncer.announce('Sortierung gelöscht');
+    }
   }
 }
