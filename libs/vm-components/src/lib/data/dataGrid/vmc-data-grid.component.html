@@ -6,7 +6,7 @@
 
 @if (_columns.length > 0 && _displayColumns.length > 0) {
   <div class="mat-elevation-z8">
-    <table [dataSource]="tableData()" mat-table>
+    <table [dataSource]="tableData" mat-table>
       @if (_selectionMode !== 'none') {
         @let _selectionKey = selectionKey();
         @let _isAllSelected = isAllSelected();

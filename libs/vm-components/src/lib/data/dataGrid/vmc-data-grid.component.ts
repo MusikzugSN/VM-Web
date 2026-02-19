@@ -1,6 +1,6 @@
 import {
   Component,
-  computed,
+  computed, effect,
   input,
   InputSignal,
   output,
@@ -34,6 +34,7 @@ export type VmSelectType = 'multi' | 'single' | 'none';
 export interface VmColumn<TElement> {
   key: string;
   header: string;
+  filterable?: boolean;
   field?: keyof TElement & string;
   type?: VmColumnType;
 }
@@ -83,6 +84,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   templates: InputSignal<VmGridTemplate[]> = input<VmGridTemplate[]>([]);
   selectionMode: InputSignal<VmSelectType> = input<VmSelectType>('none');
   selectionKey: InputSignal<TSelectionKey | undefined> = input<TSelectionKey | undefined>(undefined);
+  filterTerm: InputSignal<string | undefined> = input<string | undefined>(undefined);
 
   clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
   selectionChanged: OutputEmitterRef<TSelectionKey[]> = output();
@@ -92,7 +94,8 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   selectionDict: Signal<Dictionary<boolean>> = computed<Dictionary<boolean>>(() => this.#convertSelectionToDictionary());
   isAllSelected = computed(() => this.#convertAllSelected());
 
-  tableData = computed(() => new MatTableDataSource(this.dataSource()));
+  tableData = new MatTableDataSource();
+
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
   transformedTemplates = computed(() => this.#mapTemplates());
 
@@ -102,6 +105,28 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       .subscribe(x => {
         this.selectionChanged.emit(x);
       });
+
+    // Customfilter für DataGrid
+    this.tableData.filterPredicate = (row: unknown, filter: string) => {
+      const data = row as TRow;
+      const filterTerm = filter.toLowerCase();
+      const columns = this.columns();
+      return columns
+        .filter(x => x.filterable ?? false)
+        .some(col => {
+          if (!col.field) return false;
+          const value = data[col.field];
+          return value?.toString().toLowerCase().includes(filterTerm);
+        });
+    }
+
+    effect(() => {
+      this.tableData.data = this.dataSource() ?? [];
+    });
+
+    effect(() => {
+      this.tableData.filter = this.filterTerm() ?? '';
+    });
   }
 
   toggleRowSelection(row: TRow) {
@@ -133,13 +158,13 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       return;
     }
 
-    const keys = this.tableData().data.map(x => x[selectionKey] as TSelectionKey);
+    const keys = this.dataSource().map(x => x[selectionKey] as TSelectionKey);
     this.selection$.next(keys);
   }
 
   #convertAllSelected() {
     const numSelected = this.selection().length;
-    const numRows = this.tableData().data.length;
+    const numRows = this.dataSource().length;
     return numSelected === numRows;
   }
 
