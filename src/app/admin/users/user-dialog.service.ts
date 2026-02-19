@@ -16,6 +16,9 @@ export class UserDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'create', text: 'Erstellen', type: 'filled' },
       ],
+      dialogConfig: {
+        minWidth: '1200px',
+      },
     });
   }
 
@@ -27,6 +30,9 @@ export class UserDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'save', text: 'Speichern', type: 'filled' },
       ],
+      dialogConfig: {
+        minWidth: '1200px',
+      },
     });
   }
 

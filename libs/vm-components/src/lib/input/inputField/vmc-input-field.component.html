@@ -1,12 +1,14 @@
 @let field = formField();
 
   @if (field.type === 'checkbox') {
-    <mat-label>{{ field.label }}</mat-label>
     <mat-checkbox
       [checked]="field.value === 'checked'"
       [indeterminate]="field.value === 'indeterminate'"
       [disabled]="field.readonly ?? false"
-      (change)="checkboxCallChangeEvent($event.checked)"/>
+      [labelPosition]="'after'"
+      (change)="checkboxCallChangeEvent($event.checked)">
+      {{ field.label }}
+    </mat-checkbox>
   } @else if (field.type === 'select') {
     <mat-form-field>
       <mat-label>{{ field.label }}</mat-label>

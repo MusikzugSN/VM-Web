@@ -31,7 +31,7 @@ export class AppGroups {
 
   async execAction(action: VmRowClickedEvent<Group>): Promise<void> {
     if (action.key === 'edit') {
-      const reload = await this.#groupDataDialogService.openEditGroupDialog(action.rowData);
+      const reload = await this.#groupDataDialogService.openEditGroupDialog(action.rowData!);
       if (reload) {
         this.#reload.next(true);
       }
@@ -39,7 +39,7 @@ export class AppGroups {
     }
 
     if (action.key === 'delete') {
-      const reload = await this.#groupDataDialogService.openDeleteGroupDialog(action.rowData);
+      const reload = await this.#groupDataDialogService.openDeleteGroupDialog(action.rowData!);
       if (reload) {
         this.#reload.next(true);
       }

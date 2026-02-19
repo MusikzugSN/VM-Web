@@ -15,8 +15,8 @@ import {
   Permission,
   PermissionGroup,
   Role,
-  RolesService,
-} from '../roles.service';
+  RoleService,
+} from '../role.service';
 import { AsyncPipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +32,7 @@ const roleNameKey = nameOf<Role>('name');
 export class AppRoleDataDialog extends DialogBase<boolean> {
   readonly #data = inject<Role | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  readonly #roleService = inject(RolesService);
+  readonly #roleService = inject(RoleService);
 
   // @ts-expect-error
   RowDataType: PermissionGroup;

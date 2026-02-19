@@ -1,4 +1,81 @@
-<vmc-input-field [formField]="nameField" [shouldInitChange]="false" (inputChnaged)="storeChangedValue($event, 'username')"/>
-<vmc-input-field [formField]="passwordField" [shouldInitChange]="false" (inputChnaged)="storeChangedValue($event, 'password')"/>
-<vmc-input-field [formField]="isAdminField" [shouldInitChange]="false" (inputChnaged)="storeChangedValue($event, 'isAdmin')"/>
-<vmc-input-field [formField]="isEnabledField" [shouldInitChange]="false" (inputChnaged)="storeChangedValue($event, 'isEnabled')"/>
+<div class="flex-column">
+  <div class="data-container">
+    <vmc-input-field
+      [formField]="nameField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'username')"/>
+    <vmc-input-field
+      [formField]="passwordField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'password')"/>
+  </div>
+
+  <div class="data-container">
+    <vmc-input-field
+      [formField]="isAdminField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeBooleanChangedValue($event, 'isAdmin')"/>
+    <vmc-input-field
+      [formField]="isEnabledField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeBooleanChangedValue($event, 'isEnabled')"/>
+  </div>
+
+  <vmc-data-grid
+    [columns]="userGroupColumns"
+    [rowActions]="userGroupActions"
+    [footerActions]="footerActions"
+    [dataSource]="(userGroupData$ | async) ?? []"
+    [templates]="[
+      {
+        keys: ['groupId'],
+        templateRef: groupTemplate,
+      },
+      {
+        keys: ['roleId'],
+        templateRef: roleTemplate,
+      },
+      {
+        keys: ['groupIdFooter'],
+        templateRef: groupFooterTemplate,
+      },
+      {
+        keys: ['roleIdFooter'],
+        templateRef: roleFooterTemplate,
+      },
+    ]"
+    (clickedAction)="execActionFromRow($event)"/>
+
+  <ng-template #roleTemplate let-rowDataRaw="rowData">
+    @let roles = rolesById();
+    @let rowData = rowDataRaw | as: RoleType;
+    {{ roles[rowData.roleId]?.name ?? 'N/A'}}
+  </ng-template>
+
+  <ng-template #groupTemplate let-rowDataRaw="rowData">
+    @let groups = groupsById();
+    @let rowData = rowDataRaw | as: GroupType;
+    {{ groups[rowData.groupId]?.name ?? 'N/A'}}
+  </ng-template>
+
+  <ng-template #roleFooterTemplate>
+    <vmc-input-field [formField]="{
+      label: 'Rolle',
+      key: 'roleId',
+      type: 'select',
+      options: roleOptions(),
+    }" (inputChanged)="storeNewRoleChange($event)"/>
+  </ng-template>
+
+  <ng-template #groupFooterTemplate>
+    <vmc-input-field [formField]="{
+      label: 'Gruppe',
+      key: 'groupId',
+      type: 'select',
+      options: groupOptions(),
+    }" (inputChanged)="storeNewGroupChange($event)"/>
+  </ng-template>
+</div>
+
+
+

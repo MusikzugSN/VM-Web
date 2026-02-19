@@ -10,7 +10,7 @@ import {
 import {
   MatCell,
   MatCellDef,
-  MatColumnDef,
+  MatColumnDef, MatFooterCell, MatFooterCellDef, MatFooterRow, MatFooterRowDef,
   MatHeaderCell,
   MatHeaderCellDef,
   MatHeaderRow,
@@ -32,6 +32,7 @@ export interface VmColumn<TElement> {
   header: string;
   field?: keyof TElement & string;
   type?: VmColumnType;
+  footerAsTemplate?: boolean; // das Template muss über -- key + 'Footer' -- bereitgestellt werden
 }
 
 export interface VmGridTemplate {
@@ -47,7 +48,7 @@ export interface VmRowAction {
 
 export interface VmRowClickedEvent<TRow> {
   key: string;
-  rowData: TRow;
+  rowData: TRow | null;
 }
 
 @Component({
@@ -67,6 +68,10 @@ export interface VmRowClickedEvent<TRow> {
     NgTemplateOutlet,
     MatIconButton,
     MatIcon,
+    MatFooterRowDef,
+    MatFooterCell,
+    MatFooterRow,
+    MatFooterCellDef,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
@@ -75,12 +80,14 @@ export class VmcDataGrid<TRow> {
   dataSource: InputSignal<TRow[]> = input.required();
   columns: InputSignal<VmColumn<TRow>[]> = input.required();
   rowActions: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
+  footerActions: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
   templates: InputSignal<VmGridTemplate[]> = input<VmGridTemplate[]>([]);
 
   clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
 
   tableData = computed(() => new MatTableDataSource(this.dataSource()));
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
+  displayFooter = computed(() => this.#mapColumnsWithFooter());
   transformedTemplates = computed(() => this.#mapTemplates());
 
   #mapTemplates(): Dictionary<TemplateRef<unknown>> {
@@ -100,10 +107,27 @@ export class VmcDataGrid<TRow> {
     const columns = this.columns();
     const actions = this.rowActions();
 
+    const columnsFiltered = columns.map((c) => c.key)
+
     if (actions.length > 0) {
-      return [...columns.map((c) => c.key), 'actions'];
+      return [...columnsFiltered, 'actions'];
     }
 
-    return columns.map((c) => c.key);
+    return columnsFiltered;
+  }
+
+  #mapColumnsWithFooter(): string[] {
+    const columns = this.columns();
+    const actions = this.footerActions();
+
+    const columnsFiltered = columns
+      .filter((x) => x.footerAsTemplate)
+      .map((x) => x.key);
+
+    if (actions.length > 0) {
+      return [...columnsFiltered, 'actions'];
+    }
+
+    return columnsFiltered;
   }
 }
