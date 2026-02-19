@@ -197,19 +197,37 @@ export class AppUserDataDialog extends DialogBase<boolean> {
 
   #storeChangedGroupValues(): void {
     this.storeChangedValue(this.#changedGroupValues, nameOf<User>('roles'));
-    this.userGroupData$.next(this.#changedGroupValues.filter(x => !x.deleted));
+
+    const oldData = this.#data?.roles ?? [];
+    let newData = [...oldData];
+    for (let changedGroupValue of this.#changedGroupValues) {
+      if (changedGroupValue.deleted) {
+        newData = newData.filter(x => !(x.groupId === changedGroupValue.groupId && x.roleId === changedGroupValue.roleId));
+      } else {
+        newData.push(changedGroupValue);
+      }
+    }
+
+    this.userGroupData$.next(newData);
   }
 
   #storeNewGroupValue(newValue: UserGroupTeaser): void {
+    // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
     const currentValues = this.userGroupData$.getValue();
     if (currentValues.find(x => x.groupId === newValue.groupId && x.roleId === newValue.roleId)) {
-      return;
+      return; // todo far: Fehlerbehandlung
     }
 
-    this.#changedGroupValues.push({
-      groupId: newValue.groupId,
-      roleId: newValue.roleId,
-    });
+    // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
+    if (this.#changedGroupValues.find(x => x.groupId === newValue.groupId && x.roleId === newValue.roleId && x.deleted)) {
+      this.#changedGroupValues = this.#changedGroupValues.filter(x => !(x.groupId === newValue.groupId && x.roleId === newValue.roleId && x.deleted));
+    } else {
+      this.#changedGroupValues.push({
+        groupId: newValue.groupId,
+        roleId: newValue.roleId,
+      });
+    }
+
     this.#storeChangedGroupValues();
   }
 
