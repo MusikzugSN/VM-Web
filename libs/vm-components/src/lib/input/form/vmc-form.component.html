@@ -3,7 +3,7 @@
   <label class="text-header">{{ data.header }}</label>
   <span class="text-normal">{{ data.description }}</span>
   @for (field of data.fields; track field.key) {
-    <vmc-input-field [formField]="field" (inputChnaged)="onChange($event, field.key)" />
+    <vmc-input-field [formField]="field" (inputChanged)="onChange($event, field.key)" />
   }
   <vmc-button
     style="margin-left: auto"

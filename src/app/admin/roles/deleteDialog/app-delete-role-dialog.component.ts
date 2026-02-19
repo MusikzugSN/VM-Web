@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Role, RolesService } from '../roles.service';
+import { Role, RoleService } from '../role.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class AppDeleteRoleDialog extends DialogBase<boolean> {
   readonly #data = inject<Role>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  readonly #roleService = inject(RolesService);
+  readonly #roleService = inject(RoleService);
 
   name = this.#data.name;
 

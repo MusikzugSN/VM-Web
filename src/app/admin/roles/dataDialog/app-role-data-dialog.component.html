@@ -1,7 +1,7 @@
 <vmc-input-field
   [formField]="nameField"
   [shouldInitChange]="false"
-  (inputChnaged)="storeChangedValue($event, roleNameKey)"
+  (inputChanged)="storeChangedValue($event, roleNameKey)"
 />
 
 @let _structure = (structure$ | async) ?? [];
@@ -16,7 +16,7 @@
   ]"
 />
 
-<ng-template #permissionCheckbox let-rowDataRaw="rowData"  let-index="index">
+<ng-template #permissionCheckbox let-rowDataRaw="rowData"  let-index="indexOfColumn">
   @let rowData = (rowDataRaw | as: RowDataType).permissionValues;
 
   @let permissionType = rowData[index-1]?.permissionType;

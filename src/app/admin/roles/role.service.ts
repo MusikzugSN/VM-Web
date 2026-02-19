@@ -35,7 +35,7 @@ export interface Role extends IMetaData {
 @Injectable({
   providedIn: 'root',
 })
-export class RolesService extends BaseCrudService<Role>{
+export class RoleService extends BaseCrudService<Role> {
   override url: string = 'role';
   readonly #httpClient = inject(HttpClient);
 

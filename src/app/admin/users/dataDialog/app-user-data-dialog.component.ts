@@ -1,14 +1,37 @@
 import {Component, inject} from '@angular/core';
-import {convertToPatch, DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase, Dictionary, nameOf} from '@vm-utils';
-import {VmCheckboxValues, VmcInputField, VmFormField, VmValidFormTypes} from '@vm-components';
-import {firstValueFrom, Observable} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {User, UserUpdate, UserService} from '../user.service';
+import {
+  AsPipe,
+  convertToPatch,
+  DIALOG_BUTTON_CLICKS,
+  DIALOG_DATA,
+  DialogBase,
+  Dictionary,
+  nameOf,
+  NumDictionary
+} from '@vm-utils';
+import {
+  VmcDataGrid,
+  VmCheckboxValues,
+  VmcInputField,
+  VmColumn,
+  VmFormField,
+  VmRowAction, VmRowClickedEvent, VmSelectOption,
+  VmValidFormTypes
+} from '@vm-components';
+import {BehaviorSubject, firstValueFrom, map, Observable} from 'rxjs';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
+import {User, UserUpdate, UserService, UserGroupTeaser} from '../user.service';
+import {AsyncPipe} from '@angular/common';
+import {Group, GroupService} from '../../goups/group.service';
+import {Role, RoleService} from '../../roles/role.service';
 
 @Component({
   selector: 'app-user-data-dialog',
   imports: [
-    VmcInputField
+    VmcInputField,
+    VmcDataGrid,
+    AsyncPipe,
+    AsPipe
   ],
   templateUrl: './app-user-data-dialog.component.html',
   styleUrl: './app-user-data-dialog.component.scss',
@@ -16,9 +39,62 @@ import {User, UserUpdate, UserService} from '../user.service';
 export class AppUserDataDialog extends DialogBase<boolean> {
   readonly #data = inject<User | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  readonly #userService = inject(UserService);
 
-  #changedValues: Dictionary<VmValidFormTypes | VmCheckboxValues> = {};
+  readonly #userService = inject(UserService);
+  readonly #groupService = inject(GroupService);
+  readonly #roleService = inject(RoleService);
+
+  #roles$: Observable<Role[]> = this.#roleService.load$();
+
+  #roleOptions$: Observable<VmSelectOption[]> = this.#roles$
+    .pipe(map(x => x.map(group => ({label: group.name, value: group.roleId.toString()}))));
+
+  roleOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#roleOptions$, {
+    initialValue: [],
+  });
+
+  #rolesById$: Observable<NumDictionary<Role>> = this.#roles$
+    .pipe(map(x => x
+      .reduce((acc, role) => ({...acc, [role.roleId]: role}),
+        {} as NumDictionary<Role>)
+      )
+    );
+
+  rolesById = toSignal<NumDictionary<Role>, NumDictionary<Role>> (this.#rolesById$, {
+    initialValue: {},
+  });
+
+  #groups$: Observable<Group[]> =  this.#groupService.load$();
+
+  #groupOptions$: Observable<VmSelectOption[]> = this.#groups$
+    .pipe(map(x => x.map(group => ({label: group.name, value: group.groupId.toString()}))));
+
+  groupOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#groupOptions$, {
+    initialValue: [],
+  });
+
+  #groupsById$: Observable<NumDictionary<Group>> = this.#groups$
+    .pipe(map(x => x
+        .reduce((acc, group) => ({...acc, [group.groupId]: group}),
+          {} as NumDictionary<Group>)
+      )
+    );
+
+  groupsById = toSignal<NumDictionary<Group>, NumDictionary<Group>> (this.#groupsById$, {
+    initialValue: {},
+  });
+
+  // @ts-expect-error
+  RoleType: Role;
+  // @ts-expect-error
+  GroupType: Group;
+
+  // Datasource für die UserGroupTeaser, damit Änderungen direkt in der Tabelle sichtbar sind
+  userGroupData$: BehaviorSubject<UserGroupTeaser[]> = new BehaviorSubject<UserGroupTeaser[]>(this.#data?.roles ?? []);
+
+  // Hier werden alle geänderten Werte zwischengespeichert, damit sie beim Speichern in einem Patch-Objekt zusammengefasst werden können
+  #changedValues: Dictionary<VmValidFormTypes | boolean | UserGroupTeaser[]> = {};
+  #changedGroupValues: UserGroupTeaser[] = [];
 
   nameField: VmFormField = {
     label: 'Benutzername',
@@ -52,12 +128,46 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     value: this.#data?.isEnabled ? 'checked' : 'unchecked',
   }
 
+  userGroupColumns: VmColumn<UserGroupTeaser>[] = [
+    {
+      key: 'groupId',
+      header: 'Gruppen ID',
+      field: nameOf<UserGroupTeaser>('groupId'),
+      type: 'template',
+      footerAsTemplate: true,
+    },
+    {
+      key: 'roleId',
+      header: 'Rollen ID',
+      field: nameOf<UserGroupTeaser>('roleId'),
+      type: 'template',
+      footerAsTemplate: true,
+    },
+  ];
+
+  userGroupActions: VmRowAction[] = [
+    {
+      key: 'delete',
+      icon: 'delete',
+    },
+  ];
+
+  footerActions: VmRowAction[] = [
+    {
+      key: 'add',
+      icon: 'add',
+    },
+  ];
+
+  #newUserGroup: UserGroupTeaser = {
+    groupId: -1,
+    roleId: -1,
+  };
 
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const normalizedValues = this.normalizeValues(this.#changedValues);
-      const patch = convertToPatch<User, VmValidFormTypes | boolean>(normalizedValues);
+      const patch = convertToPatch<User, VmValidFormTypes | boolean | UserGroupTeaser[]>(this.#changedValues);
       if (x === 'save') {
         patch.userId = this.#data?.userId ?? -1;
         await firstValueFrom(this.#userService.change$(patch, patch.userId));
@@ -77,38 +187,81 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
+  storeChangedValue(newValue: VmValidFormTypes | boolean | UserGroupTeaser[], key: string): void {
     this.#changedValues[key] = newValue;
   }
 
-  normalizeValues(
-    dict: Dictionary<VmValidFormTypes | VmCheckboxValues>
-  ): Dictionary<VmValidFormTypes | boolean> {
-    const result: Dictionary<VmValidFormTypes | boolean> = {};
+  storeBooleanChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
+    this.storeChangedValue(this.#checkboxToBool(newValue), key);
+  }
 
-    for (const key in dict) {
-      const value = dict[key];
+  #storeChangedGroupValues(): void {
+    this.storeChangedValue(this.#changedGroupValues, nameOf<User>('roles'));
 
-      if (value === undefined) {
-        continue;
-      }
-
-      if (
-        value === "checked" ||
-        value === "unchecked" ||
-        value === "indeterminate"
-      ) {
-        result[key] = this.checkboxToBool(value);
+    const oldData = this.#data?.roles ?? [];
+    let newData = [...oldData];
+    for (let changedGroupValue of this.#changedGroupValues) {
+      if (changedGroupValue.deleted) {
+        newData = newData.filter(x => !(x.groupId === changedGroupValue.groupId && x.roleId === changedGroupValue.roleId));
       } else {
-        result[key] = value;
+        newData.push(changedGroupValue);
       }
     }
 
-    return result;
+    this.userGroupData$.next(newData);
   }
 
-  checkboxToBool(value: string): boolean {
+  #storeNewGroupValue(newValue: UserGroupTeaser): void {
+    // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
+    const currentValues = this.userGroupData$.getValue();
+    if (currentValues.find(x => x.groupId === newValue.groupId && x.roleId === newValue.roleId)) {
+      return; // todo far: Fehlerbehandlung
+    }
+
+    // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
+    if (this.#changedGroupValues.find(x => x.groupId === newValue.groupId && x.roleId === newValue.roleId && x.deleted)) {
+      this.#changedGroupValues = this.#changedGroupValues.filter(x => !(x.groupId === newValue.groupId && x.roleId === newValue.roleId && x.deleted));
+    } else {
+      this.#changedGroupValues.push({
+        groupId: newValue.groupId,
+        roleId: newValue.roleId,
+      });
+    }
+
+    this.#storeChangedGroupValues();
+  }
+
+  #storeDeletedGroupValue(deletedValue: UserGroupTeaser): void {
+    if (this.#changedGroupValues.find(x => x.groupId === deletedValue.groupId && x.roleId === deletedValue.roleId)) {
+      // Wenn die gelöschte Gruppe bereits in den Änderungen enthalten ist, muss sie entfernt werden, da sie sonst fälschlicherweise als neue Gruppe interpretiert werden könnte
+      this.#changedGroupValues = this.#changedGroupValues.filter(x => !(x.groupId === deletedValue.groupId && x.roleId === deletedValue.roleId));
+    } else {
+      // Wenn die gelöschte Gruppe nicht in den Änderungen enthalten ist, muss sie mit dem "deleted"-Flag gespeichert werden, damit sie beim Speichern gelöscht wird
+      deletedValue.deleted = true;
+      this.#changedGroupValues.push(deletedValue);
+    }
+    this.#storeChangedGroupValues();
+  }
+
+  storeNewGroupChange(value: VmValidFormTypes) {
+    this.#newUserGroup.groupId = parseInt(value as string);
+  }
+
+  storeNewRoleChange(value: VmValidFormTypes) {
+    this.#newUserGroup.roleId = parseInt(value as string);
+  }
+
+  execActionFromRow(event: VmRowClickedEvent<UserGroupTeaser>) {
+    if (event.key === 'delete') {
+      this.#storeDeletedGroupValue(event.rowData!);
+    } else if (event.key === 'add') {
+      if (this.#newUserGroup.groupId !== -1 && this.#newUserGroup.roleId !== -1) {
+        this.#storeNewGroupValue(this.#newUserGroup);
+      } // todo far: handle error
+    }
+  }
+
+  #checkboxToBool(value: VmValidFormTypes | VmCheckboxValues): boolean {
     return value === "checked";
   }
-
 }
