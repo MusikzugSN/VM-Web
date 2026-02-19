@@ -2,10 +2,41 @@
 @let _displayColumns = displayedColumns();
 @let _rowActions = rowActions();
 @let _templates = transformedTemplates();
+@let _selectionMode = selectionMode();
 
 @if (_columns.length > 0 && _displayColumns.length > 0) {
   <div class="mat-elevation-z8">
     <table [dataSource]="tableData()" mat-table>
+      @if (_selectionMode !== 'none') {
+        @let _selectionKey = selectionKey();
+        @let _isAllSelected = isAllSelected();
+        @let _selection = selection();
+        @let _selectionDict = selectionDict();
+        @let _isAnySelected = _selection.length > 0;
+
+        <ng-container [matColumnDef]="'select'">
+          @if (_selectionMode === 'multi') {
+            <th mat-header-cell *matHeaderCellDef class="checkbox-column">
+              @let selected = _isAnySelected && _isAllSelected;
+              @let indeterminate = _isAnySelected && !_isAllSelected;
+              <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                [checked]="selected"
+                [indeterminate]="indeterminate"
+                [aria-label]="selected ? 'Alle abhacken' : 'Alle anhacken'" />
+            </th>
+          }
+
+          <td mat-cell *matCellDef="let row" class="checkbox-column">
+            @let selected = _selectionDict[row[_selectionKey]] ?? false;
+
+            <mat-checkbox (click)="$event.stopPropagation()"
+              (change)="$event ? toggleRowSelection(row) : null"
+              [checked]="selected"
+              [aria-label]="selected ? 'Zeile abhacken' : 'Zeile anhacken'" />
+          </td>
+        </ng-container>
+      }
+
       @for (column of _columns; track column.key) {
         <ng-container [matColumnDef]="column.key">
           <th *matHeaderCellDef class="col-header-{{ column.key }}" mat-header-cell>

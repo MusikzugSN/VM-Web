@@ -4,7 +4,7 @@ import {
   input,
   InputSignal,
   output,
-  OutputEmitterRef,
+  OutputEmitterRef, Signal,
   TemplateRef,
 } from '@angular/core';
 import {
@@ -24,8 +24,12 @@ import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Dictionary } from '@vm-utils';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {BehaviorSubject} from 'rxjs';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 
 export type VmColumnType = 'text' | 'date' | 'template'; //| 'boolean' | 'number' ;
+export type VmSelectType = 'multi' | 'single' | 'none';
 
 export interface VmColumn<TElement> {
   key: string;
@@ -67,21 +71,88 @@ export interface VmRowClickedEvent<TRow> {
     NgTemplateOutlet,
     MatIconButton,
     MatIcon,
+    MatCheckbox,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
 })
-export class VmcDataGrid<TRow> {
+export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   dataSource: InputSignal<TRow[]> = input.required();
   columns: InputSignal<VmColumn<TRow>[]> = input.required();
   rowActions: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
   templates: InputSignal<VmGridTemplate[]> = input<VmGridTemplate[]>([]);
+  selectionMode: InputSignal<VmSelectType> = input<VmSelectType>('none');
+  selectionKey: InputSignal<TSelectionKey | undefined> = input<TSelectionKey | undefined>(undefined);
 
   clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
+  selectionChanged: OutputEmitterRef<TSelectionKey[]> = output();
+
+  selection$: BehaviorSubject<TSelectionKey[]> = new BehaviorSubject<TSelectionKey[]>([]);
+  selection = toSignal<TSelectionKey[], TSelectionKey[]>(this.selection$, {initialValue: []})
+  selectionDict: Signal<Dictionary<boolean>> = computed<Dictionary<boolean>>(() => this.#convertSelectionToDictionary());
+  isAllSelected = computed(() => this.#convertAllSelected());
 
   tableData = computed(() => new MatTableDataSource(this.dataSource()));
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
   transformedTemplates = computed(() => this.#mapTemplates());
+
+  constructor() {
+    this.selection$
+      .pipe(takeUntilDestroyed())
+      .subscribe(x => {
+        this.selectionChanged.emit(x);
+      });
+  }
+
+  toggleRowSelection(row: TRow) {
+    const selectionKey = this.selectionKey();
+
+    if (selectionKey === undefined) {
+      return;
+    }
+
+    const key = row[selectionKey] as TSelectionKey;
+    const selectionArray = this.selection$.getValue();
+
+    if (selectionArray.includes(key)) {
+      this.selection$.next(selectionArray.filter(k => k !== key));
+    } else {
+      this.selection$.next([...selectionArray, key]);
+    }
+  }
+
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection$.next([]);
+      return;
+    }
+
+    const selectionKey = this.selectionKey();
+
+    if (selectionKey === undefined) {
+      return;
+    }
+
+    const keys = this.tableData().data.map(x => x[selectionKey] as TSelectionKey);
+    this.selection$.next(keys);
+  }
+
+  #convertAllSelected() {
+    const numSelected = this.selection().length;
+    const numRows = this.tableData().data.length;
+    return numSelected === numRows;
+  }
+
+  #convertSelectionToDictionary(): Dictionary<boolean> {
+    const selection = this.selection();
+    const dict: Dictionary<boolean> = {};
+
+    selection.forEach((key) => {
+      dict[key.toString()] = true;
+    });
+
+    return dict;
+  }
 
   #mapTemplates(): Dictionary<TemplateRef<unknown>> {
     const templatesArray = this.templates();
@@ -100,10 +171,16 @@ export class VmcDataGrid<TRow> {
     const columns = this.columns();
     const actions = this.rowActions();
 
+    const columnsKeys = columns.map((c) => c.key);
+
     if (actions.length > 0) {
-      return [...columns.map((c) => c.key), 'actions'];
+      columnsKeys.push('actions');
     }
 
-    return columns.map((c) => c.key);
+    if (this.selectionMode() !== 'none') {
+      columnsKeys.unshift('select');
+    }
+
+    return columnsKeys;
   }
 }
