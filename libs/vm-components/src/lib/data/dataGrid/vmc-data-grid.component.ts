@@ -10,7 +10,7 @@ import {
 import {
   MatCell,
   MatCellDef,
-  MatColumnDef,
+  MatColumnDef, MatFooterCell, MatFooterCellDef, MatFooterRow, MatFooterRowDef,
   MatHeaderCell,
   MatHeaderCellDef,
   MatHeaderRow,
@@ -40,6 +40,7 @@ export interface VmColumn<TElement> {
   sortable?: boolean;
   field?: keyof TElement & string;
   type?: VmColumnType;
+  footerAsTemplate?: boolean; // das Template muss über -- key + 'Footer' -- bereitgestellt werden
 }
 
 export interface VmGridTemplate {
@@ -55,7 +56,7 @@ export interface VmRowAction {
 
 export interface VmRowClickedEvent<TRow> {
   key: string;
-  rowData: TRow;
+  rowData: TRow | null;
 }
 
 @Component({
@@ -75,6 +76,10 @@ export interface VmRowClickedEvent<TRow> {
     NgTemplateOutlet,
     MatIconButton,
     MatIcon,
+    MatFooterRowDef,
+    MatFooterCell,
+    MatFooterRow,
+    MatFooterCellDef,
     MatCheckbox,
     MatSortHeader,
     MatSort,
@@ -89,6 +94,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   dataSource: InputSignal<TRow[]> = input.required();
   columns: InputSignal<VmColumn<TRow>[]> = input.required();
   rowActions: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
+  footerActions: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
   templates: InputSignal<VmGridTemplate[]> = input<VmGridTemplate[]>([]);
   selectionMode: InputSignal<VmSelectType> = input<VmSelectType>('none');
   selectionKey: InputSignal<TSelectionKey | undefined> = input<TSelectionKey | undefined>(undefined);
@@ -105,6 +111,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   tableData = new MatTableDataSource<TRow>();
 
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
+  displayFooter = computed(() => this.#mapColumnsWithFooter());
   transformedTemplates = computed(() => this.#mapTemplates());
 
   constructor() {
@@ -231,6 +238,21 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     }
 
     return columnsKeys;
+  }
+
+  #mapColumnsWithFooter(): string[] {
+    const columns = this.columns();
+    const actions = this.footerActions();
+
+    const columnsFiltered = columns
+      .filter((x) => x.footerAsTemplate)
+      .map((x) => x.key);
+
+    if (actions.length > 0) {
+      return [...columnsFiltered, 'actions'];
+    }
+
+    return columnsFiltered;
   }
 
   /** Announce the change in sort state for assistive technology. */

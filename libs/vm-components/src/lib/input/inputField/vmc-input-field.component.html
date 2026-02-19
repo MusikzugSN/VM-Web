@@ -1,13 +1,24 @@
 @let field = formField();
 
   @if (field.type === 'checkbox') {
-    <mat-label>{{ field.label }}</mat-label>
     <mat-checkbox
       [checked]="field.value === 'checked'"
       [indeterminate]="field.value === 'indeterminate'"
       [disabled]="field.readonly ?? false"
-      (change)="checkboxCallChangeEvent($event.checked)"/>
-  } @else {
+      [labelPosition]="'after'"
+      (change)="checkboxCallChangeEvent($event.checked)">
+      {{ field.label }}
+    </mat-checkbox>
+  } @else if (field.type === 'select') {
+    <mat-form-field>
+      <mat-label>{{ field.label }}</mat-label>
+      <mat-select (selectionChange)="selectCallChangeEvent($event)">
+        @for (option of field.options; track option.value) {
+          <mat-option [value]="option.value">{{option.label}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }  @else {
     <mat-form-field class="vm-imput">
       <mat-label>{{ field.label }}</mat-label>
       <input

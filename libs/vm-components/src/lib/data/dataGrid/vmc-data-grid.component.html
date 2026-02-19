@@ -1,6 +1,8 @@
 @let _columns = columns();
 @let _displayColumns = displayedColumns();
+@let _displayFooter = displayFooter();
 @let _rowActions = rowActions();
+@let _footerActions = footerActions();
 @let _templates = transformedTemplates();
 @let _selectionMode = selectionMode();
 
@@ -60,12 +62,26 @@
                 <ng-container
                   *ngTemplateOutlet="
                     template;
-                    context: { rowData: row, column: column, index: $index }
+                    context: { rowData: row, column: column, indexOfColumn: $index }
                   "
                 />
               }
             }
           </td>
+
+          @if(column.footerAsTemplate) {
+            <td mat-footer-cell *matFooterCellDef class="col-footer-{{column.key}}">
+              @let footerTemplate = _templates[column.key + 'Footer'];
+              @if (footerTemplate !== undefined) {
+                <ng-container
+                  *ngTemplateOutlet="
+                      footerTemplate;
+                    "
+                />
+              }
+            </td>
+          }
+
         </ng-container>
       }
 
@@ -85,11 +101,28 @@
               </button>
             }
           </td>
+
+          @if (_footerActions) {
+            <td mat-footer-cell *matFooterCellDef class="col-footer-actionsFooter">
+              @for (footerAction of _footerActions; track footerAction.key) {
+                <button matIconButton (click)="clickedAction.emit({ key: footerAction.key, rowData: null })">
+                  <mat-icon
+                    class="icon"
+                    [style.font-size]="'24px'"
+                  >
+                    {{ footerAction.icon ?? 'hvac' }}
+                  </mat-icon>
+                </button>
+              }
+            </td>
+          }
+
         </ng-container>
       }
 
       <tr *matHeaderRowDef="_displayColumns" mat-header-row></tr>
       <tr *matRowDef="let _row; columns: _displayColumns" mat-row></tr>
+      <tr *matFooterRowDef="_displayFooter" mat-footer-row></tr>
     </table>
 
     <!--  maybe later! -->
