@@ -97,7 +97,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   footerActions: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
   templates: InputSignal<VmGridTemplate[]> = input<VmGridTemplate[]>([]);
   selectionMode: InputSignal<VmSelectType> = input<VmSelectType>('none');
-  selectionKey: InputSignal<TSelectionKey | undefined> = input<TSelectionKey | undefined>(undefined);
+  selectionKey: InputSignal<keyof TRow | undefined> = input<keyof TRow | undefined>(undefined);
   filterTerm: InputSignal<string | undefined> = input<string | undefined>(undefined);
 
   clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
