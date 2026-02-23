@@ -1,19 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { GroupDialogService } from '../../admin/goups/group-dialog.service';
 import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
-import {
-  VmcDataGrid,
-  VmcInputField,
-  VmColumn,
-  VmcToolbar,
-  VmFormField,
-  VmInputField,
-  VmToolbarItem,
-  VmValidFormTypes,
-} from '@vm-components';
-import { AsyncPipe } from '@angular/common';
 import { MusicSheet, MusicSheetService } from './musicSheet.service';
 import { Score, ScoreService } from './score.service';
+import { VmpNotesFullPageComponent } from '@vm-parts';
+import { AsyncPipe } from '@angular/common';
 
 interface AllNotesData {
   name: string;
@@ -26,40 +16,16 @@ interface AllNotesData {
 
 @Component({
   selector: 'app-all-notes',
-  imports: [AsyncPipe, VmcDataGrid, VmcToolbar, VmcInputField],
+  imports: [VmpNotesFullPageComponent, AsyncPipe],
   templateUrl: './app-allNotes.component.html',
   styleUrl: './app-allNotes.component.scss',
 })
 export class AppAllNotesComponent {
   readonly #MusicSheetService = inject(MusicSheetService);
   readonly #ScoreService = inject(ScoreService);
-  readonly #groupDataDialogService = inject(GroupDialogService);
 
   #reload = new BehaviorSubject(false);
 
-  items: VmToolbarItem[] = [
-    {
-      key: 'addNotes',
-      icon: 'add',
-      label: 'Notenblätter hinzufügen',
-      acton: async (): Promise<void> => {
-        await this.#groupDataDialogService.openNewGroupDialog();
-        this.#reload.next(true);
-      },
-    },
-    {
-      key: 'download',
-      icon: 'file_download',
-      label: 'Herunterladen',
-      acton: async (): Promise<void> => {},
-    },
-    {
-      key: 'drucken',
-      icon: 'print',
-      label: 'Drucken',
-      acton: async (): Promise<void> => {},
-    },
-  ];
   sheet$: Observable<MusicSheet[]> = this.#reload.pipe(
     switchMap((_x) => this.#MusicSheetService.load$()),
   );
@@ -87,33 +53,4 @@ export class AppAllNotesComponent {
         .filter((x) => x !== undefined);
     }),
   );
-
-  filter: VmFormField = {
-    key: 'voiceSelect',
-    type: 'select',
-    label: 'Filter',
-    options: [
-      { value: 'stimme 1', label: 'Stimme 1' },
-      { value: 'stimme 2', label: 'Stimme 2' },
-      { value: 'stimme 3', label: 'Stimme 3' },
-    ],
-  };
-  suchleiste: VmInputField = {
-    key: 'searchbar',
-    type: 'search',
-    label: 'Suchen',
-  };
-
-  filterSelectionChange(event: VmValidFormTypes) {
-    console.log(event);
-  }
-
-  columns: VmColumn<AllNotesData>[] = [
-    { key: 'name', header: 'Name', field: 'name' },
-    { key: 'composer', header: 'Komponist', field: 'composer' },
-    { key: 'folders', header: 'Mappen', field: 'folders' },
-    { key: 'pageCount', header: 'Seitenanzahl', field: 'pageCount' },
-    { key: 'voiceName', header: 'Stimme', field: 'voiceName' },
-  ];
-  protected readonly onselectionchange = onselectionchange;
 }

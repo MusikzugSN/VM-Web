@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BaseCrudService, IMetaData } from '@vm-utils';
 
+
 export interface Score extends IMetaData {
   scoreId: number;
   title: string;
@@ -20,3 +21,4 @@ export interface ScoreMusicFolder extends IMetaData {
 export class ScoreService extends BaseCrudService<Score> {
   override url: string = 'score';
 }
+

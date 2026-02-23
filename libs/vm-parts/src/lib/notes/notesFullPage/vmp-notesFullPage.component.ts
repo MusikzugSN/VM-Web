@@ -1,9 +1,17 @@
-import { Component, inject } from '@angular/core';
-import { MusicSheet, MusicSheetService } from '../../../../../../src/app/me/allNotes/musicSheet.service';
-import { Score, ScoreService } from '../../../../../../src/app/me/allNotes/score.service';
+import { Component, inject, input, InputSignal } from '@angular/core';
 import { GroupDialogService } from '../../../../../../src/app/admin/goups/group-dialog.service';
-import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
-import { VmColumn, VmFormField, VmInputField, VmToolbarItem, VmValidFormTypes } from '@vm-components';
+import { BehaviorSubject} from 'rxjs';
+import {
+  VmcDataGrid,
+  VmcInputField,
+  VmColumn,
+  VmcToolbar,
+  VmFormField,
+  VmInputField,
+  VmToolbarItem,
+  VmValidFormTypes,
+} from '@vm-components';
+import { AsyncPipe } from '@angular/common';
 
 interface AllNotesData {
   name: string;
@@ -16,13 +24,14 @@ interface AllNotesData {
 
 @Component({
   selector: 'vmp-notes-full-page',
-  imports: [],
+  imports: [AsyncPipe, VmcDataGrid, VmcInputField, VmcToolbar],
   templateUrl: './vmp-notesFullPage.component.html',
   styleUrl: './vmp-notesFullPage.component.scss',
+  standalone: true,
 })
 export class VmpNotesFullPageComponent {
-  readonly #MusicSheetService = inject(MusicSheetService);
-  readonly #ScoreService = inject(ScoreService);
+  data: InputSignal<AllNotesData[]> = input.required();
+
   readonly #groupDataDialogService = inject(GroupDialogService);
 
   #reload = new BehaviorSubject(false);
@@ -50,33 +59,6 @@ export class VmpNotesFullPageComponent {
       acton: async (): Promise<void> => {},
     },
   ];
-  sheet$: Observable<MusicSheet[]> = this.#reload.pipe(
-    switchMap((_x) => this.#MusicSheetService.load$()),
-  );
-  score$: Observable<Score[]> = this.#reload.pipe(switchMap((_x) => this.#ScoreService.load$()));
-
-  data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$]).pipe(
-    map(([sheet, score]) => {
-      return sheet
-        .map((x) => {
-          const currentScore = score.find((y) => y.scoreId === x.scoreId);
-          if (!currentScore) {
-            return undefined; //todo far: fehlerbehandlung
-          }
-          return {
-            name: currentScore.title,
-            composer: currentScore.composer,
-            folders: currentScore.folders
-              .map((z) => `${z.musicFolderName} (${z.number})`)
-              .join(', '),
-            link: currentScore.link,
-            pageCount: x.pageCount,
-            voiceName: x.voiceName,
-          } as AllNotesData;
-        })
-        .filter((x) => x !== undefined);
-    }),
-  );
 
   filter: VmFormField = {
     key: 'voiceSelect',
@@ -94,6 +76,8 @@ export class VmpNotesFullPageComponent {
     label: 'Suchen',
   };
 
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   filterSelectionChange(event: VmValidFormTypes) {
     return console.log(event);
   }
