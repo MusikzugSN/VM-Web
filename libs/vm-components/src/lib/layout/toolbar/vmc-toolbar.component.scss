@@ -28,3 +28,10 @@
 .toolbar-item:hover {
   background: var(--vm-primary-color);
 }
+.rightside {
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+  align-items: center;
+  padding-top: 20px; //todo florian mach mal heile
+}

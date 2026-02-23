@@ -1,0 +1,16 @@
+<vmc-toolbar [items]="items" [useNgContentForRightside]="true">
+  <div class="gap">
+    <vmc-input-field
+      [formField]="suchleiste"> <!-- todo wer auch immer bitte mach mal inputchange rein -->
+    </vmc-input-field>
+
+    <vmc-input-field
+      [formField]="filter"
+      (inputChanged)="filterSelectionChange($event)">
+    </vmc-input-field>
+  </div>
+</vmc-toolbar>
+<vmc-data-grid
+  [dataSource]="(data | async) ?? []"
+  [columns]="columns"
+/>
