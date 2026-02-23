@@ -9,9 +9,11 @@ import {
 } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { HttpClient } from '@angular/common/http';
+import {OAuthService} from 'angular-oauth2-oidc';
 
 const storage = window.sessionStorage;
 const accessTokenKey = 'accessToken';
+const providerKeyStorageKey = 'providerName';
 
 interface LoginResponse {
   token: string;
@@ -19,13 +21,31 @@ interface LoginResponse {
 
 export type LoginResult = { success: true } | { success: false; message: string };
 
+export interface OAuthProvider {
+  providerKey: string;
+  displayName: string;
+  issuerUrl: string;
+  clientId: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   readonly #httpClient = inject(HttpClient);
+  readonly #oAuthService = inject(OAuthService);
 
-  #accessToken$: BehaviorSubject<string | null> = this.#getValueFromStorage$(accessTokenKey);
+  readonly redirectUrl = window.location.origin + '/auth/callback';
+  readonly scope = 'openid profile email';
+
+  oauthProviders$ = this.#httpClient.get<OAuthProvider[]>('auth/oAuthProvider')
+    .pipe(
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
+
+  #currentProvider$: BehaviorSubject<string | null> = this.#getValueFromStorage$(providerKeyStorageKey);
+
+  #accessToken$: BehaviorSubject<string | null> = this.#getValueFromStorage$(accessTokenKey, true);
   accessToken$ = this.#accessToken$
     .asObservable()
     .pipe(shareReplay({ bufferSize: 1, refCount: false }));
@@ -35,6 +55,53 @@ export class AuthService {
     shareReplay({ bufferSize: 1, refCount: false }),
   );
 
+  async #configureOAuthProvider(provider?: OAuthProvider): Promise<void> {
+    if (provider === undefined) {
+      const providerKey = this.#currentProvider$.getValue();
+      if (providerKey === null) {
+        return;
+      }
+
+      const providers = await firstValueFrom(this.oauthProviders$);
+      provider = providers.find((p) => p.providerKey === providerKey);
+
+      if (provider !== undefined) {
+        await this.#configureOAuthProvider(provider);
+      } else {
+        console.log('Could not find provider with name ' + providerKey, providers);
+      }
+      return;
+    }
+
+    this.#oAuthService.configure({
+      issuer: provider.issuerUrl,
+      clientId: provider.clientId,
+      redirectUri: this.redirectUrl,
+      scope: this.scope,
+      responseType: 'code',
+    });
+
+    storage.setItem(providerKeyStorageKey, String(provider.providerKey));
+    this.#currentProvider$.next(String(provider.providerKey));
+  }
+
+  async handleOAuthLoginCallback(): Promise<void> {
+    await this.#configureOAuthProvider();
+    await this.#oAuthService.loadDiscoveryDocumentAndTryLogin();
+
+    if (this.#oAuthService.hasValidAccessToken()) {
+      const token = this.#oAuthService.getAccessToken();
+      this.#storeAccessToken(token, this.#currentProvider$.getValue()!);
+    }
+  }
+
+  async initOAuthLogin(provider: OAuthProvider) {
+    await this.#configureOAuthProvider(provider);
+
+    await this.#oAuthService.loadDiscoveryDocument();
+    this.#oAuthService.initLoginFlow()
+  }
+
   async login(username: string, password: string): Promise<LoginResult> {
     const request: Observable<LoginResponse> = this.#httpClient.post<LoginResponse>('auth/login', {
       username: username,
@@ -42,8 +109,7 @@ export class AuthService {
     });
     const response = await firstValueFrom(request);
     if (response.token !== null) {
-      storage.setItem(accessTokenKey, response.token);
-      this.#accessToken$.next(response.token);
+      this.#storeAccessToken(response.token, 'local');
       return { success: true };
     }
 
@@ -51,7 +117,7 @@ export class AuthService {
   }
 
   logout(): void {
-    storage.removeItem(accessTokenKey);
+    storage.clear();
     this.#accessToken$.next(null);
   }
 
@@ -91,7 +157,18 @@ export class AuthService {
     );
   }
 
-  #getValueFromStorage$(key: string): BehaviorSubject<string | null> {
+  #storeAccessToken(token: string, providerId: string): void {
+    storage.setItem(providerId + '_' + accessTokenKey, token);
+    this.#accessToken$.next(token);
+
+    storage.setItem(providerKeyStorageKey, providerId);
+    this.#currentProvider$.next(providerId);
+  }
+
+  #getValueFromStorage$(key: string, addProviderAsPrefix = false): BehaviorSubject<string | null> {
+    if (addProviderAsPrefix)
+      key = this.#currentProvider$.getValue() + '_' + key;
+
     const value = storage.getItem(key);
     return new BehaviorSubject(value);
   }

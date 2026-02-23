@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {VmcForm, VmValidFormTypes} from '@vm-components';
-import { AuthService } from '@vm-utils';
+import {AuthService, OAuthProvider} from '@vm-utils';
 import { Dictionary } from '@vm-utils';
 import { Router } from '@angular/router';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [VmcForm],
+  imports: [VmcForm, AsyncPipe],
   templateUrl: './app-login.component.html',
   styleUrl: './app-login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,6 +15,12 @@ import { Router } from '@angular/router';
 export class AppLogin {
   readonly #authService = inject(AuthService);
   readonly #router = inject(Router);
+
+  oauthProviders$ = this.#authService.oauthProviders$;
+
+  async oauthProviderClicked(provider: OAuthProvider): Promise<void> {
+    await this.#authService.initOAuthLogin(provider);
+  }
 
   async loginClicked(data: Dictionary<VmValidFormTypes>): Promise<void> {
     const username = data['username'] as string;

@@ -24,5 +24,14 @@
       }"
       (formSubmitted)="loginClicked($event)"
     />
+
+    @for (provider of (oauthProviders$ | async) ?? []; track provider.providerKey) {
+      <button
+        class="oauth-button"
+        (click)="oauthProviderClicked(provider)"
+      >
+        Mit {{ provider.displayName }} anmelden
+      </button>
+    }
   </div>
 </div>
