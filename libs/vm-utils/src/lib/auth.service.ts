@@ -28,6 +28,13 @@ export interface OAuthProvider {
   clientId: string;
 }
 
+export interface MeInformation {
+  id: string;
+  username: string;
+  provider?: string;
+  oAuthSubject?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -54,6 +61,9 @@ export class AuthService {
     distinctUntilChanged(),
     shareReplay({ bufferSize: 1, refCount: false }),
   );
+
+  #myInformation$: BehaviorSubject<MeInformation | null> = new BehaviorSubject<MeInformation | null>(null);
+  myInformation$ = this.#myInformation$.asObservable().pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   async #configureOAuthProvider(provider?: OAuthProvider): Promise<void> {
     if (provider === undefined) {
@@ -92,6 +102,7 @@ export class AuthService {
     if (this.#oAuthService.hasValidAccessToken()) {
       const token = this.#oAuthService.getAccessToken();
       this.#storeAccessToken(token, this.#currentProvider$.getValue()!);
+      await this.#loadMyInformation();
     }
   }
 
@@ -110,6 +121,7 @@ export class AuthService {
     const response = await firstValueFrom(request);
     if (response.token !== null) {
       this.#storeAccessToken(response.token, 'local');
+      await this.#loadMyInformation();
       return { success: true };
     }
 
@@ -143,6 +155,11 @@ export class AuthService {
         return (token.exp ?? 0) < now;
       }),
     );
+  }
+
+  async #loadMyInformation(): Promise<void> {
+    const me = await firstValueFrom(this.#httpClient.get<MeInformation>('auth/me'));
+    this.#myInformation$.next(me);
   }
 
   #getDecodedToken$(): Observable<JwtPayload | null> {

@@ -1,4 +1,8 @@
 <mat-toolbar class="toolbar">
+  @let _iconLink = iconLink();
+  @if (_iconLink !== undefined) {
+    <img src="{{_iconLink}}" alt="Logo des Vereins" style="height: 64px; width: 64px;" />
+  }
   <span>{{ applicationName() }}</span>
 
   <span style="margin-right: 3dvw"></span>

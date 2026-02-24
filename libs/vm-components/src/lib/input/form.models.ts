@@ -10,6 +10,7 @@ export interface VmForm {
   fields: VmFormField[];
   submitButton?: string;
   submitButtonType?: VmButtonType;
+  submitButtonPosition?: 'left' | 'right' | 'center' | 'full';
 }
 
 export type VmFormField =

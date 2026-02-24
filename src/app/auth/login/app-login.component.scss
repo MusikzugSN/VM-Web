@@ -1,15 +1,24 @@
 :host {
   display: block;
   height: 100%;
+  background-color: var(--vm-secondary-color-tonal);
 }
 
-.login-page {
+.center-wrapper {
   display: flex;
   justify-content: center;
-  height: 100%;
+  align-items: center;
 }
 
-.login-container {
-  padding: 40px;
-  width: 400px;
+.content {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
+

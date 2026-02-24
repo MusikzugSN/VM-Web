@@ -1,3 +1,5 @@
+export * from './lib/config/config.service';
+
 // Auth and HttpInterceptors
 export * from './lib/http/base-url.interceptor';
 export * from './lib/http/auth-token.interceptor';

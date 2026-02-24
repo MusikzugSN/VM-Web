@@ -1,11 +1,15 @@
-<div class="login-page">
-  <div class="login-container">
+<div class="center-wrapper">
+  <div class="content">
+    <!--suppress HtmlUnknownTarget -->
+    <img style="margin: auto;" src="{{(bannerLink$ | async) ?? ''}}" alt="Loginbanner des Vereins"/>
     <vmc-form
+      (formSubmitted)="loginClicked($event)"
       [formData]="{
         submitButtonType: 'filled',
         header: 'Anmeldung',
         description: 'Bitte melde dich mit deinem Anmeldedaten an.',
         submitButton: 'Anmelden',
+        submitButtonPosition: 'full',
         fields: [
           {
             label: 'Username',
@@ -22,16 +26,19 @@
           },
         ],
       }"
-      (formSubmitted)="loginClicked($event)"
     />
-
-    @for (provider of (oauthProviders$ | async) ?? []; track provider.providerKey) {
-      <button
-        class="oauth-button"
-        (click)="oauthProviderClicked(provider)"
-      >
-        Mit {{ provider.displayName }} anmelden
-      </button>
+    @let _providers = oauthProviders$ | async;
+    @if (_providers != null && _providers.length > 0) {
+      <label class="text-large">Oder anmelden mit:</label>
+      <div>
+        @for (provider of (oauthProviders$ | async) ?? []; track provider.providerKey) {
+          <vmc-button
+            [type]="'tonal'"
+            [label]="provider.displayName"
+            [fullWidth]="true"
+            (buttonClicked)="oauthProviderClicked(provider)"/>
+        }
+      </div>
     }
   </div>
 </div>

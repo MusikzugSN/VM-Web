@@ -3,6 +3,12 @@ import { BehaviorSubject } from 'rxjs';
 
 export interface AppConfig {
   backedApiUrl: string;
+  images: ImagesConfig;
+}
+
+export interface ImagesConfig {
+  logo: string;
+  loginBanner: string;
 }
 
 @Injectable({ providedIn: 'root' })

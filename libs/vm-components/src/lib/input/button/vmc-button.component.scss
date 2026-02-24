@@ -25,3 +25,9 @@
 .vmc-button-error {
   --vmc-button-color: var(--vm-error-color);
 }
+
+button.full-width {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
