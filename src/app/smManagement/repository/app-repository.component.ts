@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
+
 import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { VmpNotesFullPageComponent } from '@vm-parts';
 import { MusicSheet, MusicSheetService } from './musicSheet.service';
 import { Score, ScoreService } from './score.service';
-import { VmpNotesFullPageComponent } from '@vm-parts';
-import { AsyncPipe } from '@angular/common';
 
-interface AllNotesData {
+export interface AllNotesData {
   name: string;
   composer: string;
   folders: string;
@@ -15,12 +16,12 @@ interface AllNotesData {
 }
 
 @Component({
-  selector: 'app-all-notes',
-  imports: [VmpNotesFullPageComponent, AsyncPipe],
-  templateUrl: './app-allNotes.component.html',
-  styleUrl: './app-allNotes.component.scss',
+  selector: 'app-repository.component',
+  imports: [AsyncPipe, VmpNotesFullPageComponent],
+  templateUrl: './app-repository.component.html',
+  styleUrl: './app-repository.component.scss',
 })
-export class AppAllNotesComponent {
+export class AppRepositoryComponent {
   readonly #MusicSheetService = inject(MusicSheetService);
   readonly #ScoreService = inject(ScoreService);
 

@@ -22,6 +22,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'scores',
+    loadChildren: () => import('./smManagement/management.routes').then((x) => x.MANAGEMENT_ROUTES),
+    canActivate: [AuthGuard],
+  },
+  {
     path: '**',
     redirectTo: 'me',
   },

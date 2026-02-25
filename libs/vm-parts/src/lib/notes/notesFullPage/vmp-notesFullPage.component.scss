@@ -1,0 +1,14 @@
+:host {
+  width: 100%;
+  min-height: 100%;
+  ::ng-deep {
+    .col-header-name {
+      margin-left: 400px;
+    }
+  }
+}
+.gap {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}

@@ -21,6 +21,7 @@ export class VmpNavbar {
       return [
         this.#createToolbarItem('Mein Bereich', '/me', route),
         this.#createToolbarItem('Systemverwaltung', '/admin', route),
+        this.#createToolbarItem('Notenverwaltung', '/scores', route),
       ];
     }),
   );
