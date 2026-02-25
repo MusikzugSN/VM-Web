@@ -3,7 +3,9 @@ import {User, UserService} from './user.service';
 import {UserDialogService} from './user-dialog.service';
 import {VmColumn, VmToolbarItem, VmcDataGrid, VmcIconButton, VmcToolbar} from '@vm-components';
 import {AsyncPipe} from '@angular/common';
-import {BehaviorSubject, Observable, switchMap} from 'rxjs';
+import {BehaviorSubject, map, Observable, shareReplay, switchMap} from 'rxjs';
+import {ConfigService} from '@vm-utils';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-users',
@@ -19,6 +21,9 @@ import {BehaviorSubject, Observable, switchMap} from 'rxjs';
 export class AppUsers {
   readonly #userService = inject(UserService);
   readonly #userDialogService = inject(UserDialogService);
+  readonly #config = inject(ConfigService);
+
+  #providers$ = this.#config.oauthProviders$.pipe(shareReplay({refCount: true, bufferSize: 1}), takeUntilDestroyed());
 
   #reload = new BehaviorSubject(false);
 
@@ -65,10 +70,27 @@ export class AppUsers {
   columns: VmColumn<User>[] = [
     { key: 'userId', header: '', field: 'userId' }, //als Template und dann mit Icon isAdmin / isEnabled anzeigen?
     { key: 'name', header: 'Name', field: 'username' },
-    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },
-    { key: 'createdAt', header: 'Erstellt am', field: 'createdAt', type: 'date' },
+    { key: 'oAuthProvider', header: 'OAuth-Provider', type: 'template' },
     { key: 'updatedBy', header: 'Geändert von', field: 'updatedBy' },
-    { key: 'createdBy', header: 'Erstellt von', field: 'createdBy' },
+    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },
     { key: 'customActions', header: '', type: 'template' },
   ];
+
+  computeProviderString(rowData: User): Observable<string> {
+    return this.#providers$.pipe(
+      map(providers =>
+        providers.find(p => p.providerKey === rowData.provider)),
+      map(x => {
+        const providers: string[] = [];
+        if (x !== undefined) {
+          providers.push(x.displayName);
+        }
+
+        if (rowData.isEnabled) {
+          providers.push('Lokaler Login');
+        }
+
+        return providers.join(', ');
+      }));
+  }
 }
