@@ -2,6 +2,7 @@
 
   @if (field.type === 'checkbox') {
     <mat-checkbox
+      class="vm-input"
       [checked]="field.value === 'checked'"
       [indeterminate]="field.value === 'indeterminate'"
       [disabled]="field.readonly ?? false"
@@ -10,7 +11,7 @@
       {{ field.label }}
     </mat-checkbox>
   } @else if (field.type === 'select') {
-    <mat-form-field>
+    <mat-form-field class="vm-input">
       <mat-label>{{ field.label }}</mat-label>
       <mat-select [value]="field.value" (selectionChange)="selectCallChangeEvent($event)">
         @for (option of field.options; track option.value) {
@@ -19,7 +20,7 @@
       </mat-select>
     </mat-form-field>
   }  @else {
-    <mat-form-field class="vm-imput">
+    <mat-form-field class="vm-input">
       <mat-label>{{ field.label }}</mat-label>
       <input
         matInput

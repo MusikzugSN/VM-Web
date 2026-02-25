@@ -21,6 +21,7 @@
     <div class="data-container" style="flex-grow: 1;">
       <label class="text-normal">Externe Anmeldeinformationen</label>
       <vmc-input-field
+        style="height: 80px;"
         [formField]="(providerSelectorField$ | async) ?? providerSelectorFieldPlaceholder"
         [shouldInitChange]="false"
         (inputChanged)="storeChangedValue($event, 'provider')"/>
@@ -28,12 +29,6 @@
         [formField]="oAuthSubjectField"
         [shouldInitChange]="false"
         (inputChanged)="storeChangedValue($event, 'oAuthSubject')"/>
-      <div class="position-right">
-        <vmc-input-field
-          [formField]="isEnabledField"
-          [shouldInitChange]="false"
-          (inputChanged)="storeBooleanChangedValue($event, 'isEnabled')"/>
-      </div>
     </div>
   </div>
 
