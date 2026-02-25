@@ -1,4 +1,5 @@
-export * from './lib/config/config.service';
+export * from './lib/config.service';
+export * from './lib/snackbar/snackbar.service';
 
 // Auth and HttpInterceptors
 export * from './lib/http/base-url.interceptor';

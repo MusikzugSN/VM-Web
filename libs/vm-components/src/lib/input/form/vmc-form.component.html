@@ -2,9 +2,10 @@
   @let data = formData();
   <label class="text-header">{{ data.header }}</label>
   <span class="text-normal">{{ data.description }}</span>
-  <div>
+  <div class="flex-column" style="gap: 16px;">
     @for (field of data.fields; track field.key) {
-      <vmc-input-field [formField]="field" (inputChanged)="onChange($event, field.key)" />
+      <vmc-input-field
+        [formField]="field" (inputChanged)="onChange($event, field.key)" />
     }
   </div>
   <vmc-button

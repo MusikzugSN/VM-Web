@@ -10,7 +10,7 @@ import {
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { HttpClient } from '@angular/common/http';
 import {OAuthService} from 'angular-oauth2-oidc';
-import {ConfigService, OAuthProvider} from './config/config.service';
+import {ConfigService, OAuthProvider} from './config.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 const storage = window.sessionStorage;

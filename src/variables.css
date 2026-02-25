@@ -15,6 +15,11 @@
   --vm-font-size__large: 1.2rem;
   --vm-font-size__header: 2rem;
 
+
   --vm-iconColor-white: whitesmoke;
   --vm-iconColor-black: black;
+  --vm-iconColor-green: green;
+  --vm-iconColor-red: red;
+  --vm-iconColor-blue: lightblue;
+  --vm-iconColor-orange: orange;
 }
