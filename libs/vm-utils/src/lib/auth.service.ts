@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  distinctUntilChanged,
+  distinctUntilChanged, filter,
   firstValueFrom,
   map,
   Observable,
@@ -10,6 +10,8 @@ import {
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { HttpClient } from '@angular/common/http';
 import {OAuthService} from 'angular-oauth2-oidc';
+import {ConfigService, OAuthProvider} from './config/config.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 const storage = window.sessionStorage;
 const accessTokenKey = 'accessToken';
@@ -20,13 +22,6 @@ interface LoginResponse {
 }
 
 export type LoginResult = { success: true } | { success: false; message: string };
-
-export interface OAuthProvider {
-  providerKey: string;
-  displayName: string;
-  issuerUrl: string;
-  clientId: string;
-}
 
 export interface MeInformation {
   id: string;
@@ -41,14 +36,10 @@ export interface MeInformation {
 export class AuthService {
   readonly #httpClient = inject(HttpClient);
   readonly #oAuthService = inject(OAuthService);
+  readonly #config = inject(ConfigService);
 
   readonly redirectUrl = window.location.origin + '/auth/callback';
   readonly scope = 'openid profile email';
-
-  oauthProviders$ = this.#httpClient.get<OAuthProvider[]>('auth/oAuthProvider')
-    .pipe(
-      shareReplay({ bufferSize: 1, refCount: false }),
-    );
 
   #currentProvider$: BehaviorSubject<string | null> = this.#getValueFromStorage$(providerKeyStorageKey);
 
@@ -65,6 +56,17 @@ export class AuthService {
   #myInformation$: BehaviorSubject<MeInformation | null> = new BehaviorSubject<MeInformation | null>(null);
   myInformation$ = this.#myInformation$.asObservable().pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
+  constructor() {
+    this.#oAuthService.events.pipe(
+        map(e => e.type),
+        filter(e => e === 'token_refreshed'),
+        takeUntilDestroyed())
+      .subscribe(_x => {
+        const token = this.#oAuthService.getAccessToken();
+        this.#storeAccessToken(token, this.#currentProvider$.getValue()!);
+      })
+  }
+
   async #configureOAuthProvider(provider?: OAuthProvider): Promise<void> {
     if (provider === undefined) {
       const providerKey = this.#currentProvider$.getValue();
@@ -72,7 +74,7 @@ export class AuthService {
         return;
       }
 
-      const providers = await firstValueFrom(this.oauthProviders$);
+      const providers = await firstValueFrom(this.#config.oauthProviders$);
       provider = providers.find((p) => p.providerKey === providerKey);
 
       if (provider !== undefined) {
@@ -100,6 +102,7 @@ export class AuthService {
     await this.#oAuthService.loadDiscoveryDocumentAndTryLogin();
 
     if (this.#oAuthService.hasValidAccessToken()) {
+      this.#oAuthService.setupAutomaticSilentRefresh();
       const token = this.#oAuthService.getAccessToken();
       this.#storeAccessToken(token, this.#currentProvider$.getValue()!);
       await this.#loadMyInformation();
@@ -129,7 +132,8 @@ export class AuthService {
   }
 
   logout(): void {
-    storage.clear();
+    this.#oAuthService.logOut();
+    storage.removeItem(this.#currentProvider$.getValue() + '_' + accessTokenKey);
     this.#accessToken$.next(null);
   }
 

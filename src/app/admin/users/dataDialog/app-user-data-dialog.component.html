@@ -1,50 +1,75 @@
-<div class="flex-column">
-  <div class="data-container">
-    <vmc-input-field
-      [formField]="nameField"
-      [shouldInitChange]="false"
-      (inputChanged)="storeChangedValue($event, 'username')"/>
-    <vmc-input-field
-      [formField]="passwordField"
-      [shouldInitChange]="false"
-      (inputChanged)="storeChangedValue($event, 'password')"/>
+<div class="flex-column" style="gap: 16px;">
+  <div style="display: flex; gap: 16px;">
+    <div class="data-container" style="flex-grow: 1">
+      <label class="text-normal">Lokale Anmeldeinformationen</label>
+      <vmc-input-field
+        [formField]="nameField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'username')"/>
+      <vmc-input-field
+        [formField]="passwordField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'password')"/>
+      <div class="position-right">
+        <vmc-input-field
+          [formField]="isEnabledField"
+          [shouldInitChange]="false"
+          (inputChanged)="storeBooleanChangedValue($event, 'isEnabled')"/>
+      </div>
+    </div>
+
+    <div class="data-container" style="flex-grow: 1;">
+      <label class="text-normal">Externe Anmeldeinformationen</label>
+      <vmc-input-field
+        [formField]="(providerSelectorField$ | async) ?? providerSelectorFieldPlaceholder"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'provider')"/>
+      <vmc-input-field
+        [formField]="oAuthSubjectField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'oAuthSubject')"/>
+      <div class="position-right">
+        <vmc-input-field
+          [formField]="isEnabledField"
+          [shouldInitChange]="false"
+          (inputChanged)="storeBooleanChangedValue($event, 'isEnabled')"/>
+      </div>
+    </div>
   </div>
 
   <div class="data-container">
-    <vmc-input-field
-      [formField]="isAdminField"
-      [shouldInitChange]="false"
-      (inputChanged)="storeBooleanChangedValue($event, 'isAdmin')"/>
-    <vmc-input-field
-      [formField]="isEnabledField"
-      [shouldInitChange]="false"
-      (inputChanged)="storeBooleanChangedValue($event, 'isEnabled')"/>
+    <label class="text-normal">Benutzerrechte</label>
+    <vmc-data-grid
+      [columns]="userGroupColumns"
+      [rowActions]="userGroupActions"
+      [footerActions]="footerActions"
+      [dataSource]="(userGroupData$ | async) ?? []"
+      [templates]="[
+        {
+          keys: ['groupId'],
+          templateRef: groupTemplate,
+        },
+        {
+          keys: ['roleId'],
+          templateRef: roleTemplate,
+        },
+        {
+          keys: ['groupIdFooter'],
+          templateRef: groupFooterTemplate,
+        },
+        {
+          keys: ['roleIdFooter'],
+          templateRef: roleFooterTemplate,
+        },
+      ]"
+      (clickedAction)="execActionFromRow($event)"/>
+    <div class="position-right">
+      <vmc-input-field
+        [formField]="isAdminField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeBooleanChangedValue($event, 'isAdmin')"/>
+    </div>
   </div>
-
-  <vmc-data-grid
-    [columns]="userGroupColumns"
-    [rowActions]="userGroupActions"
-    [footerActions]="footerActions"
-    [dataSource]="(userGroupData$ | async) ?? []"
-    [templates]="[
-      {
-        keys: ['groupId'],
-        templateRef: groupTemplate,
-      },
-      {
-        keys: ['roleId'],
-        templateRef: roleTemplate,
-      },
-      {
-        keys: ['groupIdFooter'],
-        templateRef: groupFooterTemplate,
-      },
-      {
-        keys: ['roleIdFooter'],
-        templateRef: roleFooterTemplate,
-      },
-    ]"
-    (clickedAction)="execActionFromRow($event)"/>
 
   <ng-template #roleTemplate let-rowDataRaw="rowData">
     @let roles = rolesById();

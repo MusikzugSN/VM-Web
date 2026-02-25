@@ -5,14 +5,14 @@
       [checked]="field.value === 'checked'"
       [indeterminate]="field.value === 'indeterminate'"
       [disabled]="field.readonly ?? false"
-      [labelPosition]="'after'"
+      [labelPosition]="field.labelPosition ?? 'after'"
       (change)="checkboxCallChangeEvent($event.checked)">
       {{ field.label }}
     </mat-checkbox>
   } @else if (field.type === 'select') {
     <mat-form-field>
       <mat-label>{{ field.label }}</mat-label>
-      <mat-select (selectionChange)="selectCallChangeEvent($event)">
+      <mat-select [value]="field.value" (selectionChange)="selectCallChangeEvent($event)">
         @for (option of field.options; track option.value) {
           <mat-option [value]="option.value">{{option.label}}</mat-option>
         }

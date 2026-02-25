@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import {inject, Injectable} from '@angular/core';
+import {BehaviorSubject, shareReplay} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 
 export interface AppConfig {
   backedApiUrl: string;
@@ -11,10 +12,24 @@ export interface ImagesConfig {
   loginBanner: string;
 }
 
+export interface OAuthProvider {
+  providerKey: string;
+  displayName: string;
+  issuerUrl: string;
+  clientId: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
+  readonly #httpClient = inject(HttpClient);
+
   private configSubject = new BehaviorSubject<AppConfig | null>(null);
   config$ = this.configSubject.asObservable();
+
+  oauthProviders$ = this.#httpClient.get<OAuthProvider[]>('auth/oAuthProvider')
+    .pipe(
+      shareReplay({ bufferSize: 1, refCount: false }),
+    );
 
   constructor() {
     this.#load()

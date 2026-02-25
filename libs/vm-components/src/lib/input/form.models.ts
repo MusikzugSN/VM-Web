@@ -45,11 +45,13 @@ export interface VmInputField extends VmBaseField {
 
 export interface VmCheckboxField extends VmBaseField {
   type: 'checkbox';
+  labelPosition?: 'before' | 'after';
   value?: VmCheckboxValues;
 }
 export interface VmSelect extends VmBaseField {
   type: 'select';
   options: VmSelectOption[];
+  value?: string;
 }
 export interface VmSelectOption {
   label: string;

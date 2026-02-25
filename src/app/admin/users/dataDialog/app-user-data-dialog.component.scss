@@ -1,5 +1,23 @@
+:host {
+  ::ng-deep {
+    .mat-mdc-table {
+      background-color: var(--vm-secondary-gray);
+    }
+  }
+}
+
 .data-container {
   display: flex;
-  flex-direction: row;
-  gap: 20px;
+  flex-direction: column;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: var(--vm-secondary-gray);
+}
+
+.position-right {
+  margin-left: auto;
+}
+
+.text-normal {
+  padding-bottom: 10px;
 }

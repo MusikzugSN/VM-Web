@@ -19,7 +19,7 @@ export class AppLogin {
   readonly #router = inject(Router);
   readonly #config = inject(ConfigService);
 
-  oauthProviders$ = this.#authService.oauthProviders$;
+  oauthProviders$ = this.#config.oauthProviders$;
   bannerLink$ = this.#config.config$
     .pipe(
       map(x => x?.images.loginBanner),
