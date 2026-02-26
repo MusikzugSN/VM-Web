@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {ConfigService, OAuthProvider} from './config.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {Router} from '@angular/router';
 
 const storage = window.sessionStorage;
 const accessTokenKey = 'accessToken';
@@ -36,7 +37,8 @@ export interface MeInformation {
 export class AuthService {
   readonly #httpClient = inject(HttpClient);
   readonly #oAuthService = inject(OAuthService);
-  readonly #config = inject(ConfigService);
+  readonly #config = inject(ConfigService)
+  readonly #router = inject(Router);
 
   readonly redirectUrl = window.location.origin + '/auth/callback';
   readonly scope = 'openid profile email';
@@ -67,11 +69,11 @@ export class AuthService {
       })
   }
 
-  async #configureOAuthProvider(provider?: OAuthProvider): Promise<void> {
+  async #configureOAuthProvider(provider?: OAuthProvider): Promise<boolean> {
     if (provider === undefined) {
       const providerKey = this.#currentProvider$.getValue();
       if (providerKey === null) {
-        return;
+        return false;
       }
 
       const providers = await firstValueFrom(this.#config.oauthProviders$);
@@ -79,10 +81,9 @@ export class AuthService {
 
       if (provider !== undefined) {
         await this.#configureOAuthProvider(provider);
-      } else {
-        console.log('Could not find provider with name ' + providerKey, providers);
+        return true;
       }
-      return;
+      return false;
     }
 
     this.#oAuthService.configure({
@@ -95,10 +96,17 @@ export class AuthService {
 
     storage.setItem(providerKeyStorageKey, String(provider.providerKey));
     this.#currentProvider$.next(String(provider.providerKey));
+    return true;
   }
 
   async handleOAuthLoginCallback(): Promise<void> {
-    await this.#configureOAuthProvider();
+    const successful = await this.#configureOAuthProvider();
+
+    if (!successful) {
+      await this.#router.navigate(['/auth/login']);
+      return;
+    }
+
     await this.#oAuthService.loadDiscoveryDocumentAndTryLogin();
 
     if (this.#oAuthService.hasValidAccessToken()) {

@@ -9,7 +9,7 @@ export function httpErrorInterceptor(req: HttpRequest<unknown>, next: HttpHandle
     if (error.status === 0) {
       snackbarService.raiseError('Der Server ist nicht erreichbar, wende dich an deinen Administrator.');
     } else if (error.status === 401 && error.error != 'login_failed') {
-      snackbarService.raiseError('Du bist nichtmehr angemeldet, melde dich erneut an.', 10000);
+      snackbarService.raiseError('Du bist nicht mehr angemeldet, melde dich erneut an.', 10000);
     } else if (error.status === 401 && error.error === 'login_failed') {
       snackbarService.raiseError('Der angegebene Benutzername oder das Passwort sind falsch.', 10000);
     } else if (error.status === 403 && error.error != 'login_failed') {
