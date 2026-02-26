@@ -115,7 +115,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   passwordField: VmFormField = {
     label: 'Passwort',
     type: 'password',
-    value: this.#data ? '********' : '',
+    value: this.#data?.isPasswordSet ? '********' : '',
     key: nameOf<UserUpdate>('password'),
   }
 

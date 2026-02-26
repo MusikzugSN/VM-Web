@@ -6,6 +6,7 @@ export interface User extends IMetaData {
   username: string;
   isAdmin: boolean;
   isEnabled: boolean;
+  isPasswordSet: boolean;
   provider: string;
   oAuthSubject: string;
   roles: UserGroupTeaser[];
