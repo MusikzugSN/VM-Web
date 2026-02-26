@@ -132,8 +132,8 @@ export class AuthService {
   }
 
   logout(): void {
-    this.#oAuthService.logOut();
-    storage.removeItem(this.#currentProvider$.getValue() + '_' + accessTokenKey);
+    storage.clear();
+    //storage.removeItem(this.#currentProvider$.getValue() + '_' + accessTokenKey);
     this.#accessToken$.next(null);
   }
 
