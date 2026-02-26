@@ -18,6 +18,7 @@ export class VmcNavbar {
   readonly #router = inject(Router);
 
   applicationName: InputSignal<string> = input.required();
+  iconLink: InputSignal<string | undefined> = input<string | undefined>(undefined);
   toolbarItems: InputSignal<VmNavbarItem[]> = input.required();
   showToolbarItems: InputSignal<boolean> = input(false);
 

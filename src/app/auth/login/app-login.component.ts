@@ -1,12 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import {VmcForm, VmValidFormTypes} from '@vm-components';
-import { AuthService } from '@vm-utils';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {VmcButton, VmcForm, VmValidFormTypes} from '@vm-components';
+import {AuthService, OAuthProvider} from '@vm-utils';
 import { Dictionary } from '@vm-utils';
 import { Router } from '@angular/router';
+import {AsyncPipe} from '@angular/common';
+import {ConfigService} from '@vm-utils';
+import {filter, map} from 'rxjs';
 
 @Component({
   selector: 'app-login',
-  imports: [VmcForm],
+  imports: [VmcForm, AsyncPipe, VmcButton],
   templateUrl: './app-login.component.html',
   styleUrl: './app-login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,6 +17,18 @@ import { Router } from '@angular/router';
 export class AppLogin {
   readonly #authService = inject(AuthService);
   readonly #router = inject(Router);
+  readonly #config = inject(ConfigService);
+
+  oauthProviders$ = this.#config.oauthProviders$;
+  bannerLink$ = this.#config.config$
+    .pipe(
+      map(x => x?.images.loginBanner),
+      filter(x => x != null),
+      map(x => '/static' + x))
+
+  async oauthProviderClicked(provider: OAuthProvider): Promise<void> {
+    await this.#authService.initOAuthLogin(provider);
+  }
 
   async loginClicked(data: Dictionary<VmValidFormTypes>): Promise<void> {
     const username = data['username'] as string;

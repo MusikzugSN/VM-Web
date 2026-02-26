@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {
-  AsPipe,
+  AsPipe, ConfigService,
   convertToPatch,
   DIALOG_BUTTON_CLICKS,
   DIALOG_DATA,
@@ -18,12 +18,17 @@ import {
   VmRowAction, VmRowClickedEvent, VmSelectOption,
   VmValidFormTypes
 } from '@vm-components';
-import {BehaviorSubject, firstValueFrom, map, Observable} from 'rxjs';
+import {BehaviorSubject, distinctUntilChanged, firstValueFrom, map, Observable} from 'rxjs';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {User, UserUpdate, UserService, UserGroupTeaser} from '../user.service';
 import {AsyncPipe} from '@angular/common';
 import {Group, GroupService} from '../../goups/group.service';
 import {Role, RoleService} from '../../roles/role.service';
+
+const noProviderOption: VmSelectOption = {
+  label: 'Kein Anbieter',
+  value: '',
+};
 
 @Component({
   selector: 'app-user-data-dialog',
@@ -43,6 +48,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   readonly #userService = inject(UserService);
   readonly #groupService = inject(GroupService);
   readonly #roleService = inject(RoleService);
+  readonly #config = inject(ConfigService);
 
   #roles$: Observable<Role[]> = this.#roleService.load$();
 
@@ -109,9 +115,8 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   passwordField: VmFormField = {
     label: 'Passwort',
     type: 'password',
-    value: this.#data ? '********' : '',
+    value: this.#data?.isPasswordSet ? '********' : '',
     key: nameOf<UserUpdate>('password'),
-    required: true,
   }
 
   isAdminField: VmFormField = {
@@ -119,6 +124,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     type: 'checkbox',
     key: nameOf<UserUpdate>('isAdmin'),
     value: this.#data?.isAdmin ? 'checked' : 'unchecked',
+    labelPosition: 'before'
   }
 
   isEnabledField: VmFormField = {
@@ -126,6 +132,35 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     type: 'checkbox',
     key: nameOf<UserUpdate>('isEnabled'),
     value: this.#data?.isEnabled ? 'checked' : 'unchecked',
+    labelPosition: 'before'
+  }
+
+  providerSelectorFieldPlaceholder: VmFormField = {
+    key: nameOf<UserUpdate>('provider'),
+    label: 'Anbieter',
+    type: 'select',
+    options: [noProviderOption]
+  }
+
+  providerSelectorField$: Observable<VmFormField> = this.#config.oauthProviders$
+    .pipe(distinctUntilChanged(),
+      map(providers => {
+        return {
+          label: 'OAuth Anbieter',
+          type: 'select',
+          key: nameOf<UserUpdate>('provider'),
+          value: this.#data?.provider ?? '',
+          options: [noProviderOption, ...providers.map(x => ({label: x.displayName, value: x.providerKey}))],
+        } as VmFormField;
+      }),
+      takeUntilDestroyed());
+
+  oAuthSubjectField: VmFormField = {
+    label: 'OAuth Kennung',
+    type: 'text',
+    key: nameOf<UserUpdate>('oAuthSubject'),
+    value: this.#data?.oAuthSubject,
+    placeholder: 'z. B. 1234-xyz-5678',
   }
 
   userGroupColumns: VmColumn<UserGroupTeaser>[] = [

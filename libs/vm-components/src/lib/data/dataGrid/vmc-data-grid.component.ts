@@ -20,17 +20,17 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import {AsyncPipe, DatePipe, NgTemplateOutlet} from '@angular/common';
 import { Dictionary } from '@vm-utils';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatCheckbox} from '@angular/material/checkbox';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 
-export type VmColumnType = 'text' | 'date' | 'template'; //| 'boolean' | 'number' ;
+export type VmColumnType = 'text' | 'date' | 'template' | 'converter'; //| 'boolean' | 'number' ;
 export type VmSelectType = 'multi' | 'single' | 'none';
 
 export interface VmColumn<TElement> {
@@ -40,6 +40,7 @@ export interface VmColumn<TElement> {
   sortable?: boolean;
   field?: keyof TElement & string;
   type?: VmColumnType;
+  converter?: (rowData: TElement) => Observable<string>;
   footerAsTemplate?: boolean; // das Template muss über -- key + 'Footer' -- bereitgestellt werden
 }
 
@@ -83,6 +84,7 @@ export interface VmRowClickedEvent<TRow> {
     MatCheckbox,
     MatSortHeader,
     MatSort,
+    AsyncPipe,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',

@@ -17,7 +17,7 @@ export class UserDialogService {
         { key: 'create', text: 'Erstellen', type: 'filled' },
       ],
       dialogConfig: {
-        minWidth: '1200px',
+        minWidth: '900px',
       },
     });
   }
@@ -31,7 +31,7 @@ export class UserDialogService {
         { key: 'save', text: 'Speichern', type: 'filled' },
       ],
       dialogConfig: {
-        minWidth: '1200px',
+        minWidth: '900px',
       },
     });
   }
