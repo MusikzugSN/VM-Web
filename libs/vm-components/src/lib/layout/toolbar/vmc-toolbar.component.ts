@@ -16,6 +16,7 @@ export interface VmToolbarItem {
   styleUrl: './vmc-toolbar.component.scss',
 })
 export class VmcToolbar {
-  useNgContent: InputSignal<boolean> = input<boolean>(false);
+  useNgContentForRightside: InputSignal<boolean> = input<boolean>(false);
+  useNgContentOnly: InputSignal<boolean> = input<boolean>(false);
   items: InputSignal<VmToolbarItem[]> = input<VmToolbarItem[]>([]);
 }
