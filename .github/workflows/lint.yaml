@@ -14,6 +14,6 @@ jobs:
         with:
           node-version: '22.18.0'
       - run: npm ci
-      - run: nx run-many --target=lint --all
-      - run: nx format:check --all
+      - run: nx run-many --target=lint --all --output-style=static
+      - run: prettier --check .
 
