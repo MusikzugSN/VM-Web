@@ -11,7 +11,6 @@ import {
   VmToolbarItem,
   VmValidFormTypes,
 } from '@vm-components';
-import { AsyncPipe } from '@angular/common';
 
 interface AllNotesData {
   name: string;
