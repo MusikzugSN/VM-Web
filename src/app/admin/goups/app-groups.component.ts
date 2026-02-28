@@ -1,5 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { VmColumn, VmRowClickedEvent, VmcDataGrid, VmcToolbar, VmToolbarItem } from '@vm-components';
+import {
+  VmColumn,
+  VmRowClickedEvent,
+  VmcDataGrid,
+  VmcToolbar,
+  VmToolbarItem,
+} from '@vm-components';
 import { GroupService, Group } from './group.service';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -50,9 +56,7 @@ export class AppGroups {
     }
   }
 
-  data$: Observable<Group[]> = this.#reload.pipe(
-    switchMap((_x) => this.#groupService.load$()),
-  );
+  data$: Observable<Group[]> = this.#reload.pipe(switchMap((_x) => this.#groupService.load$()));
 
   columns: VmColumn<Group>[] = [
     { key: 'groupId', header: '', field: 'groupId' },

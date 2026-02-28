@@ -9,7 +9,7 @@ import {
 } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {VmcInputField, VmValidFormTypes} from '@vm-components';
+import { VmcInputField, VmValidFormTypes } from '@vm-components';
 import { VmFormField } from '@vm-components';
 import { GroupService, Group } from '../group.service';
 

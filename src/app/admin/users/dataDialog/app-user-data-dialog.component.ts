@@ -1,13 +1,14 @@
-import {Component, inject} from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
-  AsPipe, ConfigService,
+  AsPipe,
+  ConfigService,
   convertToPatch,
   DIALOG_BUTTON_CLICKS,
   DIALOG_DATA,
   DialogBase,
   Dictionary,
   nameOf,
-  NumDictionary
+  NumDictionary,
 } from '@vm-utils';
 import {
   VmcDataGrid,
@@ -15,15 +16,17 @@ import {
   VmcInputField,
   VmColumn,
   VmFormField,
-  VmRowAction, VmRowClickedEvent, VmSelectOption,
-  VmValidFormTypes
+  VmRowAction,
+  VmRowClickedEvent,
+  VmSelectOption,
+  VmValidFormTypes,
 } from '@vm-components';
-import {BehaviorSubject, distinctUntilChanged, firstValueFrom, map, Observable} from 'rxjs';
-import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
-import {User, UserUpdate, UserService, UserGroupTeaser} from '../user.service';
-import {AsyncPipe} from '@angular/common';
-import {Group, GroupService} from '../../goups/group.service';
-import {Role, RoleService} from '../../roles/role.service';
+import { BehaviorSubject, distinctUntilChanged, firstValueFrom, map, Observable } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { User, UserUpdate, UserService, UserGroupTeaser } from '../user.service';
+import { AsyncPipe } from '@angular/common';
+import { Group, GroupService } from '../../goups/group.service';
+import { Role, RoleService } from '../../roles/role.service';
 
 const noProviderOption: VmSelectOption = {
   label: 'Kein Anbieter',
@@ -32,12 +35,7 @@ const noProviderOption: VmSelectOption = {
 
 @Component({
   selector: 'app-user-data-dialog',
-  imports: [
-    VmcInputField,
-    VmcDataGrid,
-    AsyncPipe,
-    AsPipe
-  ],
+  imports: [VmcInputField, VmcDataGrid, AsyncPipe, AsPipe],
   templateUrl: './app-user-data-dialog.component.html',
   styleUrl: './app-user-data-dialog.component.scss',
 })
@@ -52,41 +50,41 @@ export class AppUserDataDialog extends DialogBase<boolean> {
 
   #roles$: Observable<Role[]> = this.#roleService.load$();
 
-  #roleOptions$: Observable<VmSelectOption[]> = this.#roles$
-    .pipe(map(x => x.map(group => ({label: group.name, value: group.roleId.toString()}))));
+  #roleOptions$: Observable<VmSelectOption[]> = this.#roles$.pipe(
+    map((x) => x.map((group) => ({ label: group.name, value: group.roleId.toString() }))),
+  );
 
   roleOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#roleOptions$, {
     initialValue: [],
   });
 
-  #rolesById$: Observable<NumDictionary<Role>> = this.#roles$
-    .pipe(map(x => x
-      .reduce((acc, role) => ({...acc, [role.roleId]: role}),
-        {} as NumDictionary<Role>)
-      )
-    );
+  #rolesById$: Observable<NumDictionary<Role>> = this.#roles$.pipe(
+    map((x) =>
+      x.reduce((acc, role) => ({ ...acc, [role.roleId]: role }), {} as NumDictionary<Role>),
+    ),
+  );
 
-  rolesById = toSignal<NumDictionary<Role>, NumDictionary<Role>> (this.#rolesById$, {
+  rolesById = toSignal<NumDictionary<Role>, NumDictionary<Role>>(this.#rolesById$, {
     initialValue: {},
   });
 
-  #groups$: Observable<Group[]> =  this.#groupService.load$();
+  #groups$: Observable<Group[]> = this.#groupService.load$();
 
-  #groupOptions$: Observable<VmSelectOption[]> = this.#groups$
-    .pipe(map(x => x.map(group => ({label: group.name, value: group.groupId.toString()}))));
+  #groupOptions$: Observable<VmSelectOption[]> = this.#groups$.pipe(
+    map((x) => x.map((group) => ({ label: group.name, value: group.groupId.toString() }))),
+  );
 
   groupOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#groupOptions$, {
     initialValue: [],
   });
 
-  #groupsById$: Observable<NumDictionary<Group>> = this.#groups$
-    .pipe(map(x => x
-        .reduce((acc, group) => ({...acc, [group.groupId]: group}),
-          {} as NumDictionary<Group>)
-      )
-    );
+  #groupsById$: Observable<NumDictionary<Group>> = this.#groups$.pipe(
+    map((x) =>
+      x.reduce((acc, group) => ({ ...acc, [group.groupId]: group }), {} as NumDictionary<Group>),
+    ),
+  );
 
-  groupsById = toSignal<NumDictionary<Group>, NumDictionary<Group>> (this.#groupsById$, {
+  groupsById = toSignal<NumDictionary<Group>, NumDictionary<Group>>(this.#groupsById$, {
     initialValue: {},
   });
 
@@ -96,7 +94,9 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   GroupType: Group;
 
   // Datasource für die UserGroupTeaser, damit Änderungen direkt in der Tabelle sichtbar sind
-  userGroupData$: BehaviorSubject<UserGroupTeaser[]> = new BehaviorSubject<UserGroupTeaser[]>(this.#data?.roles ?? []);
+  userGroupData$: BehaviorSubject<UserGroupTeaser[]> = new BehaviorSubject<UserGroupTeaser[]>(
+    this.#data?.roles ?? [],
+  );
 
   // Hier werden alle geänderten Werte zwischengespeichert, damit sie beim Speichern in einem Patch-Objekt zusammengefasst werden können
   #changedValues: Dictionary<VmValidFormTypes | boolean | UserGroupTeaser[]> = {};
@@ -109,7 +109,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     required: true,
     value: this.#data?.username,
     placeholder: 'z. B. max.mustermann',
-  }
+  };
 
   // ToDo Florian: nur gennerieren
   passwordField: VmFormField = {
@@ -117,43 +117,47 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     type: 'password',
     value: this.#data?.isPasswordSet ? '********' : '',
     key: nameOf<UserUpdate>('password'),
-  }
+  };
 
   isAdminField: VmFormField = {
     label: 'Administrator',
     type: 'checkbox',
     key: nameOf<UserUpdate>('isAdmin'),
     value: this.#data?.isAdmin ? 'checked' : 'unchecked',
-    labelPosition: 'before'
-  }
+    labelPosition: 'before',
+  };
 
   isEnabledField: VmFormField = {
     label: 'Login erlaubt',
     type: 'checkbox',
     key: nameOf<UserUpdate>('isEnabled'),
     value: this.#data?.isEnabled ? 'checked' : 'unchecked',
-    labelPosition: 'before'
-  }
+    labelPosition: 'before',
+  };
 
   providerSelectorFieldPlaceholder: VmFormField = {
     key: nameOf<UserUpdate>('provider'),
     label: 'Anbieter',
     type: 'select',
-    options: [noProviderOption]
-  }
+    options: [noProviderOption],
+  };
 
-  providerSelectorField$: Observable<VmFormField> = this.#config.oauthProviders$
-    .pipe(distinctUntilChanged(),
-      map(providers => {
-        return {
-          label: 'OAuth Anbieter',
-          type: 'select',
-          key: nameOf<UserUpdate>('provider'),
-          value: this.#data?.provider ?? '',
-          options: [noProviderOption, ...providers.map(x => ({label: x.displayName, value: x.providerKey}))],
-        } as VmFormField;
-      }),
-      takeUntilDestroyed());
+  providerSelectorField$: Observable<VmFormField> = this.#config.oauthProviders$.pipe(
+    distinctUntilChanged(),
+    map((providers) => {
+      return {
+        label: 'OAuth Anbieter',
+        type: 'select',
+        key: nameOf<UserUpdate>('provider'),
+        value: this.#data?.provider ?? '',
+        options: [
+          noProviderOption,
+          ...providers.map((x) => ({ label: x.displayName, value: x.providerKey })),
+        ],
+      } as VmFormField;
+    }),
+    takeUntilDestroyed(),
+  );
 
   oAuthSubjectField: VmFormField = {
     label: 'OAuth Kennung',
@@ -161,7 +165,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     key: nameOf<UserUpdate>('oAuthSubject'),
     value: this.#data?.oAuthSubject,
     placeholder: 'z. B. 1234-xyz-5678',
-  }
+  };
 
   userGroupColumns: VmColumn<UserGroupTeaser>[] = [
     {
@@ -202,7 +206,9 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<User, VmValidFormTypes | boolean | UserGroupTeaser[]>(this.#changedValues);
+      const patch = convertToPatch<User, VmValidFormTypes | boolean | UserGroupTeaser[]>(
+        this.#changedValues,
+      );
       if (x === 'save') {
         patch.userId = this.#data?.userId ?? -1;
         await firstValueFrom(this.#userService.change$(patch, patch.userId));
@@ -237,7 +243,10 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     let newData = [...oldData];
     for (const changedGroupValue of this.#changedGroupValues) {
       if (changedGroupValue.deleted) {
-        newData = newData.filter(x => !(x.groupId === changedGroupValue.groupId && x.roleId === changedGroupValue.roleId));
+        newData = newData.filter(
+          (x) =>
+            !(x.groupId === changedGroupValue.groupId && x.roleId === changedGroupValue.roleId),
+        );
       } else {
         newData.push(changedGroupValue);
       }
@@ -249,13 +258,19 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   #storeNewGroupValue(newValue: UserGroupTeaser): void {
     // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
     const currentValues = this.userGroupData$.getValue();
-    if (currentValues.find(x => x.groupId === newValue.groupId && x.roleId === newValue.roleId)) {
+    if (currentValues.find((x) => x.groupId === newValue.groupId && x.roleId === newValue.roleId)) {
       return; // todo far: Fehlerbehandlung
     }
 
     // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
-    if (this.#changedGroupValues.find(x => x.groupId === newValue.groupId && x.roleId === newValue.roleId && x.deleted)) {
-      this.#changedGroupValues = this.#changedGroupValues.filter(x => !(x.groupId === newValue.groupId && x.roleId === newValue.roleId && x.deleted));
+    if (
+      this.#changedGroupValues.find(
+        (x) => x.groupId === newValue.groupId && x.roleId === newValue.roleId && x.deleted,
+      )
+    ) {
+      this.#changedGroupValues = this.#changedGroupValues.filter(
+        (x) => !(x.groupId === newValue.groupId && x.roleId === newValue.roleId && x.deleted),
+      );
     } else {
       this.#changedGroupValues.push({
         groupId: newValue.groupId,
@@ -267,9 +282,15 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   }
 
   #storeDeletedGroupValue(deletedValue: UserGroupTeaser): void {
-    if (this.#changedGroupValues.find(x => x.groupId === deletedValue.groupId && x.roleId === deletedValue.roleId)) {
+    if (
+      this.#changedGroupValues.find(
+        (x) => x.groupId === deletedValue.groupId && x.roleId === deletedValue.roleId,
+      )
+    ) {
       // Wenn die gelöschte Gruppe bereits in den Änderungen enthalten ist, muss sie entfernt werden, da sie sonst fälschlicherweise als neue Gruppe interpretiert werden könnte
-      this.#changedGroupValues = this.#changedGroupValues.filter(x => !(x.groupId === deletedValue.groupId && x.roleId === deletedValue.roleId));
+      this.#changedGroupValues = this.#changedGroupValues.filter(
+        (x) => !(x.groupId === deletedValue.groupId && x.roleId === deletedValue.roleId),
+      );
     } else {
       // Wenn die gelöschte Gruppe nicht in den Änderungen enthalten ist, muss sie mit dem "deleted"-Flag gespeichert werden, damit sie beim Speichern gelöscht wird
       deletedValue.deleted = true;
@@ -301,6 +322,6 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   }
 
   #checkboxToBool(value: VmValidFormTypes | VmCheckboxValues): boolean {
-    return value === "checked";
+    return value === 'checked';
   }
 }

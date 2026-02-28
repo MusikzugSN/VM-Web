@@ -1,7 +1,11 @@
 <div class="center-wrapper">
   <div class="content">
     <!--suppress HtmlUnknownTarget -->
-    <img style="margin: auto;" src="{{(bannerLink$ | async) ?? ''}}" alt="Loginbanner des Vereins"/>
+    <img
+      style="margin: auto"
+      src="{{ (bannerLink$ | async) ?? '' }}"
+      alt="Loginbanner des Vereins"
+    />
     <vmc-form
       (formSubmitted)="loginClicked($event)"
       [formData]="{
@@ -36,7 +40,8 @@
             [type]="'tonal'"
             [label]="provider.displayName"
             [fullWidth]="true"
-            (buttonClicked)="oauthProviderClicked(provider)"/>
+            (buttonClicked)="oauthProviderClicked(provider)"
+          />
         }
       </div>
     }

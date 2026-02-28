@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {BaseCrudService, IMetaData} from '@vm-utils';
+import { Injectable } from '@angular/core';
+import { BaseCrudService, IMetaData } from '@vm-utils';
 
 export interface User extends IMetaData {
   userId: number;
@@ -30,9 +30,8 @@ export interface UserGroupTeaser {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class UserService extends BaseCrudService<User, UserUpdate>{
-    override url: string = 'user';
-
+export class UserService extends BaseCrudService<User, UserUpdate> {
+  override url: string = 'user';
 }

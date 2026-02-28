@@ -1,16 +1,24 @@
 import {
   Component,
-  computed, effect, inject,
+  computed,
+  effect,
+  inject,
   input,
   InputSignal,
   output,
-  OutputEmitterRef, Signal,
-  TemplateRef, viewChild,
+  OutputEmitterRef,
+  Signal,
+  TemplateRef,
+  viewChild,
 } from '@angular/core';
 import {
   MatCell,
   MatCellDef,
-  MatColumnDef, MatFooterCell, MatFooterCellDef, MatFooterRow, MatFooterRowDef,
+  MatColumnDef,
+  MatFooterCell,
+  MatFooterCellDef,
+  MatFooterRow,
+  MatFooterRowDef,
   MatHeaderCell,
   MatHeaderCellDef,
   MatHeaderRow,
@@ -20,15 +28,15 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import {AsyncPipe, DatePipe, NgTemplateOutlet} from '@angular/common';
+import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Dictionary } from '@vm-utils';
-import {MatIconButton} from '@angular/material/button';
-import {MatIcon} from '@angular/material/icon';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
-import {MatSort, MatSortHeader, Sort} from '@angular/material/sort';
-import {LiveAnnouncer} from '@angular/cdk/a11y';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 export type VmColumnType = 'text' | 'date' | 'template' | 'converter'; //| 'boolean' | 'number' ;
 export type VmSelectType = 'multi' | 'single' | 'none';
@@ -106,8 +114,10 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   selectionChanged: OutputEmitterRef<TSelectionKey[]> = output();
 
   selection$: BehaviorSubject<TSelectionKey[]> = new BehaviorSubject<TSelectionKey[]>([]);
-  selection = toSignal<TSelectionKey[], TSelectionKey[]>(this.selection$, {initialValue: []})
-  selectionDict: Signal<Dictionary<boolean>> = computed<Dictionary<boolean>>(() => this.#convertSelectionToDictionary());
+  selection = toSignal<TSelectionKey[], TSelectionKey[]>(this.selection$, { initialValue: [] });
+  selectionDict: Signal<Dictionary<boolean>> = computed<Dictionary<boolean>>(() =>
+    this.#convertSelectionToDictionary(),
+  );
   isAllSelected = computed(() => this.#convertAllSelected());
 
   tableData = new MatTableDataSource<TRow>();
@@ -117,11 +127,9 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   transformedTemplates = computed(() => this.#mapTemplates());
 
   constructor() {
-    this.selection$
-      .pipe(takeUntilDestroyed())
-      .subscribe(x => {
-        this.selectionChanged.emit(x);
-      });
+    this.selection$.pipe(takeUntilDestroyed()).subscribe((x) => {
+      this.selectionChanged.emit(x);
+    });
 
     // custom filter für DataGrid
     this.tableData.filterPredicate = (row: unknown, filter: string): boolean => {
@@ -129,21 +137,20 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       const filterTerm = filter.toLowerCase();
       const columns = this.columns();
       return columns
-        .filter(x => x.filterable ?? false)
-        .some(col => {
+        .filter((x) => x.filterable ?? false)
+        .some((col) => {
           if (!col.field) return false;
           const value = data[col.field];
           return value?.toString().toLowerCase().includes(filterTerm);
         });
-    }
+    };
 
     // custom sorting für DataGrid
     this.tableData.sortingDataAccessor = (row: TRow, columnId: string): string => {
-      const col = this.columns().find(c => c.key === columnId);
+      const col = this.columns().find((c) => c.key === columnId);
       if (!col?.field) return '';
       return row[col.field] as unknown as string;
     };
-
 
     effect(() => {
       this.tableData.data = this.dataSource() ?? [];
@@ -159,7 +166,6 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
         this.tableData.sort = sort;
       }
     });
-
   }
 
   toggleRowSelection(row: TRow): void {
@@ -173,7 +179,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     const selectionArray = this.selection$.getValue();
 
     if (selectionArray.includes(key)) {
-      this.selection$.next(selectionArray.filter(k => k !== key));
+      this.selection$.next(selectionArray.filter((k) => k !== key));
     } else {
       this.selection$.next([...selectionArray, key]);
     }
@@ -191,7 +197,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       return;
     }
 
-    const keys = this.dataSource().map(x => x[selectionKey] as TSelectionKey);
+    const keys = this.dataSource().map((x) => x[selectionKey] as TSelectionKey);
     this.selection$.next(keys);
   }
 
@@ -246,9 +252,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     const columns = this.columns();
     const actions = this.footerActions();
 
-    const columnsFiltered = columns
-      .filter((x) => x.footerAsTemplate)
-      .map((x) => x.key);
+    const columnsFiltered = columns.filter((x) => x.footerAsTemplate).map((x) => x.key);
 
     if (actions.length > 0) {
       return [...columnsFiltered, 'actions'];

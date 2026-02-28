@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {VmcButton, VmcForm, VmValidFormTypes} from '@vm-components';
-import {AuthService, OAuthProvider} from '@vm-utils';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { VmcButton, VmcForm, VmValidFormTypes } from '@vm-components';
+import { AuthService, OAuthProvider } from '@vm-utils';
 import { Dictionary } from '@vm-utils';
 import { Router } from '@angular/router';
-import {AsyncPipe} from '@angular/common';
-import {ConfigService} from '@vm-utils';
-import {filter, map} from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { ConfigService } from '@vm-utils';
+import { filter, map } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -20,11 +20,11 @@ export class AppLogin {
   readonly #config = inject(ConfigService);
 
   oauthProviders$ = this.#config.oauthProviders$;
-  bannerLink$ = this.#config.config$
-    .pipe(
-      map(x => x?.images.loginBanner),
-      filter(x => x != null),
-      map(x => '/static' + x))
+  bannerLink$ = this.#config.config$.pipe(
+    map((x) => x?.images.loginBanner),
+    filter((x) => x != null),
+    map((x) => '/static' + x),
+  );
 
   async oauthProviderClicked(provider: OAuthProvider): Promise<void> {
     await this.#authService.initOAuthLogin(provider);

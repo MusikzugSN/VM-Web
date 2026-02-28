@@ -1,6 +1,6 @@
-import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, shareReplay} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, shareReplay } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 export interface AppConfig {
   backedApiUrl: string;
@@ -26,10 +26,9 @@ export class ConfigService {
   private configSubject = new BehaviorSubject<AppConfig | null>(null);
   config$ = this.configSubject.asObservable();
 
-  oauthProviders$ = this.#httpClient.get<OAuthProvider[]>('auth/oAuthProvider')
-    .pipe(
-      shareReplay({ bufferSize: 1, refCount: false }),
-    );
+  oauthProviders$ = this.#httpClient
+    .get<OAuthProvider[]>('auth/oAuthProvider')
+    .pipe(shareReplay({ bufferSize: 1, refCount: false }));
 
   constructor() {
     this.#load()

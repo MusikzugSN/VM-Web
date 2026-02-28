@@ -9,7 +9,6 @@ import { VmpSidebar } from '@vm-parts';
   templateUrl: './app-me-layout.component.html',
   styleUrl: './app-me-layout.component.scss',
 })
-
 export class AppMeLayout {
   sidebarItems: VmSidebarGroup[] = [
     {
@@ -27,8 +26,8 @@ export class AppMeLayout {
         {
           name: 'Alle',
           route: '/me/allNotes',
-        }
-      ]
-    }
+        },
+      ],
+    },
   ];
 }

@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
-import {VmcToolbar} from '@vm-components';
+import { VmcToolbar } from '@vm-components';
 
 @Component({
   selector: 'app-general',
-  imports: [
-    VmcToolbar
-  ],
+  imports: [VmcToolbar],
   templateUrl: './app-loginSettings.component.html',
   styleUrl: './app-loginSettings.component.scss',
 })

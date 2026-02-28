@@ -1,34 +1,39 @@
-<div class="flex-column" style="gap: 16px;">
-  <div style="display: flex; gap: 16px;">
+<div class="flex-column" style="gap: 16px">
+  <div style="display: flex; gap: 16px">
     <div class="data-container" style="flex-grow: 1">
       <label class="text-normal">Lokale Anmeldeinformationen</label>
       <vmc-input-field
         [formField]="nameField"
         [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'username')"/>
+        (inputChanged)="storeChangedValue($event, 'username')"
+      />
       <vmc-input-field
         [formField]="passwordField"
         [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'password')"/>
+        (inputChanged)="storeChangedValue($event, 'password')"
+      />
       <div class="position-right">
         <vmc-input-field
           [formField]="isEnabledField"
           [shouldInitChange]="false"
-          (inputChanged)="storeBooleanChangedValue($event, 'isEnabled')"/>
+          (inputChanged)="storeBooleanChangedValue($event, 'isEnabled')"
+        />
       </div>
     </div>
 
-    <div class="data-container" style="flex-grow: 1;">
+    <div class="data-container" style="flex-grow: 1">
       <label class="text-normal">Externe Anmeldeinformationen</label>
       <vmc-input-field
-        style="height: 80px;"
+        style="height: 80px"
         [formField]="(providerSelectorField$ | async) ?? providerSelectorFieldPlaceholder"
         [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'provider')"/>
+        (inputChanged)="storeChangedValue($event, 'provider')"
+      />
       <vmc-input-field
         [formField]="oAuthSubjectField"
         [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'oAuthSubject')"/>
+        (inputChanged)="storeChangedValue($event, 'oAuthSubject')"
+      />
     </div>
   </div>
 
@@ -57,45 +62,50 @@
           templateRef: roleFooterTemplate,
         },
       ]"
-      (clickedAction)="execActionFromRow($event)"/>
+      (clickedAction)="execActionFromRow($event)"
+    />
     <div class="position-right">
       <vmc-input-field
         [formField]="isAdminField"
         [shouldInitChange]="false"
-        (inputChanged)="storeBooleanChangedValue($event, 'isAdmin')"/>
+        (inputChanged)="storeBooleanChangedValue($event, 'isAdmin')"
+      />
     </div>
   </div>
 
   <ng-template #roleTemplate let-rowDataRaw="rowData">
     @let roles = rolesById();
     @let rowData = rowDataRaw | as: RoleType;
-    {{ roles[rowData.roleId]?.name ?? 'N/A'}}
+    {{ roles[rowData.roleId]?.name ?? 'N/A' }}
   </ng-template>
 
   <ng-template #groupTemplate let-rowDataRaw="rowData">
     @let groups = groupsById();
     @let rowData = rowDataRaw | as: GroupType;
-    {{ groups[rowData.groupId]?.name ?? 'N/A'}}
+    {{ groups[rowData.groupId]?.name ?? 'N/A' }}
   </ng-template>
 
   <ng-template #roleFooterTemplate>
-    <vmc-input-field [formField]="{
-      label: 'Rolle',
-      key: 'roleId',
-      type: 'select',
-      options: roleOptions(),
-    }" (inputChanged)="storeNewRoleChange($event)"/>
+    <vmc-input-field
+      [formField]="{
+        label: 'Rolle',
+        key: 'roleId',
+        type: 'select',
+        options: roleOptions(),
+      }"
+      (inputChanged)="storeNewRoleChange($event)"
+    />
   </ng-template>
 
   <ng-template #groupFooterTemplate>
-    <vmc-input-field [formField]="{
-      label: 'Gruppe',
-      key: 'groupId',
-      type: 'select',
-      options: groupOptions(),
-    }" (inputChanged)="storeNewGroupChange($event)"/>
+    <vmc-input-field
+      [formField]="{
+        label: 'Gruppe',
+        key: 'groupId',
+        type: 'select',
+        options: groupOptions(),
+      }"
+      (inputChanged)="storeNewGroupChange($event)"
+    />
   </ng-template>
 </div>
-
-
-

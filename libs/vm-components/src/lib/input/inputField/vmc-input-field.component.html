@@ -1,36 +1,36 @@
 @let field = formField();
 
-  @if (field.type === 'checkbox') {
-    <mat-checkbox
-      class="vm-input"
-      [checked]="field.value === 'checked'"
-      [indeterminate]="field.value === 'indeterminate'"
-      [disabled]="field.readonly ?? false"
-      [labelPosition]="field.labelPosition ?? 'after'"
-      (change)="checkboxCallChangeEvent($event.checked)">
-      {{ field.label }}
-    </mat-checkbox>
-  } @else if (field.type === 'select') {
-    <mat-form-field class="vm-input">
-      <mat-label>{{ field.label }}</mat-label>
-      <mat-select [value]="field.value" (selectionChange)="selectCallChangeEvent($event)">
-        @for (option of field.options; track option.value) {
-          <mat-option [value]="option.value">{{option.label}}</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
-  }  @else {
-    <mat-form-field class="vm-input">
-      <mat-label>{{ field.label }}</mat-label>
-      <input
-        matInput
-        [type]="field.type"
-        [placeholder]="field.placeholder ?? ''"
-        [readonly]="field.readonly ?? false"
-        [required]="field.required ?? false"
-        [ngModel]="field.value ?? ''"
-        (input)="genericCallChangeEvent($event)"
-      />
-    </mat-form-field>
-  }
-
+@if (field.type === 'checkbox') {
+  <mat-checkbox
+    class="vm-input"
+    [checked]="field.value === 'checked'"
+    [indeterminate]="field.value === 'indeterminate'"
+    [disabled]="field.readonly ?? false"
+    [labelPosition]="field.labelPosition ?? 'after'"
+    (change)="checkboxCallChangeEvent($event.checked)"
+  >
+    {{ field.label }}
+  </mat-checkbox>
+} @else if (field.type === 'select') {
+  <mat-form-field class="vm-input">
+    <mat-label>{{ field.label }}</mat-label>
+    <mat-select [value]="field.value" (selectionChange)="selectCallChangeEvent($event)">
+      @for (option of field.options; track option.value) {
+        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+} @else {
+  <mat-form-field class="vm-input">
+    <mat-label>{{ field.label }}</mat-label>
+    <input
+      matInput
+      [type]="field.type"
+      [placeholder]="field.placeholder ?? ''"
+      [readonly]="field.readonly ?? false"
+      [required]="field.required ?? false"
+      [ngModel]="field.value ?? ''"
+      (input)="genericCallChangeEvent($event)"
+    />
+  </mat-form-field>
+}

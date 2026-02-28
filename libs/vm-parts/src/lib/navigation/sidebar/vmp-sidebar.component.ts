@@ -25,7 +25,10 @@ export class VmpSidebar {
     }),
   );
 
-  private mapGroupSelectionWithRoute(groupItems: VmSidebarGroup[], route: string): VmSidebarGroup[] {
+  private mapGroupSelectionWithRoute(
+    groupItems: VmSidebarGroup[],
+    route: string,
+  ): VmSidebarGroup[] {
     return groupItems.map((groupItem) => {
       return {
         ...groupItem,

@@ -20,10 +20,12 @@
           <th mat-header-cell *matHeaderCellDef class="checkbox-column">
             @let selected = _isAnySelected && _isAllSelected;
             @let indeterminate = _isAnySelected && !_isAllSelected;
-            <mat-checkbox (change)="$event ? toggleAllRows() : null"
+            <mat-checkbox
+              (change)="$event ? toggleAllRows() : null"
               [checked]="selected"
               [indeterminate]="indeterminate"
-              [aria-label]="selected ? 'Alle abhacken' : 'Alle anhacken'" />
+              [aria-label]="selected ? 'Alle abhacken' : 'Alle anhacken'"
+            />
           </th>
         } @else {
           <th mat-header-cell *matHeaderCellDef class="checkbox-column"></th>
@@ -32,10 +34,12 @@
         <td mat-cell *matCellDef="let row" class="checkbox-column">
           @let selected = _selectionDict[row[_selectionKey]] ?? false;
 
-          <mat-checkbox (click)="$event.stopPropagation()"
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
             (change)="$event ? toggleRowSelection(row) : null"
             [checked]="selected"
-            [aria-label]="selected ? 'Zeile abhacken' : 'Zeile anhacken'" />
+            [aria-label]="selected ? 'Zeile abhacken' : 'Zeile anhacken'"
+          />
         </td>
       </ng-container>
     }
@@ -44,7 +48,13 @@
       <ng-container [matColumnDef]="column.key">
         @let sortable = column.sortable ?? false;
         @if (sortable) {
-          <th *matHeaderCellDef mat-header-cell mat-sort-header sortActionDescription="Sortierung von {{column.header}}" class="col-header-{{ column.key }}">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header
+            sortActionDescription="Sortierung von {{ column.header }}"
+            class="col-header-{{ column.key }}"
+          >
             {{ column.header }}
           </th>
         } @else {
@@ -54,8 +64,8 @@
         }
         <td *matCellDef="let row" class="col-row-{{ column.key }}" mat-cell>
           @if (column.type === 'converter') {
-            {{ column.converter ? (column.converter(row) | async) ?? '' : row[column.field] }}
-          }@else if (column.type === undefined || column.type === 'text') {
+            {{ column.converter ? ((column.converter(row) | async) ?? '') : row[column.field] }}
+          } @else if (column.type === undefined || column.type === 'text') {
             {{ row[column.field] }}
           } @else if (column.type === 'date') {
             {{ row[column.field] | date: 'dd.MM.yyyy HH:mm' }}
@@ -72,19 +82,14 @@
           }
         </td>
 
-        @if(column.footerAsTemplate) {
-          <td mat-footer-cell *matFooterCellDef class="col-footer-{{column.key}}">
+        @if (column.footerAsTemplate) {
+          <td mat-footer-cell *matFooterCellDef class="col-footer-{{ column.key }}">
             @let footerTemplate = _templates[column.key + 'Footer'];
             @if (footerTemplate !== undefined) {
-              <ng-container
-                *ngTemplateOutlet="
-                    footerTemplate;
-                  "
-              />
+              <ng-container *ngTemplateOutlet="footerTemplate" />
             }
           </td>
         }
-
       </ng-container>
     }
 
@@ -95,10 +100,7 @@
         <td *matCellDef="let row" class="col-row-actions" mat-cell>
           @for (action of _rowActions; track action.key) {
             <button matIconButton (click)="clickedAction.emit({ key: action.key, rowData: row })">
-              <mat-icon
-                class="icon"
-                [style.font-size]="'24px'"
-              >
+              <mat-icon class="icon" [style.font-size]="'24px'">
                 {{ action.icon ?? 'hvac' }}
               </mat-icon>
             </button>
@@ -108,18 +110,17 @@
         @if (_footerActions) {
           <td mat-footer-cell *matFooterCellDef class="col-footer-actionsFooter">
             @for (footerAction of _footerActions; track footerAction.key) {
-              <button matIconButton (click)="clickedAction.emit({ key: footerAction.key, rowData: null })">
-                <mat-icon
-                  class="icon"
-                  [style.font-size]="'24px'"
-                >
+              <button
+                matIconButton
+                (click)="clickedAction.emit({ key: footerAction.key, rowData: null })"
+              >
+                <mat-icon class="icon" [style.font-size]="'24px'">
                   {{ footerAction.icon ?? 'hvac' }}
                 </mat-icon>
               </button>
             }
           </td>
         }
-
       </ng-container>
     }
 
