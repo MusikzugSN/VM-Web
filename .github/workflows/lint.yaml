@@ -1,19 +1,29 @@
-name: Node.js CI
+name: Format and Lint (Checks)
 
 on: [pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v5
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.18.0'
-      - run: npm ci
-      - run: prettier --check .
-      - run: npx nx run-many --target=lint --all --output-style=static
 
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - run: npm ci
+
+      - run: npx prettier --check .
+
+      - run: npx nx run-many --target=lint --all --output-style=compact
