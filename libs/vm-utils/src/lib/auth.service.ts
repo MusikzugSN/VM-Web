@@ -65,7 +65,7 @@ export class AuthService {
         takeUntilDestroyed())
       .subscribe(_x => {
         const token = this.#oAuthService.getAccessToken();
-        this.#storeAccessToken(token, this.#currentProvider$.getValue()!);
+        this.#storeAccessToken(token, this.#currentProvider$.getValue() ?? 'local');
       })
   }
 
@@ -112,12 +112,12 @@ export class AuthService {
     if (this.#oAuthService.hasValidAccessToken()) {
       this.#oAuthService.setupAutomaticSilentRefresh();
       const token = this.#oAuthService.getAccessToken();
-      this.#storeAccessToken(token, this.#currentProvider$.getValue()!);
+      this.#storeAccessToken(token, this.#currentProvider$.getValue() ?? 'local');
       await this.#loadMyInformation();
     }
   }
 
-  async initOAuthLogin(provider: OAuthProvider) {
+  async initOAuthLogin(provider: OAuthProvider): Promise<void> {
     await this.#configureOAuthProvider(provider);
 
     await this.#oAuthService.loadDiscoveryDocument();

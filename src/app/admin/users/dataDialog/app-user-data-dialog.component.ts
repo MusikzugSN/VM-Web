@@ -235,7 +235,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
 
     const oldData = this.#data?.roles ?? [];
     let newData = [...oldData];
-    for (let changedGroupValue of this.#changedGroupValues) {
+    for (const changedGroupValue of this.#changedGroupValues) {
       if (changedGroupValue.deleted) {
         newData = newData.filter(x => !(x.groupId === changedGroupValue.groupId && x.roleId === changedGroupValue.roleId));
       } else {
@@ -278,17 +278,21 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     this.#storeChangedGroupValues();
   }
 
-  storeNewGroupChange(value: VmValidFormTypes) {
+  storeNewGroupChange(value: VmValidFormTypes): void {
     this.#newUserGroup.groupId = parseInt(value as string);
   }
 
-  storeNewRoleChange(value: VmValidFormTypes) {
+  storeNewRoleChange(value: VmValidFormTypes): void {
     this.#newUserGroup.roleId = parseInt(value as string);
   }
 
-  execActionFromRow(event: VmRowClickedEvent<UserGroupTeaser>) {
+  execActionFromRow(event: VmRowClickedEvent<UserGroupTeaser>): void {
+    if (event.rowData === null) {
+      return;
+    }
+
     if (event.key === 'delete') {
-      this.#storeDeletedGroupValue(event.rowData!);
+      this.#storeDeletedGroupValue(event.rowData);
     } else if (event.key === 'add') {
       if (this.#newUserGroup.groupId !== -1 && this.#newUserGroup.roleId !== -1) {
         this.#storeNewGroupValue(this.#newUserGroup);

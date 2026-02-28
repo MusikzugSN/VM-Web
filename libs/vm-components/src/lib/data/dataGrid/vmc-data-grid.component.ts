@@ -124,7 +124,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       });
 
     // custom filter für DataGrid
-    this.tableData.filterPredicate = (row: unknown, filter: string) => {
+    this.tableData.filterPredicate = (row: unknown, filter: string): boolean => {
       const data = row as TRow;
       const filterTerm = filter.toLowerCase();
       const columns = this.columns();
@@ -138,7 +138,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     }
 
     // custom sorting für DataGrid
-    this.tableData.sortingDataAccessor = (row: TRow, columnId: string) => {
+    this.tableData.sortingDataAccessor = (row: TRow, columnId: string): string => {
       const col = this.columns().find(c => c.key === columnId);
       if (!col?.field) return '';
       return row[col.field] as unknown as string;
@@ -162,7 +162,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
 
   }
 
-  toggleRowSelection(row: TRow) {
+  toggleRowSelection(row: TRow): void {
     const selectionKey = this.selectionKey();
 
     if (selectionKey === undefined) {
@@ -179,7 +179,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     }
   }
 
-  toggleAllRows() {
+  toggleAllRows(): void {
     if (this.isAllSelected()) {
       this.selection$.next([]);
       return;
@@ -195,7 +195,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     this.selection$.next(keys);
   }
 
-  #convertAllSelected() {
+  #convertAllSelected(): boolean {
     const numSelected = this.selection().length;
     const numRows = this.dataSource().length;
     return numSelected === numRows;
@@ -258,15 +258,15 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   }
 
   /** Announce the change in sort state for assistive technology. */
-  announceSortChange(sortState: Sort) {
+  async announceSortChange(sortState: Sort): Promise<void> {
     // This example uses English messages. If your application supports
     // multiple language, you would internationalize these strings.
     // Furthermore, you can customize the message to add additional
     // details about the values being sorted.
     if (sortState.direction) {
-      this.#liveAnnouncer.announce(`Sortierung ${sortState.direction}beendet`);
+      await this.#liveAnnouncer.announce(`Sortierung ${sortState.direction}beendet`);
     } else {
-      this.#liveAnnouncer.announce('Sortierung gelöscht');
+      await this.#liveAnnouncer.announce('Sortierung gelöscht');
     }
   }
 }
