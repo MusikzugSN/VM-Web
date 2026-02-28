@@ -22,9 +22,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-npm-
 
-      - run: npm ci
+      - run: npm ci --cache .npm --prefer-offline
 
       - run: npx prettier --check .
         continue-on-error: true
 
-      - run: npx nx run-many --target=lint --all --output-style=compact
+      - run: npx nx run-many --target=lint --all --output-style=static
