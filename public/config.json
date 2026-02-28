@@ -1,6 +1,6 @@
 {
   "backedApiUrl": "http://localhost:5000",
-  "images":  {
+  "images": {
     "logo": "/assets/logo.png",
     "loginBanner": "/assets/loginBanner.png"
   }

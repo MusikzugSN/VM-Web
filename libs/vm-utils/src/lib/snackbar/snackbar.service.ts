@@ -1,6 +1,6 @@
-import {inject, Injectable} from '@angular/core';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import {VmuSnackbarLayout} from './snackbarLayout/vmu-snackbar-layout.component';
+import { inject, Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { VmuSnackbarLayout } from './snackbarLayout/vmu-snackbar-layout.component';
 
 export interface VmSnackbarData {
   message: string;
@@ -19,7 +19,7 @@ export class SnackbarService {
       data: {
         message: message,
         type: 'success',
-      }
+      },
     });
   }
 
@@ -29,7 +29,7 @@ export class SnackbarService {
       data: {
         message: message,
         type: 'error',
-      }
+      },
     });
   }
 
@@ -39,7 +39,7 @@ export class SnackbarService {
       data: {
         message: message,
         type: 'warning',
-      }
+      },
     });
   }
 
@@ -49,7 +49,7 @@ export class SnackbarService {
       data: {
         message: message,
         type: 'info',
-      }
+      },
     });
   }
 }

@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
 import { Role } from './role.service';
 import { AppDeleteRoleDialog } from './deleteDialog/app-delete-role-dialog.component';
-import {AppRoleDataDialog} from './dataDialog/app-role-data-dialog.component';
+import { AppRoleDataDialog } from './dataDialog/app-role-data-dialog.component';
 @Injectable({
   providedIn: 'root',
 })

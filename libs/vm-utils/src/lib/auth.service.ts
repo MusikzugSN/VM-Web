@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  distinctUntilChanged, filter,
+  distinctUntilChanged,
+  filter,
   firstValueFrom,
   map,
   Observable,
@@ -9,10 +10,10 @@ import {
 } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { HttpClient } from '@angular/common/http';
-import {OAuthService} from 'angular-oauth2-oidc';
-import {ConfigService, OAuthProvider} from './config.service';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {Router} from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { ConfigService, OAuthProvider } from './config.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 const storage = window.sessionStorage;
 const accessTokenKey = 'accessToken';
@@ -37,13 +38,14 @@ export interface MeInformation {
 export class AuthService {
   readonly #httpClient = inject(HttpClient);
   readonly #oAuthService = inject(OAuthService);
-  readonly #config = inject(ConfigService)
+  readonly #config = inject(ConfigService);
   readonly #router = inject(Router);
 
   readonly redirectUrl = window.location.origin + '/auth/callback';
   readonly scope = 'openid profile email';
 
-  #currentProvider$: BehaviorSubject<string | null> = this.#getValueFromStorage$(providerKeyStorageKey);
+  #currentProvider$: BehaviorSubject<string | null> =
+    this.#getValueFromStorage$(providerKeyStorageKey);
 
   #accessToken$: BehaviorSubject<string | null> = this.#getValueFromStorage$(accessTokenKey, true);
   accessToken$ = this.#accessToken$
@@ -55,18 +57,23 @@ export class AuthService {
     shareReplay({ bufferSize: 1, refCount: false }),
   );
 
-  #myInformation$: BehaviorSubject<MeInformation | null> = new BehaviorSubject<MeInformation | null>(null);
-  myInformation$ = this.#myInformation$.asObservable().pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  #myInformation$: BehaviorSubject<MeInformation | null> =
+    new BehaviorSubject<MeInformation | null>(null);
+  myInformation$ = this.#myInformation$
+    .asObservable()
+    .pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   constructor() {
-    this.#oAuthService.events.pipe(
-        map(e => e.type),
-        filter(e => e === 'token_refreshed'),
-        takeUntilDestroyed())
-      .subscribe(_x => {
+    this.#oAuthService.events
+      .pipe(
+        map((e) => e.type),
+        filter((e) => e === 'token_refreshed'),
+        takeUntilDestroyed(),
+      )
+      .subscribe((_x) => {
         const token = this.#oAuthService.getAccessToken();
-        this.#storeAccessToken(token, this.#currentProvider$.getValue()!);
-      })
+        this.#storeAccessToken(token, this.#currentProvider$.getValue() ?? 'local');
+      });
   }
 
   async #configureOAuthProvider(provider?: OAuthProvider): Promise<boolean> {
@@ -112,16 +119,16 @@ export class AuthService {
     if (this.#oAuthService.hasValidAccessToken()) {
       this.#oAuthService.setupAutomaticSilentRefresh();
       const token = this.#oAuthService.getAccessToken();
-      this.#storeAccessToken(token, this.#currentProvider$.getValue()!);
+      this.#storeAccessToken(token, this.#currentProvider$.getValue() ?? 'local');
       await this.#loadMyInformation();
     }
   }
 
-  async initOAuthLogin(provider: OAuthProvider) {
+  async initOAuthLogin(provider: OAuthProvider): Promise<void> {
     await this.#configureOAuthProvider(provider);
 
     await this.#oAuthService.loadDiscoveryDocument();
-    this.#oAuthService.initLoginFlow()
+    this.#oAuthService.initLoginFlow();
   }
 
   async login(username: string, password: string): Promise<LoginResult> {
@@ -195,8 +202,7 @@ export class AuthService {
   }
 
   #getValueFromStorage$(key: string, addProviderAsPrefix = false): BehaviorSubject<string | null> {
-    if (addProviderAsPrefix)
-      key = this.#currentProvider$.getValue() + '_' + key;
+    if (addProviderAsPrefix) key = this.#currentProvider$.getValue() + '_' + key;
 
     const value = storage.getItem(key);
     return new BehaviorSubject(value);

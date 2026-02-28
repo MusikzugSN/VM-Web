@@ -10,7 +10,7 @@
     {
       keys: ['oAuthProvider'],
       templateRef: providerTemplate,
-    }
+    },
   ]"
 />
 
@@ -20,7 +20,10 @@
 
 <ng-template #actionTemplate let-rowData="rowData">
   @let isEnabled = rowData?.isEnabled;
-  <vmc-icon-button [iconName]="isEnabled ? 'vpn_key' : 'vpn_key_off'" (buttonClicked)="execAction(rowData, 'toggle')" />
+  <vmc-icon-button
+    [iconName]="isEnabled ? 'vpn_key' : 'vpn_key_off'"
+    (buttonClicked)="execAction(rowData, 'toggle')"
+  />
   <vmc-icon-button [iconName]="'edit'" (buttonClicked)="execAction(rowData, 'edit')" />
   <vmc-icon-button [iconName]="'delete'" (buttonClicked)="execAction(rowData, 'delete')" />
 </ng-template>

@@ -1,6 +1,6 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {AuthService} from '@vm-utils';
-import {Router} from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { AuthService } from '@vm-utils';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-callback',
@@ -13,7 +13,7 @@ export class AppCallback implements OnInit {
   readonly #router = inject(Router);
 
   async ngOnInit() {
-    await this.#authService.handleOAuthLoginCallback()
+    await this.#authService.handleOAuthLoginCallback();
     await this.#router.navigate(['/']);
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BaseCrudService, IMetaData} from '@vm-utils';
+import { BaseCrudService, IMetaData } from '@vm-utils';
 
 export interface Group extends IMetaData {
   groupId: number;
@@ -9,6 +9,6 @@ export interface Group extends IMetaData {
 @Injectable({
   providedIn: 'root',
 })
-export class GroupService extends BaseCrudService<Group>{
+export class GroupService extends BaseCrudService<Group> {
   override url: string = 'group';
 }
