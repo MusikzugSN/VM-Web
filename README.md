@@ -12,32 +12,7 @@ NOTE: This software is currently not production ready!
 
 Dieses Repository enthält das Web-Frontend der digitalen Verwaltungsplattform für deinen Musikverein. Die Anwendung basiert auf Angular und bietet allen Musikern sowie der Vereinsverwaltung einen modernen, intuitiven Zugang zu allen relevanten Funktionen.
 
-## 1. Lizenz
-
-Dieses Projekt steht unter der GNU General Public License v3.0 (GPLv3).
-Der vollständige Lizenztext befindet sich in der Datei `LICENSE` in diesem Repository.
-Mit Beiträgen zu diesem Projekt erklärst du dich einverstanden, dass deine Änderungen ebenfalls unter der GPLv3 veröffentlicht werden.
-
-### Was bedeutet GPLv3 für dich?
-
-- Du darfst die Software frei nutzen, verändern und weitergeben.
-- Wenn du veränderte Versionen veröffentlichst, müssen diese ebenfalls unter GPLv3 stehen.
-- Die Software wird ohne Garantie bereitgestellt (siehe Lizenztext).
-
-## 2. Funktionen
-
-- **Benutzerverwaltung**: Registrierung, Anmeldung und Profilverwaltung für Musiker und Vereinsadministratoren.
-- **Repertoireverwaltung**: Verwaltung von Musikstücken, Noten und Übungsmaterialien.
-
-## 3. Installation und Einrichtung
-
-bald
-
-## 4. Architektur
-
-bald
-
-### Tech-Stack
+Link zum Wiki: [Wiki](https://github.com/MusikzugSN/VM-Web/wiki)
 
 ### Projektstruktur (Web)
 
