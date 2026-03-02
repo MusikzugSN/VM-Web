@@ -29,6 +29,3 @@ COPY --from=build /workspace/dist/Vereinsmanager-Web/browser /config/www
 COPY nginx.conf /config/nginx/site-confs/default.conf
 
 EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
-
