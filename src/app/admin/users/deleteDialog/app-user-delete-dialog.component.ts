@@ -1,8 +1,8 @@
-import {Component, inject} from '@angular/core';
-import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils';
-import {firstValueFrom, Observable} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {User, UserService} from '../user.service';
+import { Component, inject } from '@angular/core';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils';
+import { firstValueFrom, Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { User, UserService } from '../user.service';
 
 interface UserDeleteDialogData extends User {
   asDisable: boolean;
@@ -31,18 +31,26 @@ export class AppUserDeleteDialog extends DialogBase<boolean> {
 
         super.closeDialog(true);
       } else if (x === 'disable') {
-        await firstValueFrom(this.#userService.change$({
-            userId: this.#data.userId,
-            isEnabled: false
-          }, this.#data.userId)
+        await firstValueFrom(
+          this.#userService.change$(
+            {
+              userId: this.#data.userId,
+              isEnabled: false,
+            },
+            this.#data.userId,
+          ),
         );
 
         super.closeDialog(true);
       } else if (x === 'enable') {
-        await firstValueFrom(this.#userService.change$({
-            userId: this.#data.userId,
-            isEnabled: true
-          }, this.#data.userId)
+        await firstValueFrom(
+          this.#userService.change$(
+            {
+              userId: this.#data.userId,
+              isEnabled: true,
+            },
+            this.#data.userId,
+          ),
         );
 
         super.closeDialog(true);

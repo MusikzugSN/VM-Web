@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {BaseCrudService, IMetaData} from '@vm-utils';
+import { BaseCrudService, IMetaData } from '@vm-utils';
 
 export interface PermissionGroup {
   name: string;

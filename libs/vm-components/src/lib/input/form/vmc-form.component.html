@@ -1,14 +1,22 @@
-<form class="flex-column">
+<form class="flex-column" style="gap: 12px">
   @let data = formData();
   <label class="text-header">{{ data.header }}</label>
   <span class="text-normal">{{ data.description }}</span>
-  @for (field of data.fields; track field.key) {
-    <vmc-input-field [formField]="field" (inputChanged)="onChange($event, field.key)" />
-  }
+  <div class="flex-column" style="gap: 16px">
+    @for (field of data.fields; track field.key) {
+      <vmc-input-field [formField]="field" (inputChanged)="onChange($event, field.key)" />
+    }
+  </div>
   <vmc-button
-    style="margin-left: auto"
+    [ngStyle]="{
+      'margin-left': data.submitButtonPosition === 'right' ? 'auto' : null,
+      'margin-right': data.submitButtonPosition === 'left' ? 'auto' : null,
+      'margin-inline': data.submitButtonPosition === 'center' ? 'auto' : null,
+      width: data.submitButtonPosition === 'full' ? '100%' : null,
+    }"
     [type]="data.submitButtonType ?? 'elevated'"
     [label]="data.submitButton ?? 'Senden'"
-    (buttonClicked)="this.submitClicked()"
+    [fullWidth]="data.submitButtonPosition === 'full'"
+    (buttonClicked)="submitClicked()"
   />
 </form>

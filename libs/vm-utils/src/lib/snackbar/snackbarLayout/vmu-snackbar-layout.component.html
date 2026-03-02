@@ -1,0 +1,13 @@
+<div style="display: flex; align-items: center; justify-content: space-between; width: 100%">
+  <span matSnackBarLabel style="display: flex; align-items: center; gap: 8px">
+    <vmc-icon
+      [iconName]="typeToIconMap[dialogData.type] ?? ''"
+      [iconColor]="typeToColorMap[dialogData.type] ?? 'white'"
+    />
+    {{ dialogData.message }}
+  </span>
+
+  <span matSnackBarActions>
+    <vmc-icon-button [iconName]="'close'" [iconColor]="'white'" (click)="snackBarRef.dismiss()" />
+  </span>
+</div>

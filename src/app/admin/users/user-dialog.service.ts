@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
-import {AppUserDataDialog} from './dataDialog/app-user-data-dialog.component';
-import {AppUserDeleteDialog} from './deleteDialog/app-user-delete-dialog.component';
-import {User} from './user.service';
+import { AppUserDataDialog } from './dataDialog/app-user-data-dialog.component';
+import { AppUserDeleteDialog } from './deleteDialog/app-user-delete-dialog.component';
+import { User } from './user.service';
 @Injectable({
   providedIn: 'root',
 })
@@ -17,7 +17,7 @@ export class UserDialogService {
         { key: 'create', text: 'Erstellen', type: 'filled' },
       ],
       dialogConfig: {
-        minWidth: '1200px',
+        minWidth: '900px',
       },
     });
   }
@@ -31,14 +31,14 @@ export class UserDialogService {
         { key: 'save', text: 'Speichern', type: 'filled' },
       ],
       dialogConfig: {
-        minWidth: '1200px',
+        minWidth: '900px',
       },
     });
   }
 
   async openDeleteUserDialog(data: User): Promise<boolean | undefined> {
     return this.#dialogService.open(AppUserDeleteDialog, {
-      data: {...data, asDisable: false},
+      data: { ...data, asDisable: false },
       title: 'Benutzer löschen',
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
@@ -52,11 +52,16 @@ export class UserDialogService {
     const actionButton = data.isEnabled ? 'Deaktivieren' : 'Reaktivieren';
     const actionButtonType = data.isEnabled ? 'disable' : 'enable';
     return this.#dialogService.open(AppUserDeleteDialog, {
-      data: {...data, asDisable: true},
+      data: { ...data, asDisable: true },
       title: `Benutzer ${actionToolbar}`,
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
-        { key: actionButtonType, text: actionButton, type: 'filled', color: data.isEnabled ? 'error' : 'primary' },
+        {
+          key: actionButtonType,
+          text: actionButton,
+          type: 'filled',
+          color: data.isEnabled ? 'error' : 'primary',
+        },
       ],
     });
   }

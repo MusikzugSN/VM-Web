@@ -1,6 +1,6 @@
 import { Component, inject, input, InputSignal } from '@angular/core';
 import { GroupDialogService } from '../../../../../../src/app/admin/goups/group-dialog.service';
-import { BehaviorSubject} from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import {
   VmcDataGrid,
   VmcInputField,
@@ -75,7 +75,6 @@ export class VmpNotesFullPageComponent {
     label: 'Suchen',
   };
 
-
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   filterSelectionChange(event: VmValidFormTypes) {
     return console.log(event);
@@ -90,4 +89,3 @@ export class VmpNotesFullPageComponent {
   ];
   protected readonly onselectionchange = onselectionchange;
 }
-

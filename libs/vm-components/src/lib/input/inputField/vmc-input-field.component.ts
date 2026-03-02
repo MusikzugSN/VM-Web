@@ -1,9 +1,9 @@
 import { Component, effect, input, InputSignal, output } from '@angular/core';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
-import {VmValidFormTypes, VmFormField, VmCheckboxValues} from '../form.models';
+import { VmValidFormTypes, VmFormField, VmCheckboxValues } from '../form.models';
 import { FormsModule } from '@angular/forms';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {MatOption, MatSelect, MatSelectChange} from '@angular/material/select';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatOption, MatSelect, MatSelectChange } from '@angular/material/select';
 
 @Component({
   selector: 'vmc-input-field',
