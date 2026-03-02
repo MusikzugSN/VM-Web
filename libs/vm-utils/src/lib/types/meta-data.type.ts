@@ -15,3 +15,12 @@ export function convertMetaDataFromDto<TDto extends IMetaData>(data: TDto[]): TD
       }) as TDto,
   );
 }
+
+export function mockMetaData(): IMetaData {
+  return {
+    createdAt: new Date('24.09.2003'),
+    updatedAt: new Date('24.09.2003'),
+    updatedBy: '',
+    createdBy: '',
+  };
+}

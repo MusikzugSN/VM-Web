@@ -1,0 +1,12 @@
+<vmc-toolbar [items]="items" [useNgContentForRightside]="true">
+  <vmc-input-field [formField]="suchleiste"></vmc-input-field>
+</vmc-toolbar>
+
+<div class="flex-row-fill gap">
+  <vmc-data-grid
+    [dataSource]="voiceListe"
+    [columns]="columnsVoice"/>
+  <vmc-data-grid
+    [dataSource]="instrumentListe"
+    [columns]="columnsInstrument"/>
+</div>

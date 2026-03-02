@@ -20,8 +20,8 @@ export class VmpNavbar {
     map((route) => {
       return [
         this.#createToolbarItem('Mein Bereich', '/me', route),
-        this.#createToolbarItem('Systemverwaltung', '/admin', route),
         this.#createToolbarItem('Notenverwaltung', '/scores', route),
+        this.#createToolbarItem('Systemverwaltung', '/admin', route),
       ];
     }),
   );

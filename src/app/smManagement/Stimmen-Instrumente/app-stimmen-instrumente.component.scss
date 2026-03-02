@@ -1,0 +1,24 @@
+:host {
+  width: 100%;
+}
+.flex-row-fill {
+  display: flex;
+  flex-direction: row; // Erzwingt das Nebeneinander
+  width: 100%;         // Nutzt die volle Breite
+  gap: 5px;           // Der Abstand zwischen den Tabellen
+  align-items: flex-start;
+
+  // Das sorgt dafür, dass beide Grids sich den Platz 50/50 teilen
+  vmc-data-grid {
+    flex: 1;           // Jedes Grid bekommt den gleichen Anteil am Platz
+    min-width: 0;      // Verhindert, dass Grids das Layout sprengen
+    width: 100%;
+  }
+}
+
+// Falls du isError nutzt, um das Layout auszublenden (wie vorhin besprochen):
+.full-page {
+  display: block;
+  width: 100%;
+  overflow-x: hidden;
+}

@@ -11,7 +11,6 @@ import {
   VmToolbarItem,
   VmValidFormTypes,
 } from '@vm-components';
-import { AsyncPipe } from '@angular/common';
 
 interface AllNotesData {
   name: string;
@@ -24,7 +23,7 @@ interface AllNotesData {
 
 @Component({
   selector: 'vmp-notes-full-page',
-  imports: [AsyncPipe, VmcDataGrid, VmcInputField, VmcToolbar],
+  imports: [VmcDataGrid, VmcInputField, VmcToolbar],
   templateUrl: './vmp-notesFullPage.component.html',
   styleUrl: './vmp-notesFullPage.component.scss',
   standalone: true,

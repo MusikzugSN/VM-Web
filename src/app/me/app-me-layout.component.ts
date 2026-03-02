@@ -3,6 +3,8 @@ import { VmSidebarGroup } from '@vm-components';
 import { RouterOutlet } from '@angular/router';
 import { VmpSidebar } from '@vm-parts';
 import { FoldersService } from './folders/folders.service';
+import { EventService } from './event/event.service';
+import { TagsService } from './tags/Tag.service';
 
 @Component({
   selector: 'app-me-layout',
@@ -12,6 +14,8 @@ import { FoldersService } from './folders/folders.service';
 })
 export class AppMeLayout {
   private foldersService = inject(FoldersService);
+  private eventsService = inject(EventService);
+  private tagsService = inject(TagsService);
 
   sidebarItems: VmSidebarGroup[] = [
     {
@@ -23,21 +27,16 @@ export class AppMeLayout {
     },
     {
       groupName: 'Event',
-      items: [
-        {
-          name: 'Alle', //todo entfernung von Alle Tab und ersetzen durch Event
-          route: '/me/events',
-        },
-      ],
+      items: this.eventsService.eventListe.map((event) => ({
+        name: event.name,
+        route: `/me/event/${event.eventId}`,
+      })),
     },
     {
       groupName: 'Tags',
-      items: [
-        {
-          name: 'Favouriten',
-          route: '/me/tags/favorites'
-        }
-      ]
-    }
+      items: this.tagsService.tagListe.map((tag) => ({
+        name: tag.name,
+        route: `/me/tag/${tag.tagId}`,
+      })) }
   ];
 }

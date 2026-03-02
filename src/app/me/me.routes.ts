@@ -10,8 +10,14 @@ export const ME_ROUTES: Routes = [
     component: AppMeLayout,
     children: [
       { path: '', redirectTo: 'folders/2', pathMatch: 'full' },
-      { path: 'event', component: AppEventComponent },
-      { path: 'tags', component: AppTagsComponent },
+      { path: 'event', children: [
+          { path: ':eventId', component: AppEventComponent },
+        ]
+      },
+      { path: 'tag', children: [
+          { path: ':tagId', component: AppTagsComponent },
+          ]
+        },
       { path: 'folders', children: [
           { path: ':folderId', component: AppFoldersComponent }
          ]
