@@ -19,14 +19,14 @@ RUN npx nx build Vereinsmanager-Web --configuration=production
 # -----------------------------
 # Stage 2: Serve with Nginx
 # -----------------------------
-FROM nginx:1.25-alpine
+FROM lscr.io/linuxserver/nginx:1.28.2
 
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy the built output from Nx
-COPY --from=build /workspace/dist/Vereinsmanager-Web/browser /usr/share/nginx/html
+COPY --from=build /workspace/dist/Vereinsmanager-Web/browser /config/www
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /config/nginx/site-confs/default.conf
 
 EXPOSE 80
 
