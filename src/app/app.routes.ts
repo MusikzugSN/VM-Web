@@ -1,11 +1,16 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './auth/auth.guard';
+import {VmpNoteViewer} from '@vm-parts';
 
 export const routes: Routes = [
   {
     path: '',
     redirectTo: 'me',
     pathMatch: 'full',
+  },
+  {
+    path: 'viewer',
+    component: VmpNoteViewer
   },
   {
     path: 'me',

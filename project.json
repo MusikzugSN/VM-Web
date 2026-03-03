@@ -21,6 +21,11 @@
             "glob": "**/*",
             "input": "public",
             "output": "static"
+          },
+          {
+            "glob": "**/*",
+            "input": "node_modules/@syncfusion/ej2-pdfviewer/dist/ej2-pdfviewer-lib",
+            "output": "viewer/assets/ej2-pdfviewer-lib"
           }
         ],
         "styles": ["src/styles.scss"],
