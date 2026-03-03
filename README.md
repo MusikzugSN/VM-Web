@@ -6,6 +6,8 @@
 ![NPM](https://img.shields.io/badge/NPM-CB3837.svg?style=for-the-badge&logo=npm&logoColor=white)
 ![SCSS](https://img.shields.io/badge/SCSS-CC6699.svg?style=for-the-badge&logo=sass&logoColor=white)
 
+NOTE: This software is currently not production ready!
+
 # VM-Web
 
 Dieses Repository enthält das Web-Frontend der digitalen Verwaltungsplattform für deinen Musikverein. Die Anwendung basiert auf Angular und bietet allen Musikern sowie der Vereinsverwaltung einen modernen, intuitiven Zugang zu allen relevanten Funktionen.

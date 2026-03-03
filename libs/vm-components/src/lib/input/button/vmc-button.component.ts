@@ -15,6 +15,8 @@ export class VmcButton {
   type: InputSignal<VmButtonType> = input<VmButtonType>('elevated');
   disabled: InputSignal<boolean> = input<boolean>(false);
 
+  fullWidth: InputSignal<boolean> = input<boolean>(false);
+
   colorType: InputSignal<VmButtonColor> = input<VmButtonColor>('primary');
   colorClass = computed(() => this.#mapColorTypeToClass(this.colorType()));
 

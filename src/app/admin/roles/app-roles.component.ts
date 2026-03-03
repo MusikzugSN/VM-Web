@@ -2,7 +2,13 @@ import { Component, inject } from '@angular/core';
 import { Role, RoleService } from './role.service';
 import { BehaviorSubject, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { VmColumn, VmRowClickedEvent, VmToolbarItem, VmcDataGrid, VmcToolbar } from '@vm-components';
+import {
+  VmColumn,
+  VmRowClickedEvent,
+  VmToolbarItem,
+  VmcDataGrid,
+  VmcToolbar,
+} from '@vm-components';
 import { RoleDialogService } from './role-dialog.service';
 
 @Component({
@@ -16,8 +22,7 @@ export class AppRoles {
   readonly #roleDialogService = inject(RoleDialogService);
 
   #reload = new BehaviorSubject(false);
-  roles$ = this.#reload
-    .pipe(switchMap((_x) => this.#roleService.load$()));
+  roles$ = this.#reload.pipe(switchMap((_x) => this.#roleService.load$()));
 
   items: VmToolbarItem[] = [
     {
@@ -32,8 +37,11 @@ export class AppRoles {
   ];
 
   async execAction(action: VmRowClickedEvent<Role>): Promise<void> {
+    if (action.rowData === null) {
+      return;
+    }
     if (action.key === 'edit') {
-      const reload = await this.#roleDialogService.openEditRoleDialog(action.rowData!);
+      const reload = await this.#roleDialogService.openEditRoleDialog(action.rowData);
       if (reload) {
         this.#reload.next(true);
       }
@@ -41,7 +49,7 @@ export class AppRoles {
     }
 
     if (action.key === 'delete') {
-      const reload = await this.#roleDialogService.openDeleteRoleDialog(action.rowData!);
+      const reload = await this.#roleDialogService.openDeleteRoleDialog(action.rowData);
       if (reload) {
         this.#reload.next(true);
       }

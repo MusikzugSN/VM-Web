@@ -10,12 +10,10 @@ export interface VmForm {
   fields: VmFormField[];
   submitButton?: string;
   submitButtonType?: VmButtonType;
+  submitButtonPosition?: 'left' | 'right' | 'center' | 'full';
 }
 
-export type VmFormField =
-  | VmInputField
-  | VmCheckboxField
-  | VmSelect;
+export type VmFormField = VmInputField | VmCheckboxField | VmSelect;
 
 export interface VmBaseField {
   label: string;
@@ -44,11 +42,13 @@ export interface VmInputField extends VmBaseField {
 
 export interface VmCheckboxField extends VmBaseField {
   type: 'checkbox';
+  labelPosition?: 'before' | 'after';
   value?: VmCheckboxValues;
 }
 export interface VmSelect extends VmBaseField {
   type: 'select';
   options: VmSelectOption[];
+  value?: string;
 }
 export interface VmSelectOption {
   label: string;

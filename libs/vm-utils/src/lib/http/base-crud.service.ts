@@ -1,12 +1,12 @@
-import {inject} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {map, Observable} from 'rxjs';
-import {convertMetaDataFromDto, IMetaData} from '@vm-utils';
+import { inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+import { convertMetaDataFromDto, IMetaData } from '@vm-utils';
 
 export abstract class BaseCrudService<TDto extends IMetaData, TChangeDto = TDto> {
   readonly #httpClient = inject(HttpClient);
 
-  abstract url:string;
+  abstract url: string;
 
   create$(group: Partial<TChangeDto>): Observable<TDto> {
     return this.#httpClient.post<TDto>(this.url, group);

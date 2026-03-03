@@ -1,6 +1,6 @@
 import { Component, inject, input, InputSignal } from '@angular/core';
 import { GroupDialogService } from '../../../../../../src/app/admin/goups/group-dialog.service';
-import { BehaviorSubject} from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import {
   VmcDataGrid,
   VmcInputField,

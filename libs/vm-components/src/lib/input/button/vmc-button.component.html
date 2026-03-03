@@ -2,6 +2,7 @@
   [class]="colorClass()"
   [matButton]="type()"
   [disabled]="disabled()"
+  [class.full-width]="fullWidth()"
   (click)="buttonClicked.emit(true)"
 >
   {{ label() }}
