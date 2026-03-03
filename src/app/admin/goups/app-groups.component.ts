@@ -1,5 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { VmColumn, VmRowClickedEvent, VmcDataGrid, VmcToolbar, VmToolbarItem } from '@vm-components';
+import {
+  VmColumn,
+  VmRowClickedEvent,
+  VmcDataGrid,
+  VmcToolbar,
+  VmToolbarItem,
+} from '@vm-components';
 import { GroupService, Group } from './group.service';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -30,8 +36,12 @@ export class AppGroups {
   ];
 
   async execAction(action: VmRowClickedEvent<Group>): Promise<void> {
+    if (action.rowData === null) {
+      return;
+    }
+
     if (action.key === 'edit') {
-      const reload = await this.#groupDataDialogService.openEditGroupDialog(action.rowData!);
+      const reload = await this.#groupDataDialogService.openEditGroupDialog(action.rowData);
       if (reload) {
         this.#reload.next(true);
       }
@@ -39,16 +49,14 @@ export class AppGroups {
     }
 
     if (action.key === 'delete') {
-      const reload = await this.#groupDataDialogService.openDeleteGroupDialog(action.rowData!);
+      const reload = await this.#groupDataDialogService.openDeleteGroupDialog(action.rowData);
       if (reload) {
         this.#reload.next(true);
       }
     }
   }
 
-  data$: Observable<Group[]> = this.#reload.pipe(
-    switchMap((_x) => this.#groupService.load$()),
-  );
+  data$: Observable<Group[]> = this.#reload.pipe(switchMap((_x) => this.#groupService.load$()));
 
   columns: VmColumn<Group>[] = [
     { key: 'groupId', header: '', field: 'groupId' },

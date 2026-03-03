@@ -4,6 +4,11 @@
 
   --vm-secondary-color: #2a8899;
   --vm-secondary-color-tonal: color-mix(in srgb, var(--vm-secondary-color) 15%, white);
+  --vm-secondary-gray: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--vm-secondary-color) 50%, #808080) 20%,
+    white
+  );
 
   --vm-error-color: #f44336;
 
@@ -16,4 +21,8 @@
 
   --vm-iconColor-white: whitesmoke;
   --vm-iconColor-black: black;
+  --vm-iconColor-green: green;
+  --vm-iconColor-red: red;
+  --vm-iconColor-blue: lightblue;
+  --vm-iconColor-orange: orange;
 }

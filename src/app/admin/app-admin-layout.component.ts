@@ -15,8 +15,8 @@ export class AppAdminLayout {
       groupName: 'Grundeinstellungen',
       items: [
         {
-          name: 'Allgemein',
-          route: '/admin/general',
+          name: 'Logineinstellungen',
+          route: '/admin/loginSettings',
         },
         {
           name: 'Vereinsgruppen',
