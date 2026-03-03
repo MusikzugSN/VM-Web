@@ -1,21 +1,19 @@
 <mat-toolbar class="toolbar">
-  @if (useNgContentOnly()) {
-    <ng-content />
-  } @else {
-    @let _items = items();
+  @let _items = items();
     @if (_items && _items.length > 0) {
       @for (item of _items; track item.key) {
         <div class="toolbar-item" (click)="item.acton()">
           <vmc-icon style="height: 24px; width: 24px" [iconName]="item.icon" [iconColor]="'white'"
-          /><span class="text-normal"> {{ item.label }} </span>
-        </div>
-      }
-    }
-    @if (useNgContentForRightside()) {
-      <div class="rightside">
-        <ng-content/>
+        /><span class="text-normal"> {{ item.label }} </span>
       </div>
     }
+  }
+  @if (useNgContentForRightside() || useNgContentOnly()) {
+    <div
+      [class.rightside]="useNgContentForRightside()"
+      [class.only-ng-content]="useNgContentOnly()">
+        <ng-content/>
+      </div>
 
 
   }
