@@ -8,7 +8,6 @@ import {
   PrintService,
   ThumbnailViewService,
   ToolbarService,
-  AnnotationService,
   ToolbarSettingsModel
 } from '@syncfusion/ej2-angular-pdfviewer';
 import {NotesViewerSerice} from './noteViewer.service';
@@ -26,7 +25,6 @@ import {AsyncPipe} from '@angular/common';
     ThumbnailViewService,
     MagnificationService,
     PrintService,
-    AnnotationService,
     NotesViewerSerice
   ],
   templateUrl: './vmp-note-viewer.component.html',
@@ -38,24 +36,11 @@ export class VmpNoteViewer {
   customToolbar: ToolbarSettingsModel = {
     showTooltip: true,
     toolbarItems: [
-      {
-        text: 'test',
-        id: 'systemCall',
-      },
-      {
-        text: 'Add XXX',
-        id: 'addXXX',
-        prefixIcon: 'e-icons e-edit'
-      },
       'DownloadOption',
       'PrintOption',
       'MagnificationTool',
       'PageNavigationTool',
       'OpenOption'
-    ],
-    annotationToolbarItems: [
-      'AnnotationDeleteTool',
-      'FontSizeAnnotationTool'
     ],
   }
 
