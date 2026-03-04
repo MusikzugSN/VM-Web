@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { AppMeLayout } from './app-me-layout.component';
 import {AppTagsComponent} from './tags/app-tags.component';
 import { AppEventComponent } from './event/app-event.component';
-import { AppFoldersComponent } from './folders/app-folders.component';
+import { AppFolderMeComponent } from './folders/app-folders.component';
 
 export const ME_ROUTES: Routes = [
   {
@@ -19,7 +19,7 @@ export const ME_ROUTES: Routes = [
           ]
         },
       { path: 'folders', children: [
-          { path: ':folderId', component: AppFoldersComponent }
+          { path: ':folderId', component: AppFolderMeComponent }
          ]
       }
     ]
