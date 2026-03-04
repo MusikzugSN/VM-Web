@@ -1,5 +1,4 @@
 @let field = formField();
-
 @if (field.type === 'checkbox') {
   <mat-checkbox
     class="vm-input"
@@ -20,7 +19,7 @@
       }
     </mat-select>
   </mat-form-field>
-} @else {
+}  @else {
   <mat-form-field class="vm-input">
     <mat-label>{{ field.label }}</mat-label>
     <input

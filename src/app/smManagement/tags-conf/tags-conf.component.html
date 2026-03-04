@@ -6,4 +6,15 @@
 <vmc-data-grid
   [dataSource]="tagListe"
   [columns]="column"
+  [rowActions]="[
+    {
+      key: 'edit',
+      icon: 'edit',
+    },
+    {
+      key: 'delete',
+      icon: 'delete',
+    },
+  ]"
+  (clickedAction)="execAction($event)"
 />

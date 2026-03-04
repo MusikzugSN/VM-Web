@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { IMetaData, mockMetaData } from '@vm-utils';
+import { BaseCrudService, IMetaData, mockMetaData } from '@vm-utils';
 
 export interface Event extends IMetaData {
   eventId: number;
   name: string;
+  groupId?: number;
   disbaledAb?: string;
   activUntil?: string;
 }
@@ -11,7 +12,8 @@ export interface Event extends IMetaData {
 @Injectable({
   providedIn: 'root',
 })
-export class EventService {
+export class EventService extends BaseCrudService<Event> {
+  override url = 'event';
   private events: Event[] = [];
 
   public eventListe: Event[] = [

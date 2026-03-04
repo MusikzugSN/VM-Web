@@ -12,6 +12,7 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
+import { VoiceService } from '../../../../../../src/app/smManagement/Stimmen-Instrumente/voice.service';
 
 interface AllNotesData {
   name: string;
@@ -34,7 +35,9 @@ export class VmpNotesFullPageComponent {
 
   readonly #groupDataDialogService = inject(GroupDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
+  readonly #VoiceService = inject(VoiceService);
 
+  folderListe = this.#VoiceService.voiceListe;
   #reload = new BehaviorSubject(false);
 
   items: VmToolbarItem[] = [
@@ -78,7 +81,6 @@ export class VmpNotesFullPageComponent {
     type: 'search',
     label: 'Suchen',
   };
-
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   filterSelectionChange(event: VmValidFormTypes) {
