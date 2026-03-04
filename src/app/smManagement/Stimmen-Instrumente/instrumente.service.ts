@@ -30,6 +30,18 @@ export class InstrumentService {
   array2: string[] = ['c', 'd', 'e', 'f'];
   array3: string[] = [...this.array1, ...this.array2];
 
+  addInstrument(name: string, type: string): void {
+    const nextId = this.instrumentListe.length > 0
+      ? Math.max(...this.instrumentListe.map((i) => i.instrumentId)) + 1
+      : 1;
+    this.instrumentListe.push({
+      instrumentId: nextId,
+      name,
+      type,
+      ...mockMetaData(),
+    });
+  }
+
   getInstrumentById(instrumentId: number): Instrument | undefined {
     return this.instrument.find((Id) => Id.instrumentId === instrumentId);
   }

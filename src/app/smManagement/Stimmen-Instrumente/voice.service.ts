@@ -82,6 +82,21 @@ export class VoiceService {
     },
   ];
 
+  addVoice(name: string, instrumentId: number, instrumentName: string, countOfMusicsheets: number): void {
+    const nextId = this.voiceListe.length > 0
+      ? Math.max(...this.voiceListe.map((v) => v.voiceId)) + 1
+      : 1;
+    this.voiceListe.push({
+      voiceId: nextId,
+      name,
+      instrumentId,
+      instrumentName,
+      countOfMusicsheets,
+      countOfAlternatives: 0,
+      ...mockMetaData(),
+    });
+  }
+
   getVoiceById(voiceId: number): Voice | undefined {
     return this.voice.find((Id) => Id.voiceId === voiceId);
   }

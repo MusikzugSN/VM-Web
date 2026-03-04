@@ -1,0 +1,34 @@
+import { inject, Injectable } from '@angular/core';
+import { VmDialogService } from '@vm-utils';
+import { InstrumentService } from './instrumente.service';
+import { AppVoiceDataDialog, VoiceDialogData } from './dataDialog/app-voice-data-dialog.component';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class VoiceDialogService {
+  readonly #dialogService = inject(VmDialogService);
+  readonly #instrumentService = inject(InstrumentService);
+
+  async openAddVoiceDialog(): Promise<boolean | undefined> {
+    const instrumentOptions = this.#instrumentService.instrumentListe.map((i) => ({
+      label: i.name,
+      value: i.instrumentId.toString(),
+    }));
+
+    return this.#dialogService.open<boolean, VoiceDialogData>(AppVoiceDataDialog, {
+      title: 'Stimme hinzufügen',
+      data: {
+        instrumentOptions,
+      },
+      buttons: [
+        { key: 'close', text: 'Abbrechen', type: 'elevated' },
+        { key: 'create', text: 'Hinzufügen', type: 'filled' },
+      ],
+      dialogConfig: {
+        minWidth: '500px',
+      },
+    });
+  }
+}
+

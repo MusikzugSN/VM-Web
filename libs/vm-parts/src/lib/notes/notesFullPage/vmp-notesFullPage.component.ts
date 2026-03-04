@@ -1,5 +1,5 @@
 import { Component, inject, input, InputSignal } from '@angular/core';
-import { GroupDialogService } from '../../../../../../src/app/admin/goups/group-dialog.service';
+import { RepositoryDialogService } from '../../../../../../src/app/smManagement/repository/repository-dialog.service';
 import { BehaviorSubject} from 'rxjs';
 import {
   VmcDataGrid,
@@ -31,37 +31,59 @@ interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
+  showDownloadPrint: InputSignal<boolean> = input<boolean>(true);
+  showFilter: InputSignal<boolean> = input<boolean>(true);
+  simpleAddDialog: InputSignal<boolean> = input<boolean>(false);
+  customToolbarItems: InputSignal<VmToolbarItem[] | undefined> = input<VmToolbarItem[] | undefined>(undefined);
 
-  readonly #groupDataDialogService = inject(GroupDialogService);
+  readonly #repositoryDialogService = inject(RepositoryDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
 
   #reload = new BehaviorSubject(false);
 
-  items: VmToolbarItem[] = [
-    {
-      key: 'addNotes',
-      icon: 'add',
-      label: 'Notenblätter hinzufügen',
-      acton: async (): Promise<void> => {
-        await this.#groupDataDialogService.openNewGroupDialog();
-        this.#reload.next(true);
+  get defaultItems(): VmToolbarItem[] {
+    const addLabel = this.simpleAddDialog() ? 'Notenstück hinzufügen' : 'Notenblatt hinzufügen';
+    return [
+      {
+        key: 'addNotes',
+        icon: 'add',
+        label: addLabel,
+        acton: async (): Promise<void> => {
+          if (this.simpleAddDialog()) {
+            await this.#repositoryDialogService.openAddScoreDialogSimple();
+          } else {
+            await this.#repositoryDialogService.openAddScoreDialog();
+          }
+          this.#reload.next(true);
+        },
       },
-    },
-    {
-      key: 'download',
-      icon: 'file_download',
-      label: 'Herunterladen',
-      acton: async (): Promise<void> => {
-        this.downloadFile();
+      {
+        key: 'download',
+        icon: 'file_download',
+        label: 'Herunterladen',
+        acton: async (): Promise<void> => {
+          this.downloadFile();
+        },
       },
-    },
-    {
-      key: 'drucken',
-      icon: 'print',
-      label: 'Drucken',
-      acton: async (): Promise<void> => {},
-    },
-  ];
+      {
+        key: 'drucken',
+        icon: 'print',
+        label: 'Drucken',
+        acton: async (): Promise<void> => {},
+      },
+    ];
+  }
+
+  get items(): VmToolbarItem[] {
+    const custom = this.customToolbarItems();
+    if (custom) {
+      return custom;
+    }
+    if (!this.showDownloadPrint()) {
+      return this.defaultItems.filter((i) => i.key === 'addNotes');
+    }
+    return this.defaultItems;
+  }
 
   filter: VmFormField = {
     key: 'voiceSelect',

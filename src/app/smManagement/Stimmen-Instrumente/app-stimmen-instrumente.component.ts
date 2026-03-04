@@ -10,6 +10,8 @@ import {
 import { Voice, VoiceService } from './voice.service';
 import { Instrument, InstrumentService } from './instrumente.service';
 import { of } from 'rxjs';
+import { VoiceDialogService } from './voice-dialog.service';
+import { InstrumentDialogService } from './instrument-dialog.service';
 
 
 @Component({
@@ -21,6 +23,8 @@ import { of } from 'rxjs';
 export class AppStimmenInstrumenteComponent {
   voiceService = inject(VoiceService);
   instrumentService = inject(InstrumentService);
+  readonly #voiceDialogService = inject(VoiceDialogService);
+  readonly #instrumentDialogService = inject(InstrumentDialogService);
 
   voiceListe = this.voiceService.voiceListe;
   instrumentListe = this.instrumentService.instrumentListe;
@@ -29,13 +33,17 @@ export class AppStimmenInstrumenteComponent {
       key: 'addVoice',
       icon: 'add',
       label: 'Stimme hinzufügen',
-      acton: async (): Promise<void> => {},
+      acton: async (): Promise<void> => {
+        await this.#voiceDialogService.openAddVoiceDialog();
+      },
     },
     {
       key: 'addInstrument',
       icon: 'add',
       label: 'Instrument hinzufügen',
-      acton: async (): Promise<void> => {},
+      acton: async (): Promise<void> => {
+        await this.#instrumentDialogService.openAddInstrumentDialog();
+      },
     },
   ];
 
