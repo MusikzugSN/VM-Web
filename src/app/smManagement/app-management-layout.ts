@@ -22,7 +22,7 @@ export class AppManagementLayout {
           route: '/scores/unverified',
         },
         {
-          name: 'Alle Notenblätter',
+          name: 'Stücke',
           route: '/scores/repository',
         },
       ],
@@ -35,7 +35,7 @@ export class AppManagementLayout {
       })),
     },
     {
-      groupName: 'Konfiguraion',
+      groupName: 'Konfiguration',
       items: [
         {
           name: 'Mappen',
@@ -45,6 +45,14 @@ export class AppManagementLayout {
           name: 'Stimmen/Instrumente',
           route: '/scores/stimmen-instrumente',
         },
+        {
+          name: 'Events',
+          route: '/scores/event-conf',
+        },
+        {
+          name: 'Tags',
+          route: '/scores/tags',
+        }
       ],
     },
   ];

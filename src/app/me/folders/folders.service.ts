@@ -1,21 +1,35 @@
 import { Injectable } from '@angular/core';
 import { AllNotesData } from '../../smManagement/repository/app-repository.component';
-import {IMetaData, mockMetaData} from '@vm-utils';
+import { BaseCrudService, IMetaData, mockMetaData} from '@vm-utils';
+import { Score } from '../../smManagement/repository/score.service';
 
 export interface Folder extends IMetaData {
   folderId: number;
   name: string;
-  slug?: string;
+  groupId?: number;
   notes?: AllNotesData[];
-  membercount?: number;
-  created?: string;
-  edited?: string;
+  membercount: number;
+  stueck?: FolderStueckTeaser[];
+}
+export interface updateFolder {
+  folderId: number;
+  name: string;
+  groupId?: number;
+  notes?: AllNotesData[];
+  membercount: number;
+  stueck?: FolderStueckTeaser[];
+}
+export interface FolderStueckTeaser extends Score {
+  folderId: number;
+  ScoreId: number;
+  deleted?: boolean;
 }
 
 @Injectable({
   providedIn: 'root',
 })
-export class FoldersService {
+export class FoldersService extends BaseCrudService<Folder> {
+  override url: string = 'folders';
   private folders: Folder[] = [];
 
   public mappenListe: Folder[] = [

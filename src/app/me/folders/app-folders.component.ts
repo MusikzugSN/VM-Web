@@ -13,7 +13,7 @@ import { AllNotesData } from '../../smManagement/repository/app-repository.compo
   templateUrl: './app-folders.component.html',
   styleUrl: './app-folders.component.scss',
 })
-export class AppFoldersComponent {
+export class AppFolderMeComponent {
   folder?: Folder;
 
   isError = false;

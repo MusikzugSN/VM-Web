@@ -1,43 +1,49 @@
-import { Component } from '@angular/core';
-import { VmcDataGrid, VmcInputField, VmColumn, VmcToolbar, VmFormField, VmToolbarItem } from '@vm-components';
-import { Folder } from '../../me/folders/folders.service';
+import { Component, inject} from '@angular/core';
+import { Folder, FoldersService } from '../../me/folders/folders.service';
+import { AllNotesData } from '../repository/app-repository.component';
+import { ActivatedRoute } from '@angular/router';
+import { distinctUntilChanged, map } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { VmpNotesFullPageComponent } from '@vm-parts';
 
 @Component({
   selector: 'app-folders.component',
-  imports: [VmcToolbar, VmcInputField, VmcDataGrid],
+  imports: [VmpNotesFullPageComponent],
   templateUrl: './app-folders.component.html',
   styleUrl: './app-folders.component.scss',
 })
-export class AppFoldersAdminComponent {
-  data: Folder[] = [];
+export class AppFolderScoreComponent {
+  folders?: Folder;
 
-  // #reload = new BehaviorSubject(false);
+  isError = false;
+  notes: AllNotesData[] = [];
+  private route = inject(ActivatedRoute);
+  protected foldersServiceComponent = inject(FoldersService);
 
-  items: VmToolbarItem[] = [
-    {
-      key: 'addFolder',
-      icon: 'add',
-      label: 'Mappe hinzufügen',
-      acton: async (): Promise<void> => {},
-    },
-    {
-      key: 'Herunterladen',
-      icon: 'file_download',
-      label: 'Herunterladen',
-      acton: async (): Promise<void> => {},
-    },
-  ];
+  constructor() {
+    this.route.paramMap
+      .pipe(
+        map((params) => params.get('folderId')),
+        distinctUntilChanged(),
+        takeUntilDestroyed(),
+      )
+      .subscribe((folderId) => {
+        this.isError = false;
 
-  suchleiste: VmFormField = {
-    key: 'seachbar',
-    type: 'search',
-    label: 'Suchen',
-  };
+        if (!folderId) {
+          this.isError = true;
+          return;
+        }
 
-  columns: VmColumn<Folder>[] = [
-    { key: 'name', header: 'Name', field: 'name' },
-    { key: 'membercount', header: 'Anzahlmember', field: 'membercount' },
-    { key: 'created', header: 'Erstellt am', field: 'created' },
-    { key: 'edited', header: 'Bearbeitet am', field: 'edited' },
-  ];
+        const found = this.foldersServiceComponent.getFolderById(+folderId);
+
+        if (found) {
+          this.folders = found;
+          this.isError = false;
+        } else {
+          this.isError = true;
+          this.folders = undefined;
+        }
+      });
+  }
 }
