@@ -8,6 +8,11 @@
   flex-direction: column;
 }
 
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
 .text-header {
   font: var(--vm-font-family);
   font-size: var(--vm-font-size__header);

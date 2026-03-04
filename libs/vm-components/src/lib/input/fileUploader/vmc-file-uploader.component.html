@@ -1,0 +1,38 @@
+<!-- Versteckte Inputs -->
+<input
+  type="file"
+  #fileInput
+  multiple
+  style="display:none"
+  (change)="onFilesSelected($event)"
+/>
+
+<input
+  type="file"
+  #directoryInput
+  webkitdirectory
+  style="display:none"
+  (change)="onDirectorySelected($event)"
+/>
+
+<div class="drop-zone"
+  (dragover)="onDragOver($event)"
+  (drop)="onDrop($event)"
+  [style.height]="height()"
+  [style.width]="width()">
+  <p>Dateien oder Ordner hierher ziehen</p>
+  @let files = (fileData$ | async) ?? [];
+  @if (doNotShowFileNames()) {
+    <div class="file-list">
+      @for (file of files; track file.file.name) {
+        <p>{{ file.path }}</p>
+      } @empty {
+        <p>Noch keine Datein hochgeladen.</p>
+      }
+    </div>
+  }
+  <div class="flex-row" style="margin-top: 16px; gap: 16px; justify-content: center" >
+    <vmc-button [label]="'Datei hochladen'" (buttonClicked)="fileUploadOpen(fileInput)"/>
+    <vmc-button [label]="'Ordner hochladen'" (buttonClicked)="directoryUploadOpen(directoryInput)"/>
+  </div>
+</div>
