@@ -1,12 +1,11 @@
 <vmc-toolbar [useNgContentOnly]="true">
-  <div class="dialog__toolbar">
-    <span class="text-large">{{ dialogConfig.title }}</span>
-    <vmc-icon-button
-      [iconName]="'close'"
-      [iconColor]="'white'"
-      (buttonClicked)="buttonClicked('close')"
-    />
-  </div>
+  <span class="text-large">{{ dialogConfig.title }}</span>
+  <vmc-icon-button
+    style="margin-left: auto"
+    [iconName]="'close'"
+    [iconColor]="'white'"
+    (buttonClicked)="buttonClicked('close')"
+  />
 </vmc-toolbar>
 
 <mat-dialog-content>

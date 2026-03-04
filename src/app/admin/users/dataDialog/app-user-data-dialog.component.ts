@@ -308,11 +308,10 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   }
 
   execActionFromRow(event: VmRowClickedEvent<UserGroupTeaser>): void {
-    if (event.rowData === null) {
-      return;
-    }
-
     if (event.key === 'delete') {
+      if (event.rowData === null) {
+        return;
+      }
       this.#storeDeletedGroupValue(event.rowData);
     } else if (event.key === 'add') {
       if (this.#newUserGroup.groupId !== -1 && this.#newUserGroup.roleId !== -1) {
