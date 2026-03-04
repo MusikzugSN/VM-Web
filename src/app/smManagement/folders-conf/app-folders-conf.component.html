@@ -7,4 +7,15 @@
 <vmc-data-grid
   [dataSource]="folderListe"
   [columns]="column"
+  [rowActions]="[
+    {
+      key: 'edit',
+      icon: 'edit',
+    },
+    {
+      key: 'delete',
+      icon: 'delete',
+    },
+  ]"
+  (clickedAction)="execAction($event)"
 />

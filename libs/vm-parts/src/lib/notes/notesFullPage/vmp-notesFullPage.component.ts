@@ -1,6 +1,6 @@
 import { Component, inject, input, InputSignal } from '@angular/core';
 import { GroupDialogService } from '../../../../../../src/app/admin/goups/group-dialog.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject} from 'rxjs';
 import {
   VmcDataGrid,
   VmcInputField,
@@ -11,6 +11,7 @@ import {
   VmToolbarItem,
   VmValidFormTypes,
 } from '@vm-components';
+import { DownloadFileService } from './download-file.service';
 
 interface AllNotesData {
   name: string;
@@ -32,6 +33,7 @@ export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
 
   readonly #groupDataDialogService = inject(GroupDialogService);
+  readonly #downloadFileService = inject(DownloadFileService);
 
   #reload = new BehaviorSubject(false);
 
@@ -49,7 +51,9 @@ export class VmpNotesFullPageComponent {
       key: 'download',
       icon: 'file_download',
       label: 'Herunterladen',
-      acton: async (): Promise<void> => {},
+      acton: async (): Promise<void> => {
+        this.downloadFile();
+      },
     },
     {
       key: 'drucken',
@@ -75,6 +79,7 @@ export class VmpNotesFullPageComponent {
     label: 'Suchen',
   };
 
+
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   filterSelectionChange(event: VmValidFormTypes) {
     return console.log(event);
@@ -87,5 +92,22 @@ export class VmpNotesFullPageComponent {
     { key: 'pageCount', header: 'Seitenanzahl', field: 'pageCount' },
     { key: 'voiceName', header: 'Stimme', field: 'voiceName' },
   ];
+
+  public downloadFile(): void {
+    this.#downloadFileService.downloadFile().subscribe((response) => {
+      const fileName = response.headers.get('content-disposition')?.split(';')[1]?.split('=')[1];
+
+      if (fileName == undefined) {
+        return;
+      }
+
+      const blob: Blob = response.body as Blob;
+      const a = document.createElement('a');
+      a.download = fileName;
+      a.href = URL.createObjectURL(blob);
+      a.click();
+    });
+  }
   protected readonly onselectionchange = onselectionchange;
 }
+

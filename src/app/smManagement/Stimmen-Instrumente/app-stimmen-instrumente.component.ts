@@ -1,7 +1,15 @@
 import { Component, inject } from '@angular/core';
-import { VmcDataGrid, VmcInputField, VmColumn, VmcToolbar, VmFormField, VmToolbarItem } from '@vm-components';
+import {
+  VmcDataGrid,
+  VmcInputField,
+  VmColumn,
+  VmcToolbar,
+  VmFormField,
+  VmToolbarItem,
+} from '@vm-components';
 import { Voice, VoiceService } from './voice.service';
 import { Instrument, InstrumentService } from './instrumente.service';
+import { of } from 'rxjs';
 
 
 @Component({
@@ -37,16 +45,19 @@ export class AppStimmenInstrumenteComponent {
     label: 'Suchleiste',
   };
   columnsVoice: VmColumn<Voice>[] = [
-    { key: 'name', header: 'Name', field: 'name' },
-    { key: 'instrumentName', header: 'Instrument', field: 'instrumentName' },
-    { key: 'countOfMusicsheets', header: 'Anzahl an Notenblättern', field: 'countOfMusicsheets' },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt' },
+    {
+      key: 'name',
+      header: 'Name',
+      type: 'converter',
+      converter: (rowData) => of(rowData.instrumentName + ' ' + rowData.name),
+    },
+    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
   columnsInstrument: VmColumn<Instrument>[] = [
     { key: 'name', header: 'Name', field: 'name' },
     { key: 'type', header: 'Instrumentenart', field: 'type' },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt' },
+    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
 }

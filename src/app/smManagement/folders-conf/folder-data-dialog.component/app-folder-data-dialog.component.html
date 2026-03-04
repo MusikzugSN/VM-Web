@@ -1,0 +1,26 @@
+<div class="flex-row-fill" style="gap: 16px">
+  <div style="display: flex; gap: 16px">
+    <div class="data-container" style="flex-grow: 1">
+      <label class="text-normal">Mappeninformationen</label>
+      <vmc-input-field
+        [formField]="folderNameField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'name')"
+        />
+      <vmc-input-field
+        style=""
+        [formField]="(groupSelectorField$ | async) ?? groupSelectorFieldPlaceholder"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'name')"
+        />
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+
+
