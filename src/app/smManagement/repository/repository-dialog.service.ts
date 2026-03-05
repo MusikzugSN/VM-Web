@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
 import { AppScoreDataDialog, ScoreDialogData } from './dataDialog/app-score-data-dialog.component';
 import { VoiceService } from '../Stimmen-Instrumente/voice.service';
-import { FoldersService } from '../../me/folders/folders.service';
+import { VmSelectOption } from '@vm-components';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,6 @@ import { FoldersService } from '../../me/folders/folders.service';
 export class RepositoryDialogService {
   readonly #dialogService = inject(VmDialogService);
   readonly #voiceService = inject(VoiceService);
-  readonly #foldersService = inject(FoldersService);
 
   async openAddScoreDialog(): Promise<boolean | undefined> {
     const voiceOptions = this.#voiceService.voiceListe.map((v) => ({
@@ -18,10 +17,12 @@ export class RepositoryDialogService {
       value: v.voiceId.toString(),
     }));
 
-    const folderOptions = this.#foldersService.mappenListe.map((f) => ({
-      label: f.name,
-      value: f.folderId.toString(),
-    }));
+    const folderOptions: VmSelectOption[] = [];
+
+    //   this.#foldersService.mappenListe.map((f) => ({
+    //   label: f.name,
+    //   value: f.folderId.toString(),
+    // }));
 
     return this.#dialogService.open<boolean, ScoreDialogData>(AppScoreDataDialog, {
       title: 'Notenblatt hinzufügen',

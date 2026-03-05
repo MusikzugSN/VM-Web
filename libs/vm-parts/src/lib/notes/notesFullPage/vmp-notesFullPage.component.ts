@@ -13,6 +13,7 @@ import {
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
 import { VoiceService } from '../../../../../../src/app/smManagement/Stimmen-Instrumente/voice.service';
+import { PrintDialogService } from './print-dialog/vmp-print-dialog.service';
 
 interface AllNotesData {
   name: string;
@@ -32,6 +33,7 @@ interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
+  readonly #printService = inject(PrintDialogService)
   showDownloadPrint: InputSignal<boolean> = input<boolean>(true);
   showFilter: InputSignal<boolean> = input<boolean>(true);
   simpleAddDialog: InputSignal<boolean> = input<boolean>(false);
@@ -72,10 +74,11 @@ export class VmpNotesFullPageComponent {
         key: 'drucken',
         icon: 'print',
         label: 'Drucken',
-        acton: async (): Promise<void> => {},
+        acton: async (): Promise<void> => {
+        await this.#printService.openPrintDialog();
       },
-    ];
-  }
+    },
+  ];}
 
   get items(): VmToolbarItem[] {
     const custom = this.customToolbarItems();
