@@ -31,13 +31,10 @@ export class AppVoiceDataDialog extends DialogBase<boolean> {
 
   nameField: VmFormField = {
     label: 'Name',
-    type: 'select',
+    type: 'text',
     key: nameOf<Voice>('name'),
     value: this.#data?.voice?.name ?? '',
-    options: Array.from({ length: 9 }, (_, i) => ({
-      label: `${i + 1}`,
-      value: `${i + 1}`,
-    })),
+    placeholder: 'z. B. 1',
   };
 
   instrumentField: VmFormField = {
