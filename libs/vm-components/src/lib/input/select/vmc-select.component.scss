@@ -1,3 +1,8 @@
+:host {
+  width: 100%;
+  display: flex;
+}
+
 /* Entfernt Hover-Hintergrund vom ersten mat-option */
 .mat-select-panel mat-option.search-option:not(.mat-selected):hover {
   background: transparent !important;
