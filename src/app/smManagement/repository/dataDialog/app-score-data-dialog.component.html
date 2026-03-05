@@ -45,7 +45,7 @@
 
       <div class="data-container-top">
         <vmc-input-field
-             [formField]="folderField"
+             [formField]="scoreField"
              [shouldInitChange]="false"
              (inputChanged)="storeChangedValue($event, 'folderId')"
              ></vmc-input-field>
@@ -57,12 +57,9 @@
 <!-- height hier-->
 <!-- Mappe raus-->
 
-
       </div>
 
-
       <div class="data-container-small">
-
         @let _files = files();
         @for (file of _files; track file.path){
           <div class="file-row">

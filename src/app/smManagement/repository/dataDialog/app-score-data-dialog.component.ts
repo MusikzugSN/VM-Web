@@ -76,8 +76,8 @@ export class AppScoreDataDialog extends DialogBase<boolean> {
     options: this.#data?.voiceOptions ?? [],
   };
 
-  folderField: VmFormField = {
-    label: 'Mappe',
+  scoreField: VmFormField = {
+    label: 'Notenstück',
     type: 'select',
     key: 'folderId',
     value: '',
