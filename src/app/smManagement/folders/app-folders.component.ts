@@ -2,7 +2,7 @@ import { Component, inject} from '@angular/core';
 import { Folder, FoldersService } from '../../me/folders/folders.service';
 import { AllNotesData } from '../repository/app-repository.component';
 import { ActivatedRoute } from '@angular/router';
-import { distinctUntilChanged, map } from 'rxjs';
+import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmpNotesFullPageComponent } from '@vm-parts';
 
@@ -18,7 +18,7 @@ export class AppFolderScoreComponent {
   isError = false;
   notes: AllNotesData[] = [];
   private route = inject(ActivatedRoute);
-  protected foldersServiceComponent = inject(FoldersService);
+  protected foldersService = inject(FoldersService);
 
   constructor() {
     this.route.paramMap
@@ -27,7 +27,7 @@ export class AppFolderScoreComponent {
         distinctUntilChanged(),
         takeUntilDestroyed(),
       )
-      .subscribe((folderId) => {
+      .subscribe(async (folderId) => {
         this.isError = false;
 
         if (!folderId) {
@@ -35,7 +35,7 @@ export class AppFolderScoreComponent {
           return;
         }
 
-        const found = this.foldersServiceComponent.getFolderById(+folderId);
+        const found = await firstValueFrom(this.foldersService.loadById$(+folderId));
 
         if (found) {
           this.folders = found;

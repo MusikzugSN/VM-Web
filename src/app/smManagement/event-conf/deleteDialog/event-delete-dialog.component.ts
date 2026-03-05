@@ -2,18 +2,19 @@ import { Component, inject } from '@angular/core';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Folder, FoldersService } from '../../../me/folders/folders.service';
+import { EventService, Event } from '../../../me/event/event.service';
+
 
 @Component({
-  selector: 'app-delete-folder-dialog',
+  selector: 'app-event-delete-dialog.component',
   imports: [],
-  templateUrl: './app-delete-folder-dialog.html',
-  styleUrl: './app-delete-folder-dialog.scss',
+  templateUrl: './event-delete-dialog.component.html',
+  styleUrl: './event-delete-dialog.component.scss',
 })
-export class AppDeleteFolderDialog extends DialogBase<boolean>{
-  readonly #data = inject<Folder>(DIALOG_DATA);
+export class EventDeleteDialog extends DialogBase<boolean>{
+  readonly #data = inject<Event>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  readonly #folderService = inject(FoldersService);
+  readonly #eventService = inject(EventService);
 
   name = this.#data.name;
 
@@ -21,7 +22,7 @@ export class AppDeleteFolderDialog extends DialogBase<boolean>{
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
       if (x === 'delete') {
-        await firstValueFrom(this.#folderService.delete$(this.#data.musicFolderId));
+        await firstValueFrom(this.#eventService.delete$(this.#data.eventId));
 
         super.closeDialog(true);
       } else if (x === 'close') {

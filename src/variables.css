@@ -19,10 +19,16 @@
   --vm-font-size__large: 1.2rem;
   --vm-font-size__header: 2rem;
 
+  --vm-text-color: rgb(26, 27, 31);
+
   --vm-iconColor-white: whitesmoke;
   --vm-iconColor-black: black;
   --vm-iconColor-green: green;
   --vm-iconColor-red: red;
   --vm-iconColor-blue: lightblue;
   --vm-iconColor-orange: orange;
+
+  --vm-gap-small: 8px;
+  --vm-gap-medium: 16px;
+  --vm-gap-large: 24px;
 }

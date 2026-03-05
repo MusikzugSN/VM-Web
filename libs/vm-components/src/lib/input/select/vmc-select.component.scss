@@ -1,0 +1,14 @@
+/* Entfernt Hover-Hintergrund vom ersten mat-option */
+.mat-select-panel mat-option.search-option:not(.mat-selected):hover {
+  background: transparent !important;
+}
+
+
+/* Das eigentliche Inputfeld */
+.search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background-color: transparent;
+}

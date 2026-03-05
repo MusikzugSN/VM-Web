@@ -1,0 +1,24 @@
+<div class="flex-column" style="gap: 16px">
+  <div style="display: flex; gap: 16px">
+    <div class="data-container flex-column">
+      <label class="text-normal">Eventinformationen</label>
+      <vmc-input-field
+        [formField]="eventNameField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'name')"
+        />
+
+      <vmc-input-field
+        [formField]="(groupSelectorField$ | async) ?? groupSelectorFieldPlaceholder"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'name')"
+        />
+
+      <vmc-input-field
+        [formField]="eventDateField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'date')"
+        />
+    </div>
+  </div>
+</div>
