@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
 import { AppFolderDataDialog } from './folder-data-dialog.component/app-folder-data-dialog.component';
-import { AppDeleteGroupDialog } from '../../admin/goups/deleteDialog/app-delete-group-dialog.component';
 import { Folder } from '../../me/folders/folders.service';
+import {AppDeleteFolderDialog} from './deleteDialog/app-delete-folder-dialog';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +11,7 @@ export class FolderDialogService {
   readonly #dialogService = inject(VmDialogService);
 
   async openDeleteFolderDialog(data: Folder): Promise<boolean | undefined> {
-    return this.#dialogService.open(AppDeleteGroupDialog, {
+    return this.#dialogService.open(AppDeleteFolderDialog, {
       data: data,
       title: 'Mappe löschen',
       buttons: [
@@ -29,6 +29,9 @@ export class FolderDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'save', text: 'Speichern', type: 'filled' },
       ],
+      dialogConfig: {
+        minWidth: '700px',
+      }
     });
   }
   async openNewFolderDialog(): Promise<boolean | undefined> {
@@ -39,6 +42,9 @@ export class FolderDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'create', text: 'Erstellen', type: 'filled' },
       ],
+      dialogConfig: {
+        minWidth: '700px',
+      }
     });
   }
 }

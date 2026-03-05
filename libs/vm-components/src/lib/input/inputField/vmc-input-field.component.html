@@ -11,14 +11,9 @@
     {{ field.label }}
   </mat-checkbox>
 } @else if (field.type === 'select') {
-  <mat-form-field class="vm-input">
-    <mat-label>{{ field.label }}</mat-label>
-    <mat-select [value]="field.value" (selectionChange)="selectCallChangeEvent($event)">
-      @for (option of field.options; track option.value) {
-        <mat-option [value]="option.value">{{ option.label }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
+  <vmc-select
+    [formField]="field"
+    (inputChanged)="selectCallChangeEvent($event)"/>
 }  @else {
   <mat-form-field class="vm-input">
     <mat-label>{{ field.label }}</mat-label>

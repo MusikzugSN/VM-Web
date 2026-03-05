@@ -21,7 +21,7 @@ export class AppDeleteFolderDialog extends DialogBase<boolean>{
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
       if (x === 'delete') {
-        await firstValueFrom(this.#folderService.delete$(this.#data.folderId));
+        await firstValueFrom(this.#folderService.delete$(this.#data.musicFolderId));
 
         super.closeDialog(true);
       } else if (x === 'close') {

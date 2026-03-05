@@ -1,20 +1,21 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { VmpSidebar } from '@vm-parts';
 import { VmSidebarGroup } from '@vm-components';
 import { FoldersService } from '../me/folders/folders.service';
+import {map, Observable} from 'rxjs';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-management-layout',
-  imports: [RouterOutlet, VmpSidebar],
+  imports: [RouterOutlet, VmpSidebar, AsyncPipe],
   templateUrl: './app-management-layout.html',
   styleUrl: './app-management-layout.scss',
 })
 export class AppManagementLayout {
-  private foldersService = new FoldersService();
+  readonly #folderService = inject(FoldersService);
 
-  sidebarItems: VmSidebarGroup[] = [
-    {
+  allgemeineRouten: VmSidebarGroup = {
       groupName: 'Allgemein',
       items: [
         {
@@ -26,15 +27,9 @@ export class AppManagementLayout {
           route: '/scores/repository',
         },
       ],
-    },
-    {
-      groupName: 'Mappen',
-      items: this.foldersService.mappenListe.map((folder) => ({
-        name: folder.name,
-        route: `/scores/folders/${folder.folderId}`,
-      })),
-    },
-    {
+    };
+
+    konfigurationRouten: VmSidebarGroup = {
       groupName: 'Konfiguration',
       items: [
         {
@@ -54,6 +49,20 @@ export class AppManagementLayout {
           route: '/scores/tags',
         }
       ],
-    },
-  ];
+    };
+
+  sidebarItems$: Observable<VmSidebarGroup[]> = this.#folderService.load$()
+    .pipe(map(folders => {
+      return [
+        this.allgemeineRouten,
+        {
+          groupName: 'Mappen',
+          items: folders.map((folder) => ({
+            name: folder.name,
+            route: `/scores/folders/${folder.musicFolderId}`,
+          })),
+        },
+        this.konfigurationRouten,
+      ];
+  }));
 }

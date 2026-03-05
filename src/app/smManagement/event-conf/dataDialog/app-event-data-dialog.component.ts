@@ -11,7 +11,6 @@ import {
 } from '@vm-utils';
 import { Event, EventService } from '../../../me/event/event.service';
 import { distinctUntilChanged, firstValueFrom, map, Observable } from 'rxjs';
-import { updateFolder } from '../../../me/folders/folders.service';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Group, GroupService } from '../../../admin/goups/group.service';
 import { AsyncPipe } from '@angular/common';
@@ -73,7 +72,7 @@ export class AppEventDataDialog extends DialogBase<boolean> {
       return {
         label: 'Gruppe',
         type: 'select',
-        key: nameOf<updateFolder>('name'),
+        key: nameOf<Event>('groupId'),
         value: this.#data?.groupId ?? '',
         options: [...groups.map((x) => ({ label: x.name, value: x.groupId + '' }))],
       } as VmFormField;

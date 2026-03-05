@@ -47,6 +47,7 @@ export interface VmCheckboxField extends VmBaseField {
 }
 export interface VmSelect extends VmBaseField {
   type: 'select';
+  enableSearch?: boolean;
   options: VmSelectOption[];
   value?: string;
 }

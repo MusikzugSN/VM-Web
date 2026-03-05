@@ -1,108 +1,151 @@
 import { Component, inject } from '@angular/core';
 import {
+  AsPipe,
   convertToPatch,
   DIALOG_BUTTON_CLICKS,
   DIALOG_DATA,
   DialogBase,
   Dictionary,
-  nameOf,
-  NumDictionary,
+  nameOf, NumDictionary, SnackbarService,
 } from '@vm-utils';
+import {BehaviorSubject, combineLatest, distinctUntilChanged, firstValueFrom, map, Observable} from 'rxjs';
 import {
-  Folder,
-  FoldersService,
-  FolderStueckTeaser,
-  updateFolder,
-} from '../../../me/folders/folders.service';
-import { BehaviorSubject, distinctUntilChanged, firstValueFrom, map, Observable} from 'rxjs';
-import {
+  VmcDataGrid,
   VmcInputField,
   VmColumn,
   VmFormField,
-  VmRowAction,
-  VmSelectOption,
+  VmRowAction, VmRowClickedEvent, VmSelectOption,
   VmValidFormTypes,
 } from '@vm-components';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Group, GroupService} from '../../../admin/goups/group.service';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
+import { GroupService} from '../../../admin/goups/group.service';
 import { AsyncPipe } from '@angular/common';
-
-const noGroupOption: VmSelectOption = {
-  label: 'Keine Gruppe',
-  value: '',
-};
-
-
-const folderNameKey = nameOf<Folder>('name');
+import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '../../../me/folders/folders.service';
+import {Score, ScoreService} from '../../repository/score.service';
 
 @Component({
-  selector: 'app-folder-data-dialog.component',
-  imports: [VmcInputField, AsyncPipe],
+  selector: 'app-folder-data-dialog',
+  imports: [VmcInputField, AsyncPipe, AsPipe, VmcDataGrid],
   templateUrl: './app-folder-data-dialog.component.html',
   styleUrl: './app-folder-data-dialog.component.scss',
 })
 export class AppFolderDataDialog extends DialogBase<boolean> {
   readonly #data = inject<Folder | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  readonly #folderService = inject(FoldersService);
+
   readonly #groupService = inject(GroupService);
-  groupsdata$: Observable<Group[]> = this.#groupService.load$();
+  readonly #folderService = inject(FoldersService);
+  readonly #scoreService = inject(ScoreService);
+  readonly #snackbarService = inject(SnackbarService);
 
+  #scores$: Observable<Score[]> = this.#scoreService.load$();
 
-
-  #groupOptions$: Observable<VmSelectOption[]> = this.groupsdata$.pipe(
-    map((x) => x.map((group) => ({ label: group.name, value: group.groupId.toString() }))),
+  // Datasource für die FolderMusicSheetTeaser, damit Änderungen direkt in der Tabelle sichtbar sind
+  folderMusicSheetsData$: BehaviorSubject<FolderMusicSheetTeaser[]> = new BehaviorSubject<FolderMusicSheetTeaser[]>(
+    this.#data?.sheets ?? [],
   );
 
-  groupOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#groupOptions$, {
+  #scoresOptions$: Observable<VmSelectOption[]> = combineLatest([this.#scores$, this.folderMusicSheetsData$]).pipe(
+    map(([scores, setScores]) => {
+      const usedScoreIds = setScores.map((x) => x.scoreId);
+      return scores.filter((score) => !usedScoreIds.includes(score.scoreId));
+    }),
+    map((x) => x
+      .map((score) => ({ label: score.title, value: score.scoreId.toString() }))),
+  );
+
+  scoreOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#scoresOptions$, {
     initialValue: [],
   });
 
-  #groupsById$: Observable<NumDictionary<Group>> = this.groupsdata$.pipe(
+  #scoresById$: Observable<NumDictionary<Score>> = this.#scores$.pipe(
     map((x) =>
-      x.reduce((acc, group) => ({ ...acc, [group.groupId]: group }), {} as NumDictionary<Group>),
+      x.reduce((acc, score) => ({ ...acc, [score.scoreId]: score }), {} as NumDictionary<Score>),
     ),
   );
 
-  groupsById = toSignal<NumDictionary<Group>, NumDictionary<Group>>(this.#groupsById$, {
+  scoresById = toSignal<NumDictionary<Score>, NumDictionary<Score>>(this.#scoresById$, {
     initialValue: {},
   });
 
+  // @ts-expect-error
+  ScoreType: Score;
 
+  // Hier werden alle geänderten Werte zwischengespeichert, damit sie beim Speichern in einem Patch-Objekt zusammengefasst werden können
+  #changedValues: Dictionary<VmValidFormTypes | boolean | FolderMusicSheetTeaser[]> = {};
+  #changedGroupValues: FolderMusicSheetTeaser[] = [];
 
-  folderNameField: VmFormField = {
+  nameField: VmFormField = {
+    label: 'Name',
     type: 'text',
-    key: nameOf<updateFolder>('name'),
-    label: 'Mappename',
+    key: nameOf<UpdateFolder>('name'),
     required: true,
-    value: this.#data?.name ?? '',
-    placeholder: 'z. B. Schlägertrupp',
+    value: this.#data?.name,
+    placeholder: 'z. B. 1. Mappe',
   };
+
+  numberOfScoreField$: Observable<VmFormField> = this.folderMusicSheetsData$.pipe(
+    map((sheets) => {
+      const numbers = sheets.map((x) => x.number);
+      const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
+      return {
+        key: nameOf<FolderMusicSheetTeaser>('number'),
+        label: 'Nummer',
+        type: 'number',
+        value: maxNumber + 1,
+      } as VmFormField;
+    })
+  );
+
+  numberOfScoreFieldPlaceholder: VmFormField = {
+    key: nameOf<FolderMusicSheetTeaser>('number'),
+    label: 'Nummer',
+    type: 'number',
+    placeholder: 'z. B. 1',
+  };
+
+#groups$ = this.#groupService.load$();
+  groupSelectorField$: Observable<VmFormField> = this.#groups$.pipe(
+    distinctUntilChanged(),
+    map((groups) => {
+      return {
+        label: 'Gruppe',
+        type: 'select',
+        key: nameOf<UpdateFolder>('groupId'),
+        value: this.#data?.groupId?.toString() ?? '',
+        options: [
+          ...groups.map((x) => ({ label: x.name, value: x.groupId.toString() })),
+        ],
+        required: true,
+      } as VmFormField;
+    }),
+    takeUntilDestroyed(),
+  );
+
   groupSelectorFieldPlaceholder: VmFormField = {
-    key: nameOf<Group>('name'),
+    key: nameOf<UpdateFolder>('groupId'),
     label: 'Gruppe',
     type: 'select',
-    options: [noGroupOption],
+    options: [],
   };
 
-  stueckColumns: VmColumn<FolderStueckTeaser>[] = [
+  folderScoreColumns: VmColumn<FolderMusicSheetTeaser>[] = [
     {
-      key: 'scoreId',
-      header: 'Stück ID',
-      field: nameOf<FolderStueckTeaser>('scoreId'),
-      type: 'template',
+      key: 'number',
+      header: 'Nummer',
+      field: nameOf<FolderMusicSheetTeaser>('number'),
       footerAsTemplate: true,
     },
     {
-      key: 'title',
-      header: 'Name',
-      field: nameOf<FolderStueckTeaser>('title'),
+      key: 'score',
+      header: 'Stück',
+      field: nameOf<FolderMusicSheetTeaser>('scoreId'),
       type: 'template',
       footerAsTemplate: true,
     },
   ];
 
-  folderStueckActions: VmRowAction[] = [
+  folderScoresActions: VmRowAction[] = [
     {
       key: 'delete',
       icon: 'delete',
@@ -115,35 +158,22 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
       icon: 'add',
     },
   ];
-  groupSelectorField$: Observable<VmFormField> = this.groupsdata$.pipe(
-    distinctUntilChanged(),
-    map((groups) => {
-      return {
-        label: 'Gruppe',
-        type: 'select',
-        key: nameOf<updateFolder>('name'),
-        value: this.#data?.groupId ?? '',
-        options: [
-          ...groups.map((x) => ({ label: x.name, value: x.groupId + ""})),
-        ],
-      } as VmFormField;
-    }),
-    takeUntilDestroyed(),
-  );
 
-  folderStueckData$: BehaviorSubject<FolderStueckTeaser[]> = new BehaviorSubject<
-    FolderStueckTeaser[]
-  >(this.#data?.stueck ?? []);
-
-  changedValues: Dictionary<string> = {};
+  #musicSheetTeaser: FolderMusicSheetTeaser = {
+    number: -1,
+    scoreId: -1,
+  };
 
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<Folder, string>(this.changedValues);
+      const patch = convertToPatch<Folder, VmValidFormTypes | boolean | FolderMusicSheetTeaser[]>(
+        this.#changedValues,
+      );
       if (x === 'save') {
-        patch.folderId = this.#data?.folderId ?? -1;
-        await firstValueFrom(this.#folderService.change$(patch, patch.folderId));
+        console.log(this.#data)
+        patch.musicFolderId = this.#data?.musicFolderId ?? -1;
+        await firstValueFrom(this.#folderService.change$(patch, patch.musicFolderId));
         super.closeDialog(true);
         return;
       }
@@ -160,8 +190,92 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: VmValidFormTypes, key: string): void {
-    this.changedValues[key] = newValue as string;
+  storeChangedValue(newValue: VmValidFormTypes | boolean | FolderMusicSheetTeaser[], key: string): void {
+    this.#changedValues[key] = newValue;
   }
-  protected readonly folderNameKey = folderNameKey;
+
+  #storeChangedGroupValues(): void {
+    this.storeChangedValue(this.#changedGroupValues, nameOf<Folder>('sheets'));
+
+    const oldData = this.#data?.sheets ?? [];
+    let newData = [...oldData];
+    for (const changedGroupValue of this.#changedGroupValues) {
+      if (changedGroupValue.deleted) {
+        newData = newData.filter(
+          (x) =>
+            !(x.number === changedGroupValue.number && x.scoreId === changedGroupValue.scoreId),
+        );
+      } else {
+        newData.push(changedGroupValue);
+      }
+    }
+
+    this.folderMusicSheetsData$.next(newData);
+  }
+
+  #storeNewGroupValue(newValue: FolderMusicSheetTeaser): void {
+    // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
+    const currentValues = this.folderMusicSheetsData$.getValue();
+    if (currentValues.find((x) => x.number === newValue.number || x.scoreId === newValue.scoreId)) {
+      this.#snackbarService.raiseError("Die Nummer oder das Stück existiert bereits in der Mappe.", 2500);
+      return;
+    }
+
+    // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
+    if (
+      this.#changedGroupValues.find(
+        (x) => x.number === newValue.number || x.scoreId === newValue.scoreId && x.deleted,
+      )
+    ) {
+      this.#changedGroupValues = this.#changedGroupValues.filter(
+        (x) => !((x.number === newValue.number || x.scoreId === newValue.scoreId) && x.deleted),
+      );
+    } else {
+      this.#changedGroupValues.push({
+        scoreId: newValue.scoreId,
+        number: newValue.number,
+      });
+    }
+
+    this.#storeChangedGroupValues();
+  }
+
+  #storeDeletedGroupValue(deletedValue: FolderMusicSheetTeaser): void {
+    if (
+      this.#changedGroupValues.find(
+        (x) => x.number === deletedValue.number && x.scoreId === deletedValue.scoreId,
+      )
+    ) {
+      // Wenn die gelöschte Gruppe bereits in den Änderungen enthalten ist, muss sie entfernt werden, da sie sonst fälschlicherweise als neue Gruppe interpretiert werden könnte
+      this.#changedGroupValues = this.#changedGroupValues.filter(
+        (x) => !(x.number === deletedValue.number && x.scoreId === deletedValue.scoreId),
+      );
+    } else {
+      // Wenn die gelöschte Gruppe nicht in den Änderungen enthalten ist, muss sie mit dem "deleted"-Flag gespeichert werden, damit sie beim Speichern gelöscht wird
+      deletedValue.deleted = true;
+      this.#changedGroupValues.push(deletedValue);
+    }
+    this.#storeChangedGroupValues();
+  }
+
+  storeNewNumberChange(value: VmValidFormTypes): void {
+    this.#musicSheetTeaser.number = parseInt(value as string);
+  }
+
+  storeNewScoreChange(value: VmValidFormTypes): void {
+    this.#musicSheetTeaser.scoreId = parseInt(value as string);
+  }
+
+  execActionFromRow(event: VmRowClickedEvent<FolderMusicSheetTeaser>): void {
+    if (event.key === 'delete') {
+      if (event.rowData === null) {
+        return;
+      }
+      this.#storeDeletedGroupValue(event.rowData);
+    } else if (event.key === 'add') {
+      if (this.#musicSheetTeaser.number !== -1 && this.#musicSheetTeaser.scoreId !== -1) {
+        this.#storeNewGroupValue(this.#musicSheetTeaser);
+      } // todo far: handle error
+    }
+  }
 }
