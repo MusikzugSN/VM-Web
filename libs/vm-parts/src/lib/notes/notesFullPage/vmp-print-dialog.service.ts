@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils';
-import { PrintDialog } from './vmp-print-dialog.component';
+import {VmpPrintDialog} from './print-dialog/vmp-print-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,7 @@ export class PrintDialogService {
 
   async openPrintDialog(): Promise<boolean | undefined> {
     console.log('Opening print dialog');
-    return this.#dialogService.open(PrintDialog, {
+    return this.#dialogService.open(VmpPrintDialog, {
       data: undefined,
       title: 'Drucken',
       buttons: [

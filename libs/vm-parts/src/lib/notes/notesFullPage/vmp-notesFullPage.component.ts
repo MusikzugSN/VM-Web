@@ -13,7 +13,7 @@ import {
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
 import { VoiceService } from '../../../../../../src/app/smManagement/Stimmen-Instrumente/voice.service';
-import { PrintDialogService } from './print-dialog/vmp-print-dialog.service';
+import { PrintDialogService } from './vmp-print-dialog.service';
 
 interface AllNotesData {
   name: string;

@@ -12,7 +12,6 @@
   </mat-checkbox>
 } @else if (field.type === 'select') {
   <vmc-select
-    style="height: 64px"
     [formField]="field"
     (inputChanged)="selectCallChangeEvent($event)"/>
 }  @else {

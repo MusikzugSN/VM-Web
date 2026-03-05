@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Printer {
-  printerId: number;
   name: string;
   is_default: boolean;
 }
@@ -17,12 +16,12 @@ export interface PrintResponse {
 @Injectable ({
   providedIn: 'root'
 })
-export class VmpPrintService {
+export class PrintService {
   private readonly API_URL = 'http://127.0.0.1:1913/api';
 
   http = inject(HttpClient);
 
-  getPrinters(): Observable<Printer[]> {
+  getPrinters$(): Observable<Printer[]> {
     return this.http.get<Printer[]>(`${this.API_URL}/printers`);
   }
 
