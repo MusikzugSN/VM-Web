@@ -34,6 +34,7 @@ export class VmpPrintDialog extends DialogBase<boolean> {
   selector$ = this.printer$.pipe(map(x => {
     return {
       key: 'printer',
+      type: 'select',
       label: 'Drucker',
       options: x.map(printer => ({ value: printer.name, label: printer.name })),
       required: true,

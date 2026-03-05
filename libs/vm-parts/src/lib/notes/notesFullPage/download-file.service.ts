@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -8,7 +8,11 @@ import { Observable } from 'rxjs';
 export class DownloadFileService {
   readonly #httpClient = inject(HttpClient);
 
-  downloadFile(): Observable<HttpResponse<Blob>> {
-    return this.#httpClient.get('placeholder', { observe: 'response', responseType: 'blob' });
+  downloadFile(selectedIds?: number[]): Observable<HttpResponse<Blob>> {
+    let params = new HttpParams();
+    if (selectedIds && selectedIds.length > 0) {
+      params = params.set('ids', selectedIds.join(','));
+    }
+    return this.#httpClient.get<Blob>('placeholder', { observe: 'response', params });
   }
 }

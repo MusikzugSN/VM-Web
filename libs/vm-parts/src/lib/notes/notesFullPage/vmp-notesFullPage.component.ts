@@ -16,6 +16,7 @@ import { VoiceService } from '../../../../../../src/app/smManagement/Stimmen-Ins
 import { PrintDialogService } from './vmp-print-dialog.service';
 
 interface AllNotesData {
+  notesId: number;
   name: string;
   composer: string;
   folders: string;
@@ -45,6 +46,8 @@ export class VmpNotesFullPageComponent {
 
   folderListe = this.#VoiceService.voiceListe;
   #reload = new BehaviorSubject(false);
+  #selectnext = new BehaviorSubject<number[]>([]);
+  selectedNotesIds: number[] = [];
 
   get defaultItems(): VmToolbarItem[] {
     const addLabel = this.simpleAddDialog() ? 'Notenstück hinzufügen' : 'Notenblatt hinzufügen';
@@ -75,9 +78,10 @@ export class VmpNotesFullPageComponent {
         icon: 'print',
         label: 'Drucken',
         acton: async (): Promise<void> => {
-        await this.#printService.openPrintDialog();
+          const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId);
+          await this.#printService.openPrintDialog(selectedIds);
+        },
       },
-    },
   ];}
 
   get items(): VmToolbarItem[] {
@@ -121,7 +125,8 @@ export class VmpNotesFullPageComponent {
   ];
 
   public downloadFile(): void {
-    this.#downloadFileService.downloadFile().subscribe((response) => {
+    const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId);
+    this.#downloadFileService.downloadFile(selectedIds).subscribe((response) => {
       const fileName = response.headers.get('content-disposition')?.split(';')[1]?.split('=')[1];
 
       if (fileName == undefined) {
@@ -135,6 +140,10 @@ export class VmpNotesFullPageComponent {
       a.click();
     });
   }
-  protected readonly onselectionchange = onselectionchange;
+
+  selectionChanged(event: number[]): void {
+    this.selectedNotesIds = event;
+    this.#selectnext.next(event);
+  }
 }
 

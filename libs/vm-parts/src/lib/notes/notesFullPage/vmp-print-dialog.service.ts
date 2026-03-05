@@ -8,10 +8,10 @@ import {VmpPrintDialog} from './print-dialog/vmp-print-dialog.component';
 export class PrintDialogService {
   readonly #dialogService = inject(VmDialogService);
 
-  async openPrintDialog(): Promise<boolean | undefined> {
-    console.log('Opening print dialog');
+  async openPrintDialog(selectedIds?: number[]): Promise<boolean | undefined> {
+    console.log('Opening print dialog with selected notes:', selectedIds);
     return this.#dialogService.open(VmpPrintDialog, {
-      data: undefined,
+      data: { selectedIds },
       title: 'Drucken',
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },

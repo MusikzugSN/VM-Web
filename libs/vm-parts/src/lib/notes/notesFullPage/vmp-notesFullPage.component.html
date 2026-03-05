@@ -16,6 +16,9 @@
 <vmc-data-grid
   [dataSource]="data()"
   [columns]="columns"
+  [selectionMode]="'multi'"
+  [selectionKey]="'notesId'"
+  (selectionChanged)="selectionChanged($event)"
 />
 
 
