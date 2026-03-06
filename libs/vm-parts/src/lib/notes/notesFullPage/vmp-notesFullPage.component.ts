@@ -1,5 +1,4 @@
 import { Component, inject, input, InputSignal } from '@angular/core';
-import { RepositoryDialogService } from '../../../../../../src/app/smManagement/repository/repository-dialog.service';
 import { BehaviorSubject} from 'rxjs';
 import {
   VmcDataGrid,
@@ -34,23 +33,22 @@ interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
-  readonly #printService = inject(PrintDialogService)
+  readonly #printService = inject(PrintDialogService);
   showDownloadPrint: InputSignal<boolean> = input<boolean>(true);
   showFilter: InputSignal<boolean> = input<boolean>(true);
   simpleAddDialog: InputSignal<boolean> = input<boolean>(false);
   customToolbarItems: InputSignal<VmToolbarItem[] | undefined> = input<VmToolbarItem[] | undefined>(undefined);
 
-  readonly #repositoryDialogService = inject(RepositoryDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
-  readonly #VoiceService = inject(VoiceService);
+  readonly #voiceService = inject(VoiceService);
 
-  folderListe = this.#VoiceService.voiceListe;
+  folderListe = this.#voiceService.voiceListe;
   #reload = new BehaviorSubject(false);
   #selectnext = new BehaviorSubject<number[]>([]);
   selectedNotesIds: number[] = [];
 
   get defaultItems(): VmToolbarItem[] {
-    const addLabel = this.simpleAddDialog() ? 'Notenstück hinzufügen' : 'Notenblatt hinzufügen';
+    const addLabel = this.simpleAddDialog() ? 'Stück hinzufügen' : 'Notenblatt hinzufügen';
     return [
       {
         key: 'addNotes',
@@ -58,9 +56,9 @@ export class VmpNotesFullPageComponent {
         label: addLabel,
         acton: async (): Promise<void> => {
           if (this.simpleAddDialog()) {
-            await this.#repositoryDialogService.openAddScoreDialogSimple();
+            await this.#printService.openAddScoreInfoDialog();
           } else {
-            await this.#repositoryDialogService.openAddScoreDialog();
+            await this.#printService.openAddScoreDialog();
           }
           this.#reload.next(true);
         },
@@ -82,7 +80,8 @@ export class VmpNotesFullPageComponent {
           await this.#printService.openPrintDialog(selectedIds);
         },
       },
-  ];}
+    ];
+  }
 
   get items(): VmToolbarItem[] {
     const custom = this.customToolbarItems();
@@ -99,11 +98,10 @@ export class VmpNotesFullPageComponent {
     key: 'voiceSelect',
     type: 'select',
     label: 'Filter',
-    options: [
-      { value: 'stimme 1', label: 'Stimme 1' },
-      { value: 'stimme 2', label: 'Stimme 2' },
-      { value: 'stimme 3', label: 'Stimme 3' },
-    ],
+    options: this.#voiceService.voiceListe.map((v) => ({
+      value: v.voiceId.toString(),
+      label: `Stimme ${v.name} – ${v.instrumentName}`,
+    })),
   };
   suchleiste: VmInputField = {
     key: 'searchbar',
