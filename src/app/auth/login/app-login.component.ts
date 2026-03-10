@@ -27,6 +27,7 @@ export class AppLogin {
   );
 
   async oauthProviderClicked(provider: OAuthProvider): Promise<void> {
+    console.log(`OAuth provider clicked: ${provider.displayName}`);
     await this.#authService.initOAuthLogin(provider);
   }
 
