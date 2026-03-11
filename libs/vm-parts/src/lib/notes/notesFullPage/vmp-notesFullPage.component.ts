@@ -11,8 +11,7 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
-import { VoiceService } from '@vm-utils/services';
-import { PrintDialogService } from './vmp-print-dialog.service';
+import { VmpNotesFullpageDialogService } from './vmp-notes-fullPage-dialog.service';
 
 export interface AllNotesData {
   notesId: number;
@@ -35,70 +34,47 @@ export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
 
 
-  readonly #printService = inject(PrintDialogService);
+  readonly #printService = inject(VmpNotesFullpageDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
-  readonly #voiceService = inject(VoiceService);
 
-  folderListe = this.#voiceService.voiceListe;
   #reload = new BehaviorSubject(false);
   #selectnext = new BehaviorSubject<number[]>([]);
   selectedNotesIds: number[] = [];
 
-  get defaultItems(): VmToolbarItem[] {
-    const addLabel = this.simpleAddDialog() ? 'Stück hinzufügen' : 'Notenblatt hinzufügen';
-    return [
-      {
-        key: 'addNotes',
-        icon: 'add',
-        label: addLabel,
-        acton: async (): Promise<void> => {
-          if (this.simpleAddDialog()) {
-            await this.#printService.openAddScoreInfoDialog();
-          } else {
-            await this.#printService.openAddScoreDialog();
-          }
-          this.#reload.next(true);
-        },
+  toolbarItems: VmToolbarItem[] = [
+    {
+      key: 'addNotes',
+      icon: 'add',
+      label: 'Notenblatt hinzufügen',
+      acton: async (): Promise<void> => {
+        await this.#printService.openAddNoteSheetDialog();
+        this.#reload.next(true);
       },
-      {
-        key: 'download',
-        icon: 'file_download',
-        label: 'Herunterladen',
-        acton: async (): Promise<void> => {
-          this.downloadFile();
-        },
+    },
+    {
+      key: 'download',
+      icon: 'file_download',
+      label: 'Herunterladen',
+      acton: async (): Promise<void> => {
+        this.downloadFile();
       },
-      {
-        key: 'drucken',
-        icon: 'print',
-        label: 'Drucken',
-        acton: async (): Promise<void> => {
-          const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId);
-          await this.#printService.openPrintDialog(selectedIds);
-        },
+    },
+    {
+      key: 'drucken',
+      icon: 'print',
+      label: 'Drucken',
+      acton: async (): Promise<void> => {
+        const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId);
+        await this.#printService.openPrintDialog(selectedIds);
       },
-    ];
-  }
-
-  get items(): VmToolbarItem[] {
-    const custom = this.customToolbarItems();
-    if (custom) {
-      return custom;
-    }
-    if (!this.showDownloadPrint()) {
-      return this.defaultItems.filter((i) => i.key === 'addNotes');
-    }
-    return this.defaultItems;
-  }
+    },
+  ];
 
   filter: VmFormField = {
     key: 'voiceSelect',
     type: 'select',
     label: 'Filter',
-    options: this.#voiceService.voiceListe.map((v) => ({
-      value: v.voiceId.toString(),
-      label: `Stimme ${v.name} – ${v.instrumentName}`,
-    })),
+    options: [],
   };
   suchleiste: VmInputField = {
     key: 'searchbar',

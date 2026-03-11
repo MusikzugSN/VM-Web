@@ -3,7 +3,7 @@ import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
 import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Tag, TagsService } from './Tag.service';
+import { Tag, TagsService } from '@vm-utils/services';
 
 @Component({
   selector: 'app-tags-layout',

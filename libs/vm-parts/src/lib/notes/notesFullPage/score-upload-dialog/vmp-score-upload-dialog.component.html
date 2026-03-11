@@ -4,7 +4,7 @@
     <label class="text-normal">Stück auswählen</label>
 
     <vmc-input-field
-      [formField]="scoreField"
+      [formField]="(scoreField$ | async) ?? scoreFieldPlaceholder"
       [shouldInitChange]="false"
       (inputChanged)="storeChangedValue($event, 'folderId')"
     ></vmc-input-field>
@@ -26,7 +26,7 @@
           </div>
 
           <vmc-input-field
-            [formField]="voiceField"
+            [formField]="(voiceField$ | async) ?? voiceFieldPlaceholder"
             [shouldInitChange]="false"
             (inputChanged)="storeChangedValue($event, 'voiceId')"
           />

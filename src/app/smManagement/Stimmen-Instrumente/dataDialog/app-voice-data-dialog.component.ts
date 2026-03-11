@@ -6,8 +6,7 @@ import {
 import { Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmFormField, VmSelectOption, VmValidFormTypes } from '@vm-components';
-import { Voice, VoiceService } from '@vm-utils/services';
-import { InstrumentService } from '@vm-utils/services';
+import { Voice } from '@vm-utils/services';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 
 export interface VoiceDialogData {
@@ -24,8 +23,6 @@ export interface VoiceDialogData {
 export class AppVoiceDataDialog extends DialogBase<boolean> {
   readonly #data = inject<VoiceDialogData | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  readonly #voiceService = inject(VoiceService);
-  readonly #instrumentService = inject(InstrumentService);
 
   nameField: VmFormField = {
     label: 'Name',
@@ -56,20 +53,6 @@ export class AppVoiceDataDialog extends DialogBase<boolean> {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
       if (x === 'create') {
-        const name = (this.#changedValues['name'] ?? '') as string;
-        const instrumentIdStr = (this.#changedValues['instrumentId'] ?? '') as string;
-        const countStr = (this.#changedValues['countOfMusicsheets'] ?? '0') as string;
-
-        if (name && instrumentIdStr) {
-          const instrumentId = parseInt(instrumentIdStr, 10);
-          const instrument = this.#instrumentService.instrumentListe.find(
-            (i) => i.instrumentId === instrumentId,
-          );
-          const instrumentName = instrument?.name ?? '';
-          const countOfMusicsheets = parseInt(countStr, 10) || 0;
-
-          this.#voiceService.addVoice(name, instrumentId, instrumentName, countOfMusicsheets);
-        }
         super.closeDialog(true);
         return;
       }

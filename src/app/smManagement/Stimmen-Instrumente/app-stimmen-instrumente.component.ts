@@ -25,7 +25,6 @@ export class AppStimmenInstrumenteComponent {
   readonly #voiceDialogService = inject(VoiceDialogService);
   readonly #instrumentDialogService = inject(InstrumentDialogService);
 
-  voiceListe = this.voiceService.voiceListe;
   instrumentListe = this.instrumentService.instrumentListe;
   items: VmToolbarItem[] = [
     {
