@@ -6,7 +6,7 @@ import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs
 import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-unverified.component',
+  selector: 'app-unverified',
   imports: [VmpNotesFullPageComponent, AsyncPipe],
   templateUrl: './app-unverified.component.html',
   styleUrl: './app-unverified.component.scss',
