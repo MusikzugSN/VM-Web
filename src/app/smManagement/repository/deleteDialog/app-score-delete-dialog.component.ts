@@ -1,30 +1,32 @@
 import { Component, inject } from '@angular/core';
-import { GroupService, Group } from '../group.service';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {Score, ScoreService} from '../score.service';
 
 @Component({
-  selector: 'app-delete-group-dialog',
+  selector: 'app-user-delete-dialog',
   imports: [],
-  templateUrl: './app-delete-group-dialog.component.html',
-  styleUrl: './app-delete-group-dialog.component.scss',
+  templateUrl: './app-score-delete-dialog.component.html',
+  styleUrl: './app-score-delete-dialog.component.scss',
 })
-export class AppDeleteGroupDialog extends DialogBase<boolean> {
-  readonly #data = inject<Group>(DIALOG_DATA);
+export class AppScoreDeleteDialog extends DialogBase<boolean> {
+  readonly #data = inject<Score>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  readonly #groupService = inject(GroupService);
+  readonly #scoreService = inject(ScoreService);
 
-  name = this.#data.name;
+  name = this.#data.title;
 
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
       if (x === 'delete') {
-        await firstValueFrom(this.#groupService.delete$(this.#data.groupId));
+        await firstValueFrom(this.#scoreService.delete$(this.#data.scoreId));
 
         super.closeDialog(true);
-      } else if (x === 'close') {
+      }
+
+      if (x === 'close') {
         super.closeDialog(false);
       }
     });

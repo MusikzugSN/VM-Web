@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { VmDialogService } from '@vm-utils';
+import { VmDialogService } from '@vm-utils/dialogs';
 import { Role } from './role.service';
 import { AppDeleteRoleDialog } from './deleteDialog/app-delete-role-dialog.component';
 import { AppRoleDataDialog } from './dataDialog/app-role-data-dialog.component';

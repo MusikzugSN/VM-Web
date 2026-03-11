@@ -3,12 +3,9 @@ import {
   AsPipe,
   ConfigService,
   convertToPatch,
-  DIALOG_BUTTON_CLICKS,
-  DIALOG_DATA,
-  DialogBase,
   Dictionary,
   nameOf,
-  NumDictionary, SnackbarService,
+  NumDictionary,
 } from '@vm-utils';
 import {
   VmcDataGrid,
@@ -27,6 +24,8 @@ import { User, UserUpdate, UserService, UserGroupTeaser } from '../user.service'
 import { AsyncPipe } from '@angular/common';
 import { Group, GroupService } from '../../goups/group.service';
 import { Role, RoleService } from '../../roles/role.service';
+import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
+import {SnackbarService} from '@vm-utils/snackbar';
 
 const noProviderOption: VmSelectOption = {
   label: 'Kein Anbieter',

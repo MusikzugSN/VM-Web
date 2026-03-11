@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { VmDialogService } from '@vm-utils';
+import { VmDialogService } from '@vm-utils/dialogs';
 import { Tag } from '../../me/tags/Tag.service';
 import { TagsDataDialog } from './dataDialog/tags-data-dialog.component';
 import { TagsDeleteDialog } from './deleteDialog/tags-delete-dialog.component';

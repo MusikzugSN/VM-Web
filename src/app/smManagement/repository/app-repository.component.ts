@@ -1,48 +1,81 @@
-import { Component, inject } from '@angular/core';
+import {Component, inject} from '@angular/core';
 
-import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
-import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
-import { MusicSheet, MusicSheetService } from './musicSheet.service';
-import { Score, ScoreService } from './score.service';
+import {BehaviorSubject, switchMap} from 'rxjs';
+import {Score, ScoreService} from './score.service';
+import {
+  VmcDataGrid,
+  VmcIconButton,
+  VmcInputField,
+  VmColumn,
+  VmcToolbar,
+  VmInputField,
+  VmToolbarItem
+} from '@vm-components';
+import {RepositoryDialogService} from './repository-dialog.service';
+import {AsyncPipe} from '@angular/common';
+import {convertToDisplayMinutes} from '@vm-utils';
 
 @Component({
   selector: 'app-repository.component',
-  imports: [AsyncPipe, VmpNotesFullPageComponent],
+  imports: [VmcDataGrid, VmcInputField, VmcToolbar, AsyncPipe, VmcIconButton],
   templateUrl: './app-repository.component.html',
   styleUrl: './app-repository.component.scss',
 })
 export class AppRepositoryComponent {
-  readonly #MusicSheetService = inject(MusicSheetService);
-  readonly #ScoreService = inject(ScoreService);
+  readonly #scoresService = inject(ScoreService);
+  readonly #dataDialogService = inject(RepositoryDialogService);
 
   #reload = new BehaviorSubject(false);
 
-  sheet$: Observable<MusicSheet[]> = this.#reload.pipe(
-    switchMap((_x) => this.#MusicSheetService.load$()),
-  );
-  score$: Observable<Score[]> = this.#reload.pipe(switchMap((_x) => this.#ScoreService.load$()));
+  data$ = this.#reload.pipe(switchMap((_) => this.#scoresService.load$()));
 
-  data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$]).pipe(
-    map(([sheet, score]) => {
-      return sheet
-        .map((x) => {
-          const currentScore = score.find((y) => y.scoreId === x.scoreId);
-          if (!currentScore) {
-            return undefined; //todo far: fehlerbehandlung
-          }
-          return {
-            name: currentScore.title,
-            composer: currentScore.composer,
-            folders: currentScore.folders
-              .map((z) => `${z.musicFolderName} (${z.number})`)
-              .join(', '),
-            link: currentScore.link,
-            pageCount: x.pageCount,
-            voiceName: x.voiceName,
-          } as AllNotesData;
-        })
-        .filter((x) => x !== undefined);
-    }),
-  );
+  toolbarItems: VmToolbarItem[] = [
+    {
+      key: 'addNotes',
+      icon: 'add',
+      label: 'Stück hinzufügen',
+      acton: async (): Promise<void> => {
+        await this.#dataDialogService.openNewScoreDialog();
+        this.#reload.next(true);
+      },
+    },
+  ];
+
+  suchleiste: VmInputField = {
+    key: 'searchbar',
+    type: 'search',
+    label: 'Suchen',
+  };
+
+  columns: VmColumn<Score>[] = [
+    { key: 'title', header: 'Title', field: 'title', filterable: true },
+    { key: 'composer', header: 'Komponist', field: 'composer', filterable: true },
+    { key: 'duration', header: 'Länge', field: 'duration', type: "converter", converter: (score: Score) => convertToDisplayMinutes(score.duration ?? 0) + ' min' },
+    { key: 'folders', header: 'Mappen', field: 'folders', type: "converter", converter : (score: Score) => score.folders?.map(x => x.musicFolderName + ' (' + x.number + ')').join(', ') },
+    { key: 'changedAt', header: 'Bearbeitet am', field: 'updatedAt', type: 'date-time' },
+    { key: 'changedBy', header: 'Bearbeitet von', field: 'updatedBy' },
+    { key: 'customActions', header: '', type: 'template' },
+  ];
+
+  async execAction(rowData: Score, key: string): Promise<void> {
+    if (key === 'edit') {
+      const reload = await this.#dataDialogService.openEditScoreDialog(rowData);
+      if (reload) {
+        this.#reload.next(true);
+      }
+      return;
+    }
+
+    if (key === 'delete') {
+      const reload = await this.#dataDialogService.openEditScoreDialog(rowData);
+      if (reload) {
+        this.#reload.next(true);
+      }
+    }
+
+    if (key === 'link') {
+      window.open(rowData.link, '_blank');
+    }
+  }
+
 }

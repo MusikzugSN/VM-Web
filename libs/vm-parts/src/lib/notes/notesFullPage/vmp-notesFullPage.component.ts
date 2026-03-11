@@ -15,7 +15,7 @@ import { VoiceService } from '../../../../../../src/app/smManagement/Stimmen-Ins
 import { PrintDialogService } from './vmp-print-dialog.service';
 
 export interface AllNotesData {
-  notesId?: number;
+  notesId: number;
   name: string;
   composer: string;
   folders: string;
@@ -33,12 +33,9 @@ export interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
-  readonly #printService = inject(PrintDialogService);
-  showDownloadPrint: InputSignal<boolean> = input<boolean>(true);
-  showFilter: InputSignal<boolean> = input<boolean>(true);
-  simpleAddDialog: InputSignal<boolean> = input<boolean>(false);
-  customToolbarItems: InputSignal<VmToolbarItem[] | undefined> = input<VmToolbarItem[] | undefined>(undefined);
 
+
+  readonly #printService = inject(PrintDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
   readonly #voiceService = inject(VoiceService);
 
@@ -76,7 +73,7 @@ export class VmpNotesFullPageComponent {
         icon: 'print',
         label: 'Drucken',
         acton: async (): Promise<void> => {
-          const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId).filter((id): id is number => id !== undefined);
+          const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId);
           await this.#printService.openPrintDialog(selectedIds);
         },
       },

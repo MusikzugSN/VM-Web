@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { VmDialogService } from '@vm-utils';
-import { AppScoreDataDialog, ScoreDialogData } from './dataDialog/app-score-data-dialog.component';
+import { VmDialogService } from '@vm-utils/dialogs';
+import {Score} from './score.service';
+import {AppRepositoryDataDialog} from './dataDialog/app-repository-data-dialog.component';
+import {AppScoreDeleteDialog} from './deleteDialog/app-score-delete-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -8,17 +10,41 @@ import { AppScoreDataDialog, ScoreDialogData } from './dataDialog/app-score-data
 export class RepositoryDialogService {
   readonly #dialogService = inject(VmDialogService);
 
-  async openScoreInfoDialog(): Promise<boolean | undefined> {
-    return this.#dialogService.open<boolean, ScoreDialogData>(AppScoreDataDialog, {
+  async openNewScoreDialog(): Promise<boolean | undefined> {
+    return this.#dialogService.open<boolean, Score>(AppRepositoryDataDialog, {
       title: 'Stück hinzufügen',
-      data: {
-        voiceOptions: [],
-        folderOptions: [],
-        simpleMode: true,
-      },
+      data: undefined,
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'create', text: 'Hinzufügen', type: 'filled' },
+      ],
+      dialogConfig: {
+        minWidth: '600px',
+      },
+    });
+  }
+
+  async openEditScoreDialog(score: Score): Promise<boolean | undefined> {
+    return this.#dialogService.open<boolean, Score>(AppRepositoryDataDialog, {
+      title: 'Stück bearbeiten',
+      data: score,
+      buttons: [
+        { key: 'close', text: 'Abbrechen', type: 'elevated' },
+        { key: 'save', text: 'Speichern', type: 'filled' },
+      ],
+      dialogConfig: {
+        minWidth: '600px',
+      },
+    });
+  }
+
+  async openDeleteScoreDialog(score: Score): Promise<boolean | undefined> {
+    return this.#dialogService.open<boolean, Score>(AppScoreDeleteDialog, {
+      title: 'Stück löschen',
+      data: score,
+      buttons: [
+        { key: 'close', text: 'Abbrechen', type: 'elevated' },
+        { key: 'edit', text: 'Löschen', type: 'filled', color: 'error' },
       ],
       dialogConfig: {
         minWidth: '600px',

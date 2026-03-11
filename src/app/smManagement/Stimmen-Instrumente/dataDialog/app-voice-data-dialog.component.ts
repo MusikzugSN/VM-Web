@@ -1,8 +1,5 @@
 import { Component, inject } from '@angular/core';
 import {
-  DIALOG_BUTTON_CLICKS,
-  DIALOG_DATA,
-  DialogBase,
   Dictionary,
   nameOf,
 } from '@vm-utils';
@@ -11,6 +8,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmFormField, VmSelectOption, VmValidFormTypes } from '@vm-components';
 import { Voice, VoiceService } from '../voice.service';
 import { InstrumentService } from '../instrumente.service';
+import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 
 export interface VoiceDialogData {
   voice?: Voice;

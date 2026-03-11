@@ -2,9 +2,6 @@ import { Component, inject } from '@angular/core';
 import { VmcInputField, VmFormField, VmSelectOption, VmValidFormTypes } from '@vm-components';
 import {
   convertToPatch,
-  DIALOG_BUTTON_CLICKS,
-  DIALOG_DATA,
-  DialogBase,
   Dictionary,
   nameOf,
   NumDictionary,
@@ -14,6 +11,7 @@ import { distinctUntilChanged, firstValueFrom, map, Observable } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Group, GroupService } from '../../../admin/goups/group.service';
 import { AsyncPipe } from '@angular/common';
+import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 
 const noGroupOption: VmSelectOption = {
   label: 'Keine Gruppe',

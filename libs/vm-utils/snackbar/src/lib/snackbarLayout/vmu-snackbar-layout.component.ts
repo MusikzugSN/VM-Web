@@ -6,7 +6,7 @@ import {
   MatSnackBarRef,
 } from '@angular/material/snack-bar';
 import { VmcIcon, VmcIconButton } from '@vm-components';
-import { VmSnackbarData } from '@vm-utils';
+import { VmSnackbarData } from '@vm-utils/snackbar';
 import { Dictionary } from '@vm-utils';
 
 @Component({

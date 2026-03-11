@@ -9,16 +9,15 @@ import {
 } from '@vm-components';
 import { BehaviorSubject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ScoreDialogData } from '../../../../../../../src/app/smManagement/repository/dataDialog/app-score-data-dialog.component';
 
 @Component({
   selector: 'app-score-upload-step',
   imports: [VmcInputField, VmcFileUploader],
-  templateUrl: './score-upload-step.component.html',
-  styleUrl: './score-upload-step.component.scss',
+  templateUrl: './score-upload-dialog.component.html',
+  styleUrl: './score-upload-dialog.component.scss',
 })
-export class ScoreUploadStepComponent {
-  readonly #data = inject<ScoreDialogData | undefined>(DIALOG_DATA);
+export class ScoreUploadDialogComponent {
+  readonly #folderService = inject(FoldersService);
 
   valueChanged = output<{ key: string; value: string }>();
 

@@ -1,5 +1,4 @@
 export * from './lib/config.service';
-export * from './lib/snackbar/snackbar.service';
 
 // Auth and HttpInterceptors
 export * from './lib/http/base-url.interceptor';
@@ -9,10 +8,6 @@ export * from './lib/http/current-route.service';
 export * from './lib/auth.service';
 export * from './lib/http/base-crud.service';
 
-// Dialog
-export * from './lib/dialog/dialog.service';
-export * from './lib/dialog/dialog-base';
-
 // Types
 export * from './lib/types/dictionary';
 export * from './lib/types/nameOf';
@@ -20,3 +15,8 @@ export * from './lib/types/meta-data.type';
 
 // Pipes
 export * from './lib/pipes/as.pipe';
+
+
+export * from './lib/converter/time.converter';
+
+

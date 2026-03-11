@@ -9,7 +9,6 @@ import {
 } from '@vm-components';
 import { Voice, VoiceService } from './voice.service';
 import { Instrument, InstrumentService } from './instrumente.service';
-import { of } from 'rxjs';
 import { VoiceDialogService } from './voice-dialog.service';
 import { InstrumentDialogService } from './instrument-dialog.service';
 
@@ -57,7 +56,7 @@ export class AppStimmenInstrumenteComponent {
       key: 'name',
       header: 'Name',
       type: 'converter',
-      converter: (rowData) => of(rowData.instrumentName + ' ' + rowData.name),
+      converter: (rowData) => rowData.instrumentName + ' ' + rowData.name,
     },
     { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },

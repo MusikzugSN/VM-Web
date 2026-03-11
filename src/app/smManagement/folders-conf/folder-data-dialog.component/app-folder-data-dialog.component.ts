@@ -2,11 +2,8 @@ import { Component, inject } from '@angular/core';
 import {
   AsPipe,
   convertToPatch,
-  DIALOG_BUTTON_CLICKS,
-  DIALOG_DATA,
-  DialogBase,
   Dictionary,
-  nameOf, NumDictionary, SnackbarService,
+  nameOf, NumDictionary,
 } from '@vm-utils';
 import {BehaviorSubject, combineLatest, distinctUntilChanged, firstValueFrom, map, Observable} from 'rxjs';
 import {
@@ -22,6 +19,8 @@ import { GroupService} from '../../../admin/goups/group.service';
 import { AsyncPipe } from '@angular/common';
 import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '../../../me/folders/folders.service';
 import {Score, ScoreService} from '../../repository/score.service';
+import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
+import { SnackbarService } from '@vm-utils/snackbar'
 
 @Component({
   selector: 'app-folder-data-dialog',

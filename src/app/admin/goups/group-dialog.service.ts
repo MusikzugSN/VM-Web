@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { VmDialogService } from '@vm-utils';
+import { VmDialogService } from '@vm-utils/dialogs';
 import { Group } from './group.service';
 import { AppDeleteGroupDialog } from './deleteDialog/app-delete-group-dialog.component';
 import { AppGroupDataDialog } from './dataDialog/app-group-data-dialog.component';

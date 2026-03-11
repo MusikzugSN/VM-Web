@@ -22,7 +22,9 @@
     "paths": {
       "@vm-components": ["libs/vm-components/src/index.ts"],
       "@vm-parts": ["libs/vm-parts/src/index.ts"],
-      "@vm-utils": ["libs/vm-utils/src/index.ts"]
+      "@vm-utils": ["libs/vm-utils/src/index.ts"],
+      "@vm-utils/dialogs": ["libs/vm-utils/dialogs/src/index.ts"],
+      "@vm-utils/snackbar": ["libs/vm-utils/snackbar/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

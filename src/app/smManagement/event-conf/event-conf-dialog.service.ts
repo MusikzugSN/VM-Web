@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { VmDialogService } from '@vm-utils';
+import { VmDialogService } from '@vm-utils/dialogs';
 import { AppEventDataDialog } from './dataDialog/app-event-data-dialog.component';
 import { Event } from '../../me/event/event.service';
 import { EventDeleteDialog } from './deleteDialog/event-delete-dialog.component';

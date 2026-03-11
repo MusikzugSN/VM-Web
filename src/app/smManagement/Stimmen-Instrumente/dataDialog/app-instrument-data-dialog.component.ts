@@ -1,16 +1,14 @@
 import { Component, inject } from '@angular/core';
 import {
-  DIALOG_BUTTON_CLICKS,
-  DIALOG_DATA,
-  DialogBase,
   Dictionary,
   nameOf,
-  SnackbarService,
 } from '@vm-utils';
 import { Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmInputField, VmValidFormTypes } from '@vm-components';
 import { Instrument, InstrumentService } from '../instrumente.service';
+import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
+import {SnackbarService} from '@vm-utils/snackbar';
 
 const LETTERS_ONLY = /^[a-zA-ZäöüÄÖÜß\s]*$/;
 

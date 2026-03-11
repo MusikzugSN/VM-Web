@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {PrintService} from './print.service';
-import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 import { map, Observable} from 'rxjs';
 import {VmcInputField, VmFormField, VmSelect} from '@vm-components';
 import {AsyncPipe} from '@angular/common';

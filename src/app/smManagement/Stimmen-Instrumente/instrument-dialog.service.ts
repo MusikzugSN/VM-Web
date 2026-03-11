@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { VmDialogService } from '@vm-utils';
+import { VmDialogService } from '@vm-utils/dialogs';
 import { Instrument } from './instrumente.service';
 import { AppInstrumentDataDialog } from './dataDialog/app-instrument-data-dialog.component';
 

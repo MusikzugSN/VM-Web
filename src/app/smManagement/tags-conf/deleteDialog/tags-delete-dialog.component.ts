@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Tag, TagsService } from '../../../me/tags/Tag.service';
+import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from "@vm-utils/dialogs";
 
 @Component({
   selector: 'app-tags-delete-dialog.component',

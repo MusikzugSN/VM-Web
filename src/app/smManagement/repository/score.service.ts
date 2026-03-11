@@ -11,7 +11,7 @@ export interface Score extends IMetaData {
   title: string;
   composer: string;
   link: string;
-  duration?: string;
+  duration?: number;
   folders: ScoreFolderEntry[];
 }
 
@@ -19,6 +19,6 @@ export interface Score extends IMetaData {
   providedIn: 'root',
 })
 export class ScoreService extends BaseCrudService<Score> {
-  override url: string = 'scores';
+  override url: string = 'score';
 }
 
