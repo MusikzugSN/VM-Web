@@ -1,4 +1,4 @@
 <div style="display: flex; flex-direction: row" class="full-page">
-  <vmp-sidebar [sidebarItems]="sidebarItems" />
+  <vmp-sidebar [sidebarItems]="(sidebarItems$ | async) ?? [eventItems, tagItems]" />
   <router-outlet />
 </div>

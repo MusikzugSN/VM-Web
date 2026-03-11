@@ -8,7 +8,7 @@ import {
   DialogBase,
   Dictionary,
   nameOf,
-  NumDictionary,
+  NumDictionary, SnackbarService,
 } from '@vm-utils';
 import {
   VmcDataGrid,
@@ -47,6 +47,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   readonly #groupService = inject(GroupService);
   readonly #roleService = inject(RoleService);
   readonly #config = inject(ConfigService);
+  readonly #snackbarService = inject(SnackbarService);
 
   #roles$: Observable<Role[]> = this.#roleService.load$();
 
@@ -170,14 +171,14 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   userGroupColumns: VmColumn<UserGroupTeaser>[] = [
     {
       key: 'groupId',
-      header: 'Gruppen ID',
+      header: 'Gruppe',
       field: nameOf<UserGroupTeaser>('groupId'),
       type: 'template',
       footerAsTemplate: true,
     },
     {
       key: 'roleId',
-      header: 'Rollen ID',
+      header: 'Rolle',
       field: nameOf<UserGroupTeaser>('roleId'),
       type: 'template',
       footerAsTemplate: true,
@@ -259,7 +260,8 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
     const currentValues = this.userGroupData$.getValue();
     if (currentValues.find((x) => x.groupId === newValue.groupId && x.roleId === newValue.roleId)) {
-      return; // todo far: Fehlerbehandlung
+      this.#snackbarService.raiseError("Die Gruppe mit der Rolle ist bereits vorhanden.", 2500);
+      return;
     }
 
     // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
@@ -308,11 +310,10 @@ export class AppUserDataDialog extends DialogBase<boolean> {
   }
 
   execActionFromRow(event: VmRowClickedEvent<UserGroupTeaser>): void {
-    if (event.rowData === null) {
-      return;
-    }
-
     if (event.key === 'delete') {
+      if (event.rowData === null) {
+        return;
+      }
       this.#storeDeletedGroupValue(event.rowData);
     } else if (event.key === 'add') {
       if (this.#newUserGroup.groupId !== -1 && this.#newUserGroup.roleId !== -1) {

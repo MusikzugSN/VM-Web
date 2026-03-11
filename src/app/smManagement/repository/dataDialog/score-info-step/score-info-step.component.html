@@ -1,0 +1,37 @@
+<div class="flex-column" style="gap: 16px">
+  <div class="data-container">
+    <label class="text-normal">Informationen</label>
+    <vmc-input-field
+      [formField]="titleField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'title')"
+    />
+
+    <vmc-input-field
+      [formField]="composerField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'composer')"
+    />
+
+    <vmc-input-field
+      [formField]="linkField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'link')"
+    />
+
+    <div class="duration-input">
+      <mat-form-field class="vm-input">
+        <mat-label>Länge (MM:SS)</mat-label>
+        <input
+          matInput
+          type="text"
+          [ngModel]="durationDisplay"
+          (input)="onDurationInput($event)"
+          placeholder="MM:SS"
+          maxlength="5"
+        />
+      </mat-form-field>
+    </div>
+  </div>
+</div>
+

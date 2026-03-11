@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Folder, FoldersService } from './folders.service';
 import { ActivatedRoute} from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, map } from 'rxjs';
+import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';
 import { VmpNotesFullPageComponent } from '@vm-parts';
 import { AllNotesData } from '../../smManagement/repository/app-repository.component';
 
@@ -13,14 +13,14 @@ import { AllNotesData } from '../../smManagement/repository/app-repository.compo
   templateUrl: './app-folders.component.html',
   styleUrl: './app-folders.component.scss',
 })
-export class AppFoldersComponent {
+export class AppFolderMeComponent {
   folder?: Folder;
 
   isError = false;
 
   notes: AllNotesData[] = [];
   private route = inject(ActivatedRoute);
-  protected foldersServiceComponent = inject(FoldersService);
+  protected foldersService = inject(FoldersService);
 
   constructor() {
     this.route.paramMap
@@ -29,7 +29,7 @@ export class AppFoldersComponent {
         distinctUntilChanged(),
         takeUntilDestroyed()
       )
-      .subscribe((folderId) => {
+      .subscribe(async (folderId) => {
         this.isError = false;
 
 
@@ -39,7 +39,7 @@ export class AppFoldersComponent {
           return;
         }
 
-        const found = this.foldersServiceComponent.getFolderById(+folderId);
+        const found = await firstValueFrom(this.foldersService.loadById$(+folderId));
 
         if (found) {
           this.folder = found;

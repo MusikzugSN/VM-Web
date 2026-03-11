@@ -1,11 +1,12 @@
 <vmc-toolbar [useNgContentOnly]="true">
-  <span class="text-large">{{ dialogConfig.title }}</span>
-  <vmc-icon-button
-    style="margin-left: auto"
-    [iconName]="'close'"
-    [iconColor]="'white'"
-    (buttonClicked)="buttonClicked('close')"
-  />
+  <div class="flex-row">
+    <span class="text-large" style="margin-right: auto; align-self: center">{{ dialogConfig.title }}</span>
+    <vmc-icon-button
+      [iconName]="'close'"
+      [iconColor]="'white'"
+      (buttonClicked)="buttonClicked('close')"
+    />
+  </div>
 </vmc-toolbar>
 
 <mat-dialog-content>
@@ -16,7 +17,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="dialog__footer">
-  @for (button of dialogConfig.buttons; track button.key) {
+  @for (button of (buttons$ | async) ?? []; track button.key) {
     <vmc-button
       [type]="button.type ?? 'elevated'"
       [label]="button.text"

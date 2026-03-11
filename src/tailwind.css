@@ -8,6 +8,23 @@
   flex-direction: column;
 }
 
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.gap-small {
+  gap: var(--vm-gap-small);
+}
+
+.gap-medium {
+  gap: var(--vm-gap-medium);
+}
+
+.gap-large {
+  gap: var(--vm-gap-large);
+}
+
 .text-header {
   font: var(--vm-font-family);
   font-size: var(--vm-font-size__header);

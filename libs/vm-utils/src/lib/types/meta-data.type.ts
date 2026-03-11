@@ -5,7 +5,7 @@ export interface IMetaData {
   createdBy: string;
 }
 
-export function convertMetaDataFromDto<TDto extends IMetaData>(data: TDto[]): TDto[] {
+export function convertMetaDataFromDtos<TDto extends IMetaData>(data: TDto[]): TDto[] {
   return data.map(
     (dto) =>
       ({
@@ -16,11 +16,19 @@ export function convertMetaDataFromDto<TDto extends IMetaData>(data: TDto[]): TD
   );
 }
 
+export function convertMetaDataFromDto<TDto extends IMetaData>(dto: TDto): TDto {
+  return {
+    ...dto,
+    createdAt: new Date(dto.createdAt),
+    updatedAt: new Date(dto.updatedAt),
+  } as TDto;
+}
+
 export function mockMetaData(): IMetaData {
   return {
-    createdAt: new Date('24.09.2003'),
-    updatedAt: new Date('24.09.2003'),
-    updatedBy: '',
+    createdAt: new Date('September 23, 2003 13:36:03'),
+    updatedAt: new Date('September 23, 2003 13:36:03'),
+    updatedBy: 'Dominiik',
     createdBy: '',
   };
 }

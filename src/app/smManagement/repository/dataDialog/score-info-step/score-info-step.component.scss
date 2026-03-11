@@ -1,0 +1,25 @@
+:host {
+  ::ng-deep {
+    .vm-input {
+      padding-bottom: 6px;
+    }
+  }
+}
+
+.data-container {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: var(--vm-secondary-gray);
+}
+
+.duration-input {
+  display: flex;
+  align-items: center;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+

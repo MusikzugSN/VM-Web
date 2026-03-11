@@ -19,7 +19,7 @@ export class VoiceService {
   public voiceListe: Voice[] = [
     {
       voiceId: 1,
-      name: 'Stimme 1',
+      name: '1',
       instrumentId: 1,
       instrumentName: 'Klarinette',
       countOfMusicsheets: 20,
@@ -28,7 +28,7 @@ export class VoiceService {
     },
     {
       voiceId: 2,
-      name: 'Stimme 2',
+      name: '2',
       instrumentId: 1,
       instrumentName: 'Klarinette',
       countOfMusicsheets: 20,
@@ -37,7 +37,7 @@ export class VoiceService {
     },
     {
       voiceId: 3,
-      name: 'Stimme 3',
+      name: '3',
       instrumentId: 1,
       instrumentName: 'Klarinette',
       countOfMusicsheets: 20,
@@ -46,7 +46,7 @@ export class VoiceService {
     },
     {
       voiceId: 4,
-      name: 'Stimme 1',
+      name: '1',
       instrumentId: 2,
       instrumentName: 'Posaune',
       countOfMusicsheets: 12,
@@ -55,7 +55,7 @@ export class VoiceService {
     },
     {
       voiceId: 5,
-      name: 'Stimme 2',
+      name: '2',
       instrumentId: 2,
       instrumentName: 'Posaune',
       countOfMusicsheets: 12,
@@ -64,7 +64,7 @@ export class VoiceService {
     },
     {
       voiceId: 6,
-      name: 'Stimme 3',
+      name: '3',
       instrumentId: 2,
       instrumentName: 'Posaune',
       countOfMusicsheets: 12,
@@ -73,7 +73,7 @@ export class VoiceService {
     },
     {
       voiceId: 7,
-      name: 'Stimme 4',
+      name: '4',
       instrumentId: 2,
       instrumentName: 'Posaune',
       countOfMusicsheets: 12,
@@ -81,6 +81,21 @@ export class VoiceService {
       ...mockMetaData(),
     },
   ];
+
+  addVoice(name: string, instrumentId: number, instrumentName: string, countOfMusicsheets: number): void {
+    const nextId = this.voiceListe.length > 0
+      ? Math.max(...this.voiceListe.map((v) => v.voiceId)) + 1
+      : 1;
+    this.voiceListe.push({
+      voiceId: nextId,
+      name,
+      instrumentId,
+      instrumentName,
+      countOfMusicsheets,
+      countOfAlternatives: 0,
+      ...mockMetaData(),
+    });
+  }
 
   getVoiceById(voiceId: number): Voice | undefined {
     return this.voice.find((Id) => Id.voiceId === voiceId);

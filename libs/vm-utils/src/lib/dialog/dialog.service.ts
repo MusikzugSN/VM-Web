@@ -14,6 +14,7 @@ export interface VmDialogButtonConfig {
 
 export const DIALOG_DATA = new InjectionToken('dialogData');
 export const DIALOG_BUTTON_CLICKS = new InjectionToken('buttonClickEvents$');
+export const DIALOG_BUTTONS$ = new InjectionToken('dialogButtons$');
 
 @Injectable({ providedIn: 'root' })
 export class VmDialogService {

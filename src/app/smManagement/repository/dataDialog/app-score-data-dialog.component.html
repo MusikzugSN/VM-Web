@@ -1,0 +1,9 @@
+<div class="step-container">
+  @if (currentStep === 1) {
+    <app-score-info-step (valueChanged)="storeChangedValue($event)" />
+  }
+
+  @if (currentStep === 2) {
+    <app-score-upload-step (valueChanged)="storeChangedValue($event)" />
+  }
+</div>
