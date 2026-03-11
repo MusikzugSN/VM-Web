@@ -9,11 +9,10 @@ import {
   DIALOG_DATA,
   DialogBase,
 } from '@vm-utils/dialogs';
-import { Event } from '../../../me/event/event.service';
+import { Event, Tag, TagsService } from '@vm-utils/services';
 import { VmcInputField, VmFormField, VmValidFormTypes } from '@vm-components';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {firstValueFrom, Observable} from 'rxjs';
-import { Tag, TagsService } from '../../../me/tags/Tag.service';
 
 @Component({
   selector: 'app-tags-data-dialog.component',

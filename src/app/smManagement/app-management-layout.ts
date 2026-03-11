@@ -2,7 +2,7 @@ import {Component, inject} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { VmpSidebar } from '@vm-parts';
 import { VmSidebarGroup } from '@vm-components';
-import { FoldersService } from '../me/folders/folders.service';
+import { FoldersService } from '@vm-utils/services';
 import {map, Observable} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 

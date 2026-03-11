@@ -11,7 +11,7 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
-import { VoiceService } from '../../../../../../src/app/smManagement/Stimmen-Instrumente/voice.service';
+import { VoiceService } from '@vm-utils/services';
 import { PrintDialogService } from './vmp-print-dialog.service';
 
 export interface AllNotesData {

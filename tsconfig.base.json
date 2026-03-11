@@ -24,7 +24,8 @@
       "@vm-parts": ["libs/vm-parts/src/index.ts"],
       "@vm-utils": ["libs/vm-utils/src/index.ts"],
       "@vm-utils/dialogs": ["libs/vm-utils/dialogs/src/index.ts"],
-      "@vm-utils/snackbar": ["libs/vm-utils/snackbar/src/index.ts"]
+      "@vm-utils/snackbar": ["libs/vm-utils/snackbar/src/index.ts"],
+      "@vm-utils/services": ["libs/vm-utils/services/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

@@ -7,8 +7,8 @@ import {
   VmFormField,
   VmToolbarItem,
 } from '@vm-components';
-import { Voice, VoiceService } from './voice.service';
-import { Instrument, InstrumentService } from './instrumente.service';
+import { Voice, VoiceService } from '@vm-utils/services';
+import { Instrument, InstrumentService } from '@vm-utils/services';
 import { VoiceDialogService } from './voice-dialog.service';
 import { InstrumentDialogService } from './instrument-dialog.service';
 

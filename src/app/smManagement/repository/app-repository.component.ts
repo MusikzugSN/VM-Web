@@ -1,7 +1,7 @@
 import {Component, inject} from '@angular/core';
 
 import {BehaviorSubject, switchMap} from 'rxjs';
-import {Score, ScoreService} from './score.service';
+import {Score, ScoreService} from '@vm-utils/services';
 import {
   VmcDataGrid,
   VmcIconButton,

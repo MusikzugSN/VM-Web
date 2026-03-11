@@ -6,7 +6,7 @@ import {
   nameOf
 } from '@vm-utils';
 import {VmcInputField, VmFormField, VmValidFormTypes} from '@vm-components';
-import {Score, ScoreService} from '../score.service';
+import {Score, ScoreService} from '@vm-utils/services';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';

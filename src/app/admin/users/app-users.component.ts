@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { User, UserService } from './user.service';
+import { User, UserService } from '@vm-utils/services';
 import { UserDialogService } from './user-dialog.service';
 import { VmColumn, VmToolbarItem, VmcDataGrid, VmcIconButton, VmcToolbar } from '@vm-components';
 import { AsyncPipe } from '@angular/common';

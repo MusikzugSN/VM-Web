@@ -15,10 +15,10 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
-import { GroupService} from '../../../admin/goups/group.service';
+import { GroupService} from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
-import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '../../../me/folders/folders.service';
-import {Score, ScoreService} from '../../repository/score.service';
+import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '../../../../../libs/vm-utils/services/src/lib/folders.service';
+import {Score, ScoreService} from '@vm-utils/services';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 import { SnackbarService } from '@vm-utils/snackbar'
 

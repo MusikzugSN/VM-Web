@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Folder, FoldersService } from './folders.service';
+import { Folder, FoldersService } from '@vm-utils/services';
 import { ActivatedRoute} from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';

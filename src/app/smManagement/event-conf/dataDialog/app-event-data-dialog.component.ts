@@ -6,10 +6,10 @@ import {
   nameOf,
   NumDictionary,
 } from '@vm-utils';
-import { Event, EventService } from '../../../me/event/event.service';
+import { Event, EventService } from '@vm-utils/services';
 import { distinctUntilChanged, firstValueFrom, map, Observable } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Group, GroupService } from '../../../admin/goups/group.service';
+import { Group, GroupService } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 

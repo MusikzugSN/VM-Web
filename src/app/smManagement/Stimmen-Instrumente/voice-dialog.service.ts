@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
-import { InstrumentService } from './instrumente.service';
+import { InstrumentService } from '@vm-utils/services';
 import { AppVoiceDataDialog, VoiceDialogData } from './dataDialog/app-voice-data-dialog.component';
 
 @Injectable({

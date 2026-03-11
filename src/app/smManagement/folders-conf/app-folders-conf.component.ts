@@ -8,13 +8,13 @@ import {
   VmRowClickedEvent,
   VmToolbarItem,
 } from '@vm-components';
-import { Folder, FoldersService } from '../../me/folders/folders.service';
+import { Folder, FoldersService } from '@vm-utils/services';
 import {BehaviorSubject, map, Observable, switchMap} from 'rxjs';
 import {FolderDialogService} from './folder-conf-dialog.service';
 import {AsyncPipe} from '@angular/common';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {AsPipe, NumDictionary} from '@vm-utils';
-import {Group, GroupService} from '../../admin/goups/group.service';
+import {Group, GroupService} from '@vm-utils/services';
 
 
 @Component({

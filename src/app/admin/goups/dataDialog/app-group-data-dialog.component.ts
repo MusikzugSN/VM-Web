@@ -8,7 +8,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmValidFormTypes } from '@vm-components';
 import { VmFormField } from '@vm-components';
-import { GroupService, Group } from '../group.service';
+import { GroupService, Group } from '@vm-utils/services';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 
 const groupNameKey = nameOf<Group>('name');

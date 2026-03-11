@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
 import { AppFolderDataDialog } from './folder-data-dialog.component/app-folder-data-dialog.component';
-import { Folder } from '../../me/folders/folders.service';
+import { Folder } from '@vm-utils/services';
 import {AppDeleteFolderDialog} from './deleteDialog/app-delete-folder-dialog';
 
 @Injectable({

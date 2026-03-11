@@ -8,7 +8,7 @@ import {
   VmRowClickedEvent,
   VmToolbarItem,
 } from '@vm-components';
-import { Event, EventService } from '../../me/event/event.service';
+import { Event, EventService } from '@vm-utils/services';
 import {BehaviorSubject, switchMap} from 'rxjs';
 import { EventDialogService } from './event-conf-dialog.service';
 import {AsyncPipe} from '@angular/common';

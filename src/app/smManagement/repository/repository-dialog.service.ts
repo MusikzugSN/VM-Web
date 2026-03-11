@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
-import {Score} from './score.service';
+import {Score} from '@vm-utils/services';
 import {AppRepositoryDataDialog} from './dataDialog/app-repository-data-dialog.component';
 import {AppScoreDeleteDialog} from './deleteDialog/app-score-delete-dialog.component';
 

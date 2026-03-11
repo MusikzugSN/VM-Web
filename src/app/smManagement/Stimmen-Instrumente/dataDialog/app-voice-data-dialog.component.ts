@@ -6,8 +6,8 @@ import {
 import { Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmFormField, VmSelectOption, VmValidFormTypes } from '@vm-components';
-import { Voice, VoiceService } from '../voice.service';
-import { InstrumentService } from '../instrumente.service';
+import { Voice, VoiceService } from '@vm-utils/services';
+import { InstrumentService } from '@vm-utils/services';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 
 export interface VoiceDialogData {

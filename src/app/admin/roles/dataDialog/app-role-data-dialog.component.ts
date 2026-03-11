@@ -14,7 +14,7 @@ import {
   VmFormField,
 } from '@vm-components';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Permission, PermissionGroup, Role, RoleService } from '../role.service';
+import { Permission, PermissionGroup, Role, RoleService } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';

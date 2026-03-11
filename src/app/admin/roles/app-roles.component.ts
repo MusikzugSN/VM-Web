@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Role, RoleService } from './role.service';
+import { Role, RoleService } from '@vm-utils/services';
 import { BehaviorSubject, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import {

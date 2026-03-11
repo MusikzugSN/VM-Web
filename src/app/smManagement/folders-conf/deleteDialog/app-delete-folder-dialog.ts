@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Folder, FoldersService } from '../../../me/folders/folders.service';
+import { Folder, FoldersService } from '@vm-utils/services';
 
 @Component({
   selector: 'app-delete-folder-dialog',

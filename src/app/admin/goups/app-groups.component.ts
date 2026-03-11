@@ -6,7 +6,7 @@ import {
   VmcToolbar,
   VmToolbarItem,
 } from '@vm-components';
-import { GroupService, Group } from './group.service';
+import { GroupService, Group } from '@vm-utils/services';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { GroupDialogService } from './group-dialog.service';

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { firstValueFrom, Observable } from 'rxjs';
-import { Role, RoleService } from '../role.service';
+import { Role, RoleService } from '@vm-utils/services';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

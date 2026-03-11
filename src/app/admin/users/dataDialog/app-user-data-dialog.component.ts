@@ -20,10 +20,10 @@ import {
 } from '@vm-components';
 import { BehaviorSubject, distinctUntilChanged, firstValueFrom, map, Observable } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { User, UserUpdate, UserService, UserGroupTeaser } from '../user.service';
+import { User, UserUpdate, UserService, UserGroupTeaser } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
-import { Group, GroupService } from '../../goups/group.service';
-import { Role, RoleService } from '../../roles/role.service';
+import { Group, GroupService } from '@vm-utils/services';
+import { Role, RoleService } from '@vm-utils/services';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 import {SnackbarService} from '@vm-utils/snackbar';
 

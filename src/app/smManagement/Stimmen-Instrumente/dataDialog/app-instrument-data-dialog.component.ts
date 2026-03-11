@@ -6,7 +6,7 @@ import {
 import { Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmInputField, VmValidFormTypes } from '@vm-components';
-import { Instrument, InstrumentService } from '../instrumente.service';
+import { Instrument, InstrumentService } from '@vm-utils/services';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 import {SnackbarService} from '@vm-utils/snackbar';
 

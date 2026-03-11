@@ -2,9 +2,9 @@ import { Component, inject } from '@angular/core';
 import { VmSidebarGroup } from '@vm-components';
 import { RouterOutlet } from '@angular/router';
 import { VmpSidebar } from '@vm-parts';
-import { FoldersService } from './folders/folders.service';
-import { EventService } from './event/event.service';
-import { TagsService } from './tags/Tag.service';
+import { FoldersService } from '@vm-utils/services';
+import { EventService } from '@vm-utils/services';
+import { TagsService } from '@vm-utils/services';
 import {combineLatest, map, Observable} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 
