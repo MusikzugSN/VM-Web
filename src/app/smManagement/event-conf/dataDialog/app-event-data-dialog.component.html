@@ -11,7 +11,7 @@
       <vmc-input-field
         [formField]="(groupSelectorField$ | async) ?? groupSelectorFieldPlaceholder"
         [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'name')"
+        (inputChanged)="storeChangedValue($event, 'groupId')"
         />
 
       <vmc-input-field

@@ -1,9 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { VmpNotesFullPageComponent } from '@vm-parts';
+import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
 import { MusicSheet, MusicSheetService } from '../repository/musicSheet.service';
 import { Score, ScoreService } from '../repository/score.service';
 import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
-import { AllNotesData } from '../repository/app-repository.component';
 import { AsyncPipe } from '@angular/common';
 
 @Component({

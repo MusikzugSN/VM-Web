@@ -6,7 +6,7 @@
 </vmc-toolbar>
 
 <vmc-data-grid
-  [dataSource]="eventListe"
+  [dataSource]="(eventListe$ | async) ?? []"
   [columns]="column"
   [rowActions]="[
     {

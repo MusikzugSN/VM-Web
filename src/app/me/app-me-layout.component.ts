@@ -5,8 +5,9 @@ import { VmpSidebar } from '@vm-parts';
 import { FoldersService } from './folders/folders.service';
 import { EventService } from './event/event.service';
 import { TagsService } from './tags/Tag.service';
-import {map, Observable} from 'rxjs';
+import {combineLatest, map, Observable} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
+
 
 @Component({
   selector: 'app-me-layout',
@@ -16,16 +17,19 @@ import {AsyncPipe} from '@angular/common';
 })
 export class AppMeLayout {
   readonly #foldersService = inject(FoldersService);
-  private eventsService = inject(EventService);
+  readonly #eventsService = inject(EventService);
   private tagsService = inject(TagsService);
 
-  eventItems: VmSidebarGroup = {
-    groupName: 'Event',
-    items: this.eventsService.eventListe.map((event) => ({
-      name: event.name,
-      route: `/me/event/${event.eventId}`,
-    })),
-  };
+  eventGroup$: Observable<VmSidebarGroup> = this.#eventsService.load$()
+    .pipe(map(event => {
+      return {
+        groupName: 'Events',
+        items: event.map((folder) => ({
+          name: folder.name,
+          route: `/me/event/${folder.eventId}`,
+        })),
+      };
+    }));
 
   tagItems: VmSidebarGroup = {
     groupName: 'Tags',
@@ -35,20 +39,19 @@ export class AppMeLayout {
     }))
   };
 
-  sidebarItems$: Observable<VmSidebarGroup[]> = this.#foldersService.load$()
+  folderGroup$: Observable<VmSidebarGroup> = this.#foldersService.load$()
     .pipe(map(folders => {
-      return [
-        {
+      return {
           groupName: 'Mappen',
           items: folders.map((folder) => ({
             name: folder.name,
-            route: `/scores/folders/${folder.musicFolderId}`,
+            route: `/me/folders/${folder.musicFolderId}`,
           })),
-        },
-        this.eventItems,
-        this.tagItems,
-      ];
+        };
     }));
+
+  sidebarItems$: Observable<VmSidebarGroup[]> = combineLatest([this.folderGroup$, this.eventGroup$])
+    .pipe(map(([folderGroup, eventGroup]) => [folderGroup, eventGroup, this.tagItems]));
 
 
 }

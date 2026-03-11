@@ -3,8 +3,7 @@ import { Folder, FoldersService } from './folders.service';
 import { ActivatedRoute} from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';
-import { VmpNotesFullPageComponent } from '@vm-parts';
-import { AllNotesData } from '../../smManagement/repository/app-repository.component';
+import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
 
 
 @Component({

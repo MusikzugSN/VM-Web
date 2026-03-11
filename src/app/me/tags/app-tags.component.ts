@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { VmpNotesFullPageComponent } from '@vm-parts';
-import { AllNotesData } from '../../smManagement/repository/app-repository.component';
+import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
 import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

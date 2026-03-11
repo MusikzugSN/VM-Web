@@ -38,7 +38,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
-export type VmColumnType = 'text' | 'date' | 'template' | 'converter'; //| 'boolean' | 'number' ;
+export type VmColumnType = 'text' | 'date' | 'date-time' | 'template' | 'converter'; //| 'boolean' | 'number' ;
 export type VmSelectType = 'multi' | 'single' | 'none';
 
 export interface VmColumn<TElement> {

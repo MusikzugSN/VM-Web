@@ -9,13 +9,14 @@ import {
   VmToolbarItem,
 } from '@vm-components';
 import { Event, EventService } from '../../me/event/event.service';
-import { BehaviorSubject } from 'rxjs';
+import {BehaviorSubject, switchMap} from 'rxjs';
 import { EventDialogService } from './event-conf-dialog.service';
+import {AsyncPipe} from '@angular/common';
 
 
 @Component({
-  selector: 'app-event.conf.component',
-  imports: [VmcDataGrid, VmcInputField, VmcToolbar],
+  selector: 'app-event-conf',
+  imports: [VmcDataGrid, VmcInputField, VmcToolbar, AsyncPipe],
   templateUrl: './app-event.conf.component.html',
   styleUrl: './app-event.conf.component.scss',
 })
@@ -23,9 +24,9 @@ export class AppEventConfComponent {
   eventService = inject(EventService);
   #eventDataDialogService = inject(EventDialogService);
 
-  eventListe = this.eventService.eventListe;
-
   #reload = new BehaviorSubject(false);
+  eventListe$ = this.#reload.pipe(switchMap(_ => this.eventService.load$()));
+
 
   items: VmToolbarItem[] = [
     {
@@ -65,8 +66,8 @@ export class AppEventConfComponent {
 
   column: VmColumn<Event>[] = [
     { key: 'name', header: 'Name', field: 'name' },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
-    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', type: 'date' },
-    { key: 'activUntil', header: 'Aktiv bis', field: 'activUntil' },
+    { key: 'activUntil', header: 'Aktiv bis', field: 'activUntil', type: 'date' },
+    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
+    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time' },
   ];
 }

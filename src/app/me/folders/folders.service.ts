@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AllNotesData } from '../../smManagement/repository/app-repository.component';
 import { BaseCrudService, IMetaData} from '@vm-utils';
+import {AllNotesData} from '@vm-parts';
 
 export interface Folder extends IMetaData {
   musicFolderId: number;

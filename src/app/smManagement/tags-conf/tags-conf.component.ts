@@ -11,10 +11,10 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import { BehaviorSubject } from 'rxjs';
-import { AllNotesData } from '../repository/app-repository.component';
 import { Tag, TagsService } from '../../me/tags/Tag.service';
 import { tags } from '@angular-devkit/core';
 import { TagDialogService } from './tags-conf-dialog.service';
+import {AllNotesData} from '@vm-parts';
 
 @Component({
   selector: 'app-tags-conf.component',

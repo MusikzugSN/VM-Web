@@ -14,7 +14,7 @@ import { DownloadFileService } from './download-file.service';
 import { VoiceService } from '../../../../../../src/app/smManagement/Stimmen-Instrumente/voice.service';
 import { PrintDialogService } from './vmp-print-dialog.service';
 
-interface AllNotesData {
+export interface AllNotesData {
   notesId: number;
   name: string;
   composer: string;

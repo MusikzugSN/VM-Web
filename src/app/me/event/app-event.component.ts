@@ -1,10 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EventService, Event } from './event.service';
-import { distinctUntilChanged, map } from 'rxjs';
+import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { VmpNotesFullPageComponent } from '@vm-parts';
-import { AllNotesData } from '../../smManagement/repository/app-repository.component';
+import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
 
 @Component({
   selector: 'app-event.component',
@@ -27,14 +26,14 @@ export class AppEventComponent {
         distinctUntilChanged(),
         takeUntilDestroyed(),
       )
-      .subscribe((eventId) => {
+      .subscribe(async (eventId) => {
         this.isError = false;
 
         if (!eventId) {
           this.isError = true;
           return;
         }
-        const found = this.eventServiceComponent.getEventById(+eventId);
+        const found = await firstValueFrom(this.eventServiceComponent.loadById$(+eventId));
 
         if (found) {
           this.event = found;

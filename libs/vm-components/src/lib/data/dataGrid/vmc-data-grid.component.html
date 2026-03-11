@@ -68,6 +68,8 @@
           } @else if (column.type === undefined || column.type === 'text') {
             {{ row[column.field] }}
           } @else if (column.type === 'date') {
+            {{ row[column.field] | date: 'dd.MM.yyyy' }}
+          } @else if (column.type === 'date-time') {
             {{ row[column.field] | date: 'dd.MM.yyyy HH:mm' }}
           } @else if (column.type === 'template') {
             @let template = _templates[column.key];

@@ -1,10 +1,9 @@
 import { Component, inject} from '@angular/core';
 import { Folder, FoldersService } from '../../me/folders/folders.service';
-import { AllNotesData } from '../repository/app-repository.component';
 import { ActivatedRoute } from '@angular/router';
 import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { VmpNotesFullPageComponent } from '@vm-parts';
+import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
 
 @Component({
   selector: 'app-folders.component',
