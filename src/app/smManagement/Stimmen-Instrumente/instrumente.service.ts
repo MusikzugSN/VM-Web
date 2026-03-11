@@ -17,12 +17,7 @@ export class InstrumentService {
   public instrumentListe: Instrument[] = [
     { instrumentId: 1, name: 'Klarinette', type: 'Holzblasinstrument', ...mockMetaData() },
     { instrumentId: 2, name: 'Posaune', type: 'blechblasinstrument', ...mockMetaData() },
-    {
-      instrumentId: 3,
-      name: 'Pauke',
-      type: 'Schlagwerk',
-      ...mockMetaData()
-    },
+    { instrumentId: 3, name: 'Pauke', type: 'Schlagwerk', ...mockMetaData() },
     { instrumentId: 4, name: 'Klavier', type: 'Tasteninstrument', ...mockMetaData() },
   ];
 
