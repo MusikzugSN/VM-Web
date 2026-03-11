@@ -15,7 +15,7 @@ import { VoiceService } from '../../../../../../src/app/smManagement/Stimmen-Ins
 import { PrintDialogService } from './vmp-print-dialog.service';
 
 export interface AllNotesData {
-  notesId: number;
+  notesId?: number;
   name: string;
   composer: string;
   folders: string;
@@ -76,7 +76,7 @@ export class VmpNotesFullPageComponent {
         icon: 'print',
         label: 'Drucken',
         acton: async (): Promise<void> => {
-          const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId);
+          const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId).filter((id): id is number => id !== undefined);
           await this.#printService.openPrintDialog(selectedIds);
         },
       },
@@ -123,7 +123,7 @@ export class VmpNotesFullPageComponent {
   ];
 
   public downloadFile(): void {
-    const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId);
+    const selectedIds = this.selectedNotesIds.length > 0 ? this.selectedNotesIds : this.data().map(n => n.notesId).filter((id): id is number => id !== undefined);
     this.#downloadFileService.downloadFile(selectedIds).subscribe((response) => {
       const fileName = response.headers.get('content-disposition')?.split(';')[1]?.split('=')[1];
 

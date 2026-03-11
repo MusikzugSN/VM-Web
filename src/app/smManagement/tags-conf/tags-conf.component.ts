@@ -12,7 +12,6 @@ import {
 } from '@vm-components';
 import { BehaviorSubject } from 'rxjs';
 import { Tag, TagsService } from '../../me/tags/Tag.service';
-import { tags } from '@angular-devkit/core';
 import { TagDialogService } from './tags-conf-dialog.service';
 import {AllNotesData} from '@vm-parts';
 
@@ -86,6 +85,4 @@ export class TagsConfComponent {
   filterSelectionChange(event: VmValidFormTypes) {
     return console.log(event);
   }
-
-  protected readonly tags = tags;
 }
