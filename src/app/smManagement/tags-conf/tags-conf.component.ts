@@ -12,7 +12,6 @@ import {
 } from '@vm-components';
 import { BehaviorSubject } from 'rxjs';
 import { Tag, TagsService } from '@vm-utils/services';
-import { tags } from '@angular-devkit/core';
 import { TagDialogService } from './tags-conf-dialog.service';
 import {AllNotesData} from '@vm-parts';
 
