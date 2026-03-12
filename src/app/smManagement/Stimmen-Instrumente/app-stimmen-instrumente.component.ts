@@ -7,15 +7,15 @@ import {
   VmFormField,
   VmToolbarItem,
 } from '@vm-components';
-import { Voice, VoiceService } from '@vm-utils/services';
-import { Instrument, InstrumentService } from '@vm-utils/services';
+import { Voice, VoiceService, Instrument, InstrumentService } from '@vm-utils/services';
 import { VoiceDialogService } from './voice-dialog.service';
 import { InstrumentDialogService } from './instrument-dialog.service';
-
+import { BehaviorSubject, switchMap } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-stimmen-instrumente',
-  imports: [VmcDataGrid, VmcToolbar, VmcInputField],
+  imports: [VmcDataGrid, VmcToolbar, VmcInputField, AsyncPipe],
   templateUrl: './app-stimmen-instrumente.component.html',
   styleUrl: './app-stimmen-instrumente.component.scss',
 })
@@ -25,7 +25,10 @@ export class AppStimmenInstrumenteComponent {
   readonly #voiceDialogService = inject(VoiceDialogService);
   readonly #instrumentDialogService = inject(InstrumentDialogService);
 
-  instrumentListe = this.instrumentService.instrumentListe;
+  #reload = new BehaviorSubject(false);
+  voiceListe$ = this.#reload.pipe(switchMap(_ => this.voiceService.load$()));
+  instrumentListe$ = this.#reload.pipe(switchMap(_ => this.instrumentService.load$()));
+
   items: VmToolbarItem[] = [
     {
       key: 'addVoice',
@@ -33,6 +36,7 @@ export class AppStimmenInstrumenteComponent {
       label: 'Stimme hinzufügen',
       acton: async (): Promise<void> => {
         await this.#voiceDialogService.openAddVoiceDialog();
+        this.#reload.next(true);
       },
     },
     {
@@ -41,6 +45,7 @@ export class AppStimmenInstrumenteComponent {
       label: 'Instrument hinzufügen',
       acton: async (): Promise<void> => {
         await this.#instrumentDialogService.openAddInstrumentDialog();
+        this.#reload.next(true);
       },
     },
   ];

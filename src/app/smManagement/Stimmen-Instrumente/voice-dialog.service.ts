@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
 import { InstrumentService } from '@vm-utils/services';
 import { AppVoiceDataDialog, VoiceDialogData } from './dataDialog/app-voice-data-dialog.component';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,8 @@ export class VoiceDialogService {
   readonly #instrumentService = inject(InstrumentService);
 
   async openAddVoiceDialog(): Promise<boolean | undefined> {
-    const instrumentOptions = this.#instrumentService.instrumentListe.map((i) => ({
+    const instruments = await firstValueFrom(this.#instrumentService.load$());
+    const instrumentOptions = instruments.map((i) => ({
       label: i.name,
       value: i.instrumentId.toString(),
     }));
@@ -31,4 +33,3 @@ export class VoiceDialogService {
     });
   }
 }
-

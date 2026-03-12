@@ -11,7 +11,10 @@ export function httpErrorInterceptor(
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       console.log('HTTP-Fehler aufgetreten:', error);
-      if (error.status === 0) {
+      if (error.status === 303) {
+        // 303 See Other = Backend hat erfolgreich erstellt, antwortet mit Redirect
+        // Kein Fehler anzeigen
+      } else if (error.status === 0) {
         snackbarService.raiseError(
           'Der Server ist nicht erreichbar, wende dich an deinen Administrator.',
         );

@@ -4,9 +4,9 @@
 
 <div class="flex-row-fill gap">
   <vmc-data-grid
-    [dataSource]="[]"
+    [dataSource]="(voiceListe$ | async) ?? []"
     [columns]="columnsVoice"/>
   <vmc-data-grid
-    [dataSource]="instrumentListe"
+    [dataSource]="(instrumentListe$ | async) ?? []"
     [columns]="columnsInstrument"/>
 </div>

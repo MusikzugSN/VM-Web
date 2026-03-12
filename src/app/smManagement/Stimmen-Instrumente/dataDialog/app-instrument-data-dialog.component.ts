@@ -1,14 +1,15 @@
 import { Component, inject } from '@angular/core';
 import {
+  convertToPatch,
   Dictionary,
   nameOf,
 } from '@vm-utils';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmInputField, VmValidFormTypes } from '@vm-components';
 import { Instrument, InstrumentService } from '@vm-utils/services';
-import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
-import {SnackbarService} from '@vm-utils/snackbar';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
+import { SnackbarService } from '@vm-utils/snackbar';
 
 const LETTERS_ONLY = /^[a-zA-ZäöüÄÖÜß\s]*$/;
 
@@ -43,6 +44,8 @@ export class AppInstrumentDataDialog extends DialogBase<boolean> {
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
+      const patch = convertToPatch<Instrument, string>(this.#changedValues);
+
       if (x === 'create') {
         const name = (this.#changedValues['name'] ?? '') as string;
         const type = (this.#changedValues['type'] ?? '') as string;
@@ -55,9 +58,14 @@ export class AppInstrumentDataDialog extends DialogBase<boolean> {
           return;
         }
 
-        if (name && type) {
-          this.#instrumentService.addInstrument(name, type);
-        }
+        await firstValueFrom(this.#instrumentService.create$(patch));
+        super.closeDialog(true);
+        return;
+      }
+
+      if (x === 'save') {
+        patch.instrumentId = this.#data?.instrumentId ?? -1;
+        await firstValueFrom(this.#instrumentService.change$(patch, patch.instrumentId));
         super.closeDialog(true);
         return;
       }

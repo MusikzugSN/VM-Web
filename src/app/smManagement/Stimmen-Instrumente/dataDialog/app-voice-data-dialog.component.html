@@ -1,23 +1,24 @@
 <div class="flex-column" style="gap: 16px">
-  <div class="data-container">
-    <label class="text-normal">Stimme konfigurieren</label>
-    <vmc-input-field
-      [formField]="nameField"
-      [shouldInitChange]="false"
-      (inputChanged)="storeChangedValue($event, 'name')"
-    />
+  <div style="display: flex; gap: 16px">
+    <div class="data-container flex-column">
+      <label class="text-normal">Stimme konfigurieren</label>
+      <vmc-input-field
+        [formField]="nameField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'name')"
+      />
 
-    <vmc-input-field
-      [formField]="instrumentField"
-      [shouldInitChange]="false"
-      (inputChanged)="storeChangedValue($event, 'instrumentId')"
-    />
+      <vmc-input-field
+        [formField]="instrumentField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'instrumentId')"
+      />
 
-    <vmc-input-field
-      [formField]="countField"
-      [shouldInitChange]="false"
-      (inputChanged)="storeChangedValue($event, 'countOfMusicsheets')"
-    />
+      <vmc-input-field
+        [formField]="countField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'countOfMusicsheets')"
+      />
+    </div>
   </div>
 </div>
-

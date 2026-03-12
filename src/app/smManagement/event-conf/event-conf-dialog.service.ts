@@ -23,6 +23,7 @@ export class EventDialogService {
     });
   }
 
+
   async openEditEventDialog(data: Event): Promise<boolean | undefined> {
     return this.#dialogService.open(AppEventDataDialog, {
       data: data,

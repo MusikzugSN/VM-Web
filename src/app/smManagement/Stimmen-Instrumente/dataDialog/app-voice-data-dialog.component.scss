@@ -14,12 +14,11 @@
   flex-direction: column;
   border-radius: 10px;
   padding: 20px;
-  gap: 16px;
   background-color: var(--vm-secondary-gray);
-  overflow: visible;
+  flex-grow: 1;
+  gap: 12px;
 
   vmc-input-field {
     min-height: 56px;
   }
 }
-
