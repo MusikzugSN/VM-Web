@@ -1,0 +1,13 @@
+<vmc-toolbar [items]="items" [useNgContentForRightside]="true">
+  <vmc-input-field [formField]="suchleiste"></vmc-input-field>
+</vmc-toolbar>
+
+<vmc-data-grid
+  [dataSource]="(instrumentListe$ | async) ?? []"
+  [columns]="column"
+  [rowActions]="[
+    { key: 'edit', icon: 'edit' },
+    { key: 'delete', icon: 'delete' },
+  ]"
+  (clickedAction)="execAction($event)"
+/>
