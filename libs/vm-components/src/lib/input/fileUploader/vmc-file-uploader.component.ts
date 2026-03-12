@@ -45,6 +45,7 @@ export class VmcFileUploader {
   width: InputSignal<string | undefined> = input<string | undefined>(undefined);
   height: InputSignal<string | undefined> = input<string | undefined>(undefined);
   doNotShowFileNames: InputSignal<boolean> = input<boolean>(true);
+  onlySingleFile: InputSignal<boolean> = input<boolean>(false);
 
   filesChanged = output<FileData[]>();
 

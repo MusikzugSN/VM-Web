@@ -39,6 +39,15 @@ export class AppRepositoryComponent {
         this.#reload.next(true);
       },
     },
+    {
+      key: 'addMultiNotes',
+      icon: 'add',
+      label: 'Mehrere Stücke hinzufügen',
+      acton: async (): Promise<void> => {
+        await this.#dataDialogService.openNewScoreMulitDialog();
+        this.#reload.next(true);
+      },
+    },
   ];
 
   suchleiste: VmInputField = {
