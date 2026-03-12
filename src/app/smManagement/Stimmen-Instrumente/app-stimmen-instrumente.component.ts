@@ -6,6 +6,7 @@ import {
   VmcToolbar,
   VmFormField,
   VmToolbarItem,
+  VmRowClickedEvent,
 } from '@vm-components';
 import { Voice, VoiceService, Instrument, InstrumentService } from '@vm-utils/services';
 import { VoiceDialogService } from './voice-dialog.service';
@@ -49,6 +50,38 @@ export class AppStimmenInstrumenteComponent {
       },
     },
   ];
+
+  async execActionVoice(action: VmRowClickedEvent<Voice>): Promise<void> {
+    if (action.key === 'edit' && action.rowData) {
+      const reload = await this.#voiceDialogService.openEditVoiceDialog(action.rowData);
+      if (reload) {
+        this.#reload.next(true);
+      }
+      return;
+    }
+    if (action.key === 'delete' && action.rowData) {
+      const reload = await this.#voiceDialogService.openDeleteVoiceDialog(action.rowData);
+      if (reload) {
+        this.#reload.next(true);
+      }
+    }
+  }
+
+  async execActionInstrument(action: VmRowClickedEvent<Instrument>): Promise<void> {
+    if (action.key === 'edit' && action.rowData) {
+      const reload = await this.#instrumentDialogService.openEditInstrumentDialog(action.rowData);
+      if (reload) {
+        this.#reload.next(true);
+      }
+      return;
+    }
+    if (action.key === 'delete' && action.rowData) {
+      const reload = await this.#instrumentDialogService.openDeleteInstrumentDialog(action.rowData);
+      if (reload) {
+        this.#reload.next(true);
+      }
+    }
+  }
 
   suchleiste: VmFormField = {
     key: 'suchleiste',
