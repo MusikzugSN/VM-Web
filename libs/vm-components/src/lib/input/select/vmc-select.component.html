@@ -1,13 +1,12 @@
-@let field = formField();
 <mat-form-field class="vm-input" style="width: 100%">
-  <mat-label>{{ field.label }}</mat-label>
+  <mat-label>{{ label() }}</mat-label>
 
   <mat-select
-    [value]="field.value"
+    [value]="value()"
     (selectionChange)="selectCallChangeEvent($event)"
     (openedChange)="onOpened($event)"
   >
-    @if(field.enableSearch) {
+    @if(enableSearch()) {
       <mat-option class="search-option" disabled>
         <input
           #searchInput

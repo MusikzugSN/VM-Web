@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import {convertMetaDataFromDto, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
 
-export abstract class BaseCrudService<TDto extends IMetaData, TChangeDto = TDto> {
+export abstract class BaseCrudService<TDto extends IMetaData, TChangeDto = TDto, TQuery = undefined> {
   readonly #httpClient = inject(HttpClient);
 
   abstract url: string;
@@ -20,10 +20,20 @@ export abstract class BaseCrudService<TDto extends IMetaData, TChangeDto = TDto>
     return this.#httpClient.delete<boolean>(`${this.url}/${dtoId}`);
   }
 
-  load$(): Observable<TDto[]> {
+  load$(queryParams?: TQuery | undefined): Observable<TDto[]> {
+    let params = new HttpParams();
+
+    if (queryParams) {
+      for (const [key, value] of Object.entries(queryParams)) {
+        if (value !== null && value !== undefined) {
+          params = params.set(key, String(value));
+        }
+      }
+    }
+
     return this.#httpClient
-      .get<TDto[]>(`${this.url}`)
-      .pipe(map((groups) => convertMetaDataFromDtos(groups)));
+      .get<TDto[]>(this.url, { params })
+      .pipe(map(groups => convertMetaDataFromDtos(groups)));
   }
 
   loadById$(id: number): Observable<TDto> {
