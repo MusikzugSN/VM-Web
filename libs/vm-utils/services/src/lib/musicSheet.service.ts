@@ -13,5 +13,5 @@ export interface MusicSheet extends IMetaData {
   providedIn: 'root',
 })
 export class MusicSheetService extends BaseCrudService<MusicSheet> {
-  override url: string = 'notes';
+  override url: string = 'musicSheet';
 }

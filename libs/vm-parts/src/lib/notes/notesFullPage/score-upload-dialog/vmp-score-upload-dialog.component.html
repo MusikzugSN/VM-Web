@@ -5,8 +5,9 @@
 
     <vmc-input-field
       [formField]="(scoreField$ | async) ?? scoreFieldPlaceholder"
+      [shouldInitChange]="false"
       (inputChanged)="storeScoreId($event)"
-    />
+    ></vmc-input-field>
   </div>
 
   <div class="data-container">
@@ -24,13 +25,11 @@
             {{ file.path }}
           </div>
 
-          <vmc-select
-            style="width: 200px; height: 100%"
-            [label]="'Stimme'"
-            [options]="(voices$ | async) ?? []"
-            [hideIfNotSelected]="(selectedVoiceIds$ | async) ?? []"
-            [enableSearch]="true"
-            (inputChanged)="storeChangedValue($event, file.path)"/>
+          <vmc-input-field
+            [formField]="(voiceField$ | async) ?? voiceFieldPlaceholder"
+            [shouldInitChange]="false"
+            (inputChanged)="storeChangedValue($event, file.path)"
+          />
         </div>
       }
     </div>
