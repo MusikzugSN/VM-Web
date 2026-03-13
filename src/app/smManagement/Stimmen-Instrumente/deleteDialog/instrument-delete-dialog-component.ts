@@ -8,7 +8,7 @@ import { Instrument, InstrumentService } from '@vm-utils/services';
   selector: 'app-instrument-delete-dialog',
   imports: [],
   templateUrl: './instrument-delete-dialog.component.html',
-  styleUrl: './instrument-delete-dialog.component.scss',
+  styleUrl: './instrument-delete-dialoge-component.scss',
 })
 export class InstrumentDeleteDialog extends DialogBase<boolean> {
   readonly #data = inject<Instrument>(DIALOG_DATA);

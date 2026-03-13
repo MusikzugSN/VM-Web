@@ -1,0 +1,41 @@
+<div>
+  <div class="configList">
+    @for(printconf of (printconfs$ | async); track printconf.pageCount ) {
+      <div>
+        <button class="configList__btn" (click)="selectConfig(printconf)">{{printconf.pageCount}}</button>
+      </div>
+    }
+  </div>
+
+  <div class="configsettings">
+    <label class="text-normal">Konfig Einstellungen</label>
+    <div>
+      <vmc-input-field
+      [formField]="pageCountField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'pageCount')">
+      </vmc-input-field>
+      <vmc-button-toggle
+        [selectOptions]="selectoptions"
+        >
+      </vmc-button-toggle>
+
+
+
+
+
+  </div>
+    <div class="flex-column">
+      <vmc-input-field
+        [formField]="duplexField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'duplex')">
+      </vmc-input-field>
+      <vmc-input-field
+        [formField]="fileFormatField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'fileFormat')">
+      </vmc-input-field>
+    </div>
+  </div>
+</div>
