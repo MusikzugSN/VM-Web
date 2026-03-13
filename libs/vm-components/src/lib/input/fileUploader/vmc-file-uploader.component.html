@@ -2,7 +2,7 @@
 <input
   type="file"
   #fileInput
-  multiple
+  [multiple]="!onlySingleFile()"
   style="display:none"
   (change)="onFilesSelected($event)"
 />
@@ -20,7 +20,11 @@
   (drop)="onDrop($event)"
   [style.height]="height()"
   [style.width]="width()">
-  <p>Dateien oder Ordner hierher ziehen</p>
+  @if(onlySingleFile()) {
+    <p>Datei hierher ziehen oder auf "Datei hochladen" klicken</p>
+  } @else {
+    <p>Dateien oder Ordner hierher ziehen oder auf "Datei/Ordner hochladen" klicken</p>
+  }
   @let files = (fileData$ | async) ?? [];
   @if (doNotShowFileNames()) {
     <div class="file-list">
@@ -33,6 +37,6 @@
   }
   <div class="flex-row" style="margin-top: 16px; gap: 16px; justify-content: center" >
     <vmc-button [label]="'Datei hochladen'" (buttonClicked)="fileUploadOpen(fileInput)"/>
-    <vmc-button [label]="'Ordner hochladen'" (buttonClicked)="directoryUploadOpen(directoryInput)"/>
+    <vmc-button [label]="'Ordner hochladen'" (buttonClicked)="directoryUploadOpen(directoryInput)" [disabled]="onlySingleFile()"/>
   </div>
 </div>

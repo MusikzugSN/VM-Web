@@ -6,7 +6,7 @@
     <vmc-input-field
       [formField]="(scoreField$ | async) ?? scoreFieldPlaceholder"
       [shouldInitChange]="false"
-      (inputChanged)="storeChangedValue($event, 'folderId')"
+      (inputChanged)="storeScoreId($event)"
     ></vmc-input-field>
   </div>
 
@@ -28,7 +28,7 @@
           <vmc-input-field
             [formField]="(voiceField$ | async) ?? voiceFieldPlaceholder"
             [shouldInitChange]="false"
-            (inputChanged)="storeChangedValue($event, 'voiceId')"
+            (inputChanged)="storeChangedValue($event, file.path)"
           />
         </div>
       }

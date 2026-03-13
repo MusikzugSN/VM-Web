@@ -5,16 +5,22 @@
     </vmc-input-field>
 
     <vmc-input-field
-      [formField]="filter"
+      [formField]="filter()"
       (inputChanged)="filterSelectionChange($event)">
     </vmc-input-field>
   </div>
 </vmc-toolbar>
 <vmc-data-grid
-  [dataSource]="data()"
+  [dataSource]="filteredData()"
   [columns]="columns"
+  [rowActions]="showEditAction()
+    ? (showDeleteAction()
+      ? [{ key: 'edit', icon: 'edit' }, { key: 'delete', icon: 'delete' }]
+      : [{ key: 'edit', icon: 'edit' }])
+    : (showDeleteAction() ? [{ key: 'delete', icon: 'delete' }] : [])"
   [selectionMode]="'multi'"
   [selectionKey]="'notesId'"
+  (clickedAction)="execGridAction($event)"
   (selectionChanged)="selectionChanged($event)"
 />
 

@@ -1,9 +1,10 @@
 import {Component, effect, ElementRef, input, InputSignal, output, ViewChild} from '@angular/core';
-import {VmSelect, VmSelectOption} from '@vm-components';
+import {VmSelectOption} from '@vm-components';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect, MatSelectChange} from '@angular/material/select';
 import {BehaviorSubject, combineLatest, map, Observable} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
+import {toObservable} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'vmc-select',
@@ -18,24 +19,42 @@ import {AsyncPipe} from '@angular/common';
   styleUrl: './vmc-select.component.scss',
 })
 export class VmcSelect {
-  formField: InputSignal<VmSelect> = input.required();
+  label: InputSignal<string> = input.required()
+  enableSearch: InputSignal<boolean> = input<boolean>(false);
+  options: InputSignal<VmSelectOption[]> = input.required();
+  value: InputSignal<string | undefined> = input<string | undefined>(undefined);
+  hideIfNotSelected: InputSignal<string[]> = input<string[]>([]);
 
   inputChanged = output<string>();
+
+  #currentValue: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined)
 
   #filterString$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   #filteredOptions$: BehaviorSubject<VmSelectOption[]> = new BehaviorSubject<VmSelectOption[]>([]);
 
-  filteredOptions$: Observable<VmSelectOption[]> = combineLatest([this.#filterString$, this.#filteredOptions$])
-    .pipe(map(([filterString, options]) => {
-      if (!filterString) {
-        return options;
+  filteredOptions$: Observable<VmSelectOption[]> = combineLatest([this.#filterString$, this.#filteredOptions$, toObservable(this.hideIfNotSelected), this.#currentValue])
+    .pipe(
+      map(([filterString, options, hideIfNotSelected, currentValue]) => {
+      const valuesToHide = hideIfNotSelected.filter(x => x !== currentValue);
+      let optionsToShow = options;
+
+      if (valuesToHide.length > 0) {
+        optionsToShow = optionsToShow.filter(option => !valuesToHide.includes(option.value));
       }
-      return options.filter(option => this.#filter(option, filterString));
-    }))
+
+      if (filterString) {
+        optionsToShow = optionsToShow.filter(option => this.#filter(option, filterString));
+      }
+      return optionsToShow;
+    }));
 
   constructor() {
     effect(() => {
-      this.#filteredOptions$.next(this.formField().options);
+      this.#filteredOptions$.next(this.options());
+    });
+
+    effect(() => {
+      this.#currentValue.next(this.value());
     });
   }
 
@@ -50,6 +69,7 @@ export class VmcSelect {
 
   selectCallChangeEvent(event: MatSelectChange): void {
     this.inputChanged.emit(event.value);
+    this.#currentValue.next(event.value);
   }
 
 

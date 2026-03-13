@@ -27,7 +27,7 @@ export class VmpNotesFullpageDialogService {
       title: 'Notenblatt hinzufügen',
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
-        { key: 'print', text: 'Hinzufügen', type: 'filled' },
+        { key: 'upload', text: 'Hinzufügen', type: 'filled' },
       ],
     });
   }

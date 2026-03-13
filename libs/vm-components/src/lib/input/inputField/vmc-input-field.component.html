@@ -12,8 +12,10 @@
   </mat-checkbox>
 } @else if (field.type === 'select') {
   <vmc-select
-    [formField]="field"
-    (inputChanged)="selectCallChangeEvent($event)"/>
+    [label]="field.label"
+    [options]="field.options"
+    [value]="field.value"
+    (inputChanged)="selectCallChangeEvent($event)" />
 }  @else {
   <mat-form-field class="vm-input">
     <mat-label>{{ field.label }}</mat-label>

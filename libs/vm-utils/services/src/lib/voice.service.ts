@@ -10,10 +10,15 @@ export interface Voice extends IMetaData{
   countOfAlternatives?: number;
 }
 
+export interface VoiceQueryParams {
+  includeAlternateVoices?: boolean;
+  includeInstrumentName?: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
-export class VoiceService extends BaseCrudService<Voice> {
+export class VoiceService extends BaseCrudService<Voice, Voice, VoiceQueryParams> {
     override url = 'voice';
 
 }
