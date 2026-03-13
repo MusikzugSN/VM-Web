@@ -8,6 +8,7 @@ import {
   VmcToolbar,
   VmFormField,
   VmInputField,
+  VmRowClickedEvent,
   VmToolbarItem,
   VmValidFormTypes,
 } from '@vm-components';
@@ -17,6 +18,8 @@ import { VoiceService } from '@vm-utils/services';
 
 export interface AllNotesData {
   notesId: number;
+  scoreId?: number;
+  voiceId?: number;
   name: string;
   composer: string;
   folders: string;
@@ -34,7 +37,11 @@ export interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
+  showDeleteAction = input(false);
+  showEditAction = input(false);
   itemAdded = output<boolean>();
+  deleteClicked = output<AllNotesData>();
+  editClicked = output<AllNotesData>();
 
 
   readonly #printService = inject(VmpNotesFullpageDialogService);
@@ -140,6 +147,17 @@ export class VmpNotesFullPageComponent {
   selectionChanged(event: number[]): void {
     this.selectedNotesIds = event;
     this.#selectnext.next(event);
+  }
+
+  execGridAction(action: VmRowClickedEvent<AllNotesData>): void {
+    if (action.key === 'edit' && action.rowData) {
+      this.editClicked.emit(action.rowData);
+      return;
+    }
+
+    if (action.key === 'delete' && action.rowData) {
+      this.deleteClicked.emit(action.rowData);
+    }
   }
 }
 
