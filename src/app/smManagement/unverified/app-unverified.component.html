@@ -1,9 +1,2 @@
-<vmp-notes-full-page
-  [data]="(data$ | async) ?? []"
-  [showEditAction]="true"
-  [showDeleteAction]="true"
-  (itemAdded)="reloadData()"
-  (editClicked)="editEntry($event)"
-  (deleteClicked)="deleteEntry($event)"
-/>
+<vmp-notes-full-page [data]="(data$ | async) ?? []" (itemAdded)="reloadData()"/>
 

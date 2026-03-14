@@ -13,14 +13,8 @@
 <vmc-data-grid
   [dataSource]="filteredData()"
   [columns]="columns"
-  [rowActions]="showEditAction()
-    ? (showDeleteAction()
-      ? [{ key: 'edit', icon: 'edit' }, { key: 'delete', icon: 'delete' }]
-      : [{ key: 'edit', icon: 'edit' }])
-    : (showDeleteAction() ? [{ key: 'delete', icon: 'delete' }] : [])"
   [selectionMode]="'multi'"
   [selectionKey]="'notesId'"
-  (clickedAction)="execGridAction($event)"
   (selectionChanged)="selectionChanged($event)"
 />
 

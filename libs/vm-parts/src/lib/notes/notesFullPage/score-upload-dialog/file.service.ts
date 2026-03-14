@@ -1,10 +1,9 @@
 import {inject, Injectable} from '@angular/core';
-import {forkJoin, Observable, of} from 'rxjs';
-import {CreateMusicSheetRequest, MusicSheet, MusicSheetService} from '@vm-utils/services';
+import {Observable} from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 
 export interface UploadScoreFileRequest {
   fileName: string;
-  filePath: string;
   voiceId: number;
   file: File;
 }
@@ -19,27 +18,20 @@ export interface UploadScoreFilesRequest {
   providedIn: 'root'
 })
 export class FileService {
-  readonly #musicSheetService = inject(MusicSheetService);
 
-  uploadScoreFiles$(req: UploadScoreFilesRequest): Observable<MusicSheet[]> {
-    const createCalls = req.files.map((f, index) => {
-      const normalizedPath = (f.filePath ?? '').trim();
-      const createRequest: CreateMusicSheetRequest = {
-        scoreId: req.scoreId,
-        voiceId: f.voiceId,
-        pageCount: 1,
-        filePath: normalizedPath.length > 0
-          ? normalizedPath
-          : `${req.scoreId}-${f.voiceId}-${Date.now()}-${index}-${f.fileName}`,
-      };
+  readonly #httpClient =inject(HttpClient);
 
-      return this.#musicSheetService.create$(createRequest);
+  uploadScoreFiles$(req: UploadScoreFilesRequest): Observable<any> {
+    const form = new FormData();
+
+    form.append('ScoreId', req.scoreId.toString());
+
+    req.files.forEach((f, i) => {
+      form.append(`Files[${i}].FileName`, f.fileName);
+      form.append(`Files[${i}].VoiceId`, f.voiceId.toString());
+      form.append(`Files[${i}].File`, f.file, f.fileName);
     });
 
-    if (createCalls.length === 0) {
-      return of([]);
-    }
-
-    return forkJoin(createCalls);
+    return this.#httpClient.post('pdf/upload', form);
   }
 }
