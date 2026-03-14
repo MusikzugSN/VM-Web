@@ -141,8 +141,13 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
         .filter((x) => x.filterable ?? false)
         .some((col) => {
           if (!col.field) return false;
-          const value = data[col.field];
-          return value?.toString().toLowerCase().includes(filterTerm);
+          let value = data[col.field]?.toString();
+
+          if (col.type === 'converter') {
+            value = this.calculatedColumns()[`${col.key}-${value}`] ?? value;
+          }
+
+          return value?.toLowerCase().includes(filterTerm);
         });
     };
 

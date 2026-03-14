@@ -1,11 +1,12 @@
 <vmc-toolbar [items]="items" [useNgContentForRightside]="true">
-  <vmc-input-field [formField]="suchleiste"></vmc-input-field>
+  <vmc-input-field [formField]="suchleiste" (inputChanged)="searchChanged($event)"/>
 </vmc-toolbar>
 
 <div class="flex-row-fill gap">
   <vmc-data-grid
     [dataSource]="(voiceListe$ | async) ?? []"
     [columns]="columnsVoice"
+    [filterTerm]="searchTerm()"
     [rowActions]="[
       { key: 'edit', icon: 'edit' },
       { key: 'delete', icon: 'delete' },
@@ -14,6 +15,7 @@
   <vmc-data-grid
     [dataSource]="(instrumentListe$ | async) ?? []"
     [columns]="columnsInstrument"
+    [filterTerm]="searchTerm()"
     [rowActions]="[
       { key: 'edit', icon: 'edit' },
       { key: 'delete', icon: 'delete' },

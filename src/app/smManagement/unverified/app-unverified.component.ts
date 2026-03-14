@@ -38,7 +38,7 @@ export class AppUnverifiedComponent {
               .join(', '),
             link: currentScore.link,
             pageCount: x.pageCount,
-            voiceName: x.voiceName,
+            voiceId: x.voiceId,
           } as AllNotesData;
         })
         .filter((x) => x !== undefined);
