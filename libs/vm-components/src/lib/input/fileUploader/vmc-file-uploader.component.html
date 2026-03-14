@@ -1,9 +1,11 @@
 <!-- Versteckte Inputs -->
+@let _allowedExtensionsText = allowedExtensionsText();
 <input
   type="file"
   #fileInput
   [multiple]="!onlySingleFile()"
   style="display:none"
+  [accept]="_allowedExtensionsText"
   (change)="onFilesSelected($event)"
 />
 
@@ -12,6 +14,7 @@
   #directoryInput
   webkitdirectory
   style="display:none"
+  [accept]="_allowedExtensionsText"
   (change)="onDirectorySelected($event)"
 />
 
@@ -25,11 +28,19 @@
   } @else {
     <p>Dateien oder Ordner hierher ziehen oder auf "Datei/Ordner hochladen" klicken</p>
   }
+
+  @if (_allowedExtensionsText) {
+    <p class="allowed-ext">Erlaubte Dateitypen: {{ _allowedExtensionsText }}</p>
+  }
+
   @let files = (fileData$ | async) ?? [];
   @if (doNotShowFileNames()) {
     <div class="file-list">
       @for (file of files; track file.file.name) {
-        <p>{{ file.path }}</p>
+        <div class="flex-row">
+          <p>{{ file.path }}</p>
+          <button class="remove-btn" (click)="removeFile(file.path)">✕</button>
+        </div>
       } @empty {
         <p>Noch keine Datein hochgeladen.</p>
       }

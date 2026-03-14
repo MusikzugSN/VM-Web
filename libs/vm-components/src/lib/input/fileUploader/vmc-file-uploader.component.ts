@@ -1,4 +1,4 @@
-import {Component, input, InputSignal, output} from '@angular/core';
+import {Component, computed, input, InputSignal, output} from '@angular/core';
 import {BehaviorSubject } from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {VmcButton} from '../button/vmc-button.component';
@@ -46,8 +46,16 @@ export class VmcFileUploader {
   height: InputSignal<string | undefined> = input<string | undefined>(undefined);
   doNotShowFileNames: InputSignal<boolean> = input<boolean>(true);
   onlySingleFile: InputSignal<boolean> = input<boolean>(false);
+  allowedExtensions: InputSignal<string[] | undefined> = input<string[] | undefined>(undefined);
 
   filesChanged = output<FileData[]>();
+
+  allowedExtensionsText = computed(() => {
+    const exts = this.allowedExtensions();
+    if (!exts || exts.length === 0) return null;
+    return exts
+      .map(e => '.' + e.toLowerCase()).join(', ');
+  });
 
   #fileData: BehaviorSubject<FileData[]> = new BehaviorSubject<FileData[]>([]);
   fileData$ = this.#fileData.asObservable();
@@ -75,8 +83,8 @@ export class VmcFileUploader {
     for (const item of items) {
       const entry = item.webkitGetAsEntry();
       if (entry) {
-        const newFiles = await this.readEntry(entry);
-        this.mergeFiles(newFiles);
+        const newFiles = await this.#readEntry(entry);
+        this.#mergeFiles(newFiles);
       }
     }
   }
@@ -90,7 +98,7 @@ export class VmcFileUploader {
       path: f.name
     } as FileData));
 
-    this.mergeFiles(newFiles);
+    this.#mergeFiles(newFiles);
   }
 
   onDirectorySelected(event: Event) {
@@ -102,13 +110,14 @@ export class VmcFileUploader {
       path: (f as any).webkitRelativePath
     } as FileData));
 
-    this.mergeFiles(newFiles);
+    this.#mergeFiles(newFiles);
   }
 
-  private mergeFiles(newFiles: FileData[]) {
-    const current = this.#fileData.getValue();
+  #mergeFiles(newFiles: FileData[]) {
+    const filtered = newFiles.filter(f => this.#isExtensionAllowed(f.file));
 
-    const merged = [...current, ...newFiles];
+    const current = this.#fileData.getValue();
+    const merged = [...current, ...filtered];
 
     const distinct = Array.from(
       new Map(merged.map(f => [f.path, f])).values()
@@ -117,7 +126,7 @@ export class VmcFileUploader {
     this.#fileData.next(distinct);
   }
 
-  readEntry(entry: FileSystemEntry): Promise<FileData[]> {
+  #readEntry(entry: FileSystemEntry): Promise<FileData[]> {
     return new Promise(resolve => {
       if (entry.isFile) {
         const fileEntry = entry as FileSystemFileEntry;
@@ -140,7 +149,7 @@ export class VmcFileUploader {
               const results: FileData[] = [];
 
               for (const e of entries) {
-                const sub = await this.readEntry(e);
+                const sub = await this.#readEntry(e);
                 results.push(...sub);
               }
 
@@ -164,5 +173,21 @@ export class VmcFileUploader {
   directoryUploadOpen(input: HTMLInputElement) {
     input.click();
   }
+
+  #isExtensionAllowed(file: File): boolean {
+    const allowed = this.allowedExtensions();
+    if (!allowed || allowed.length === 0) return true; // alles erlauben
+
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    return !!ext && allowed.map(e => e.toLowerCase()).includes(ext);
+  }
+
+  removeFile(path: string) {
+    const current = this.#fileData.getValue();
+    const filtered = current.filter(f => f.path !== path);
+    this.#fileData.next(filtered);
+  }
+
+
 
 }
