@@ -19,7 +19,7 @@ export interface UpdateFolder {
   sheets?: FolderMusicSheetTeaser[];
 }
 export interface FolderMusicSheetTeaser {
-  number: number;
+  number: string;
   scoreId: number;
   deleted?: boolean;
 }

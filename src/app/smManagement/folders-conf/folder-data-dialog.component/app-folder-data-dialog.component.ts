@@ -85,12 +85,12 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
 
   numberOfScoreField$: Observable<VmFormField> = this.folderMusicSheetsData$.pipe(
     map((sheets) => {
-      const numbers = sheets.map((x) => x.number);
-      const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
+      const numbers = sheets.map((x) => x.number).sort();
+      const maxNumber = numbers[numbers.length - 1] ?? '0';
       return {
         key: nameOf<FolderMusicSheetTeaser>('number'),
         label: 'Nummer',
-        type: 'number',
+        type: 'text',
         value: maxNumber + 1,
       } as VmFormField;
     })
@@ -99,7 +99,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   numberOfScoreFieldPlaceholder: VmFormField = {
     key: nameOf<FolderMusicSheetTeaser>('number'),
     label: 'Nummer',
-    type: 'number',
+    type: 'text',
     placeholder: 'z. B. 1',
   };
 
@@ -159,7 +159,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   ];
 
   #musicSheetTeaser: FolderMusicSheetTeaser = {
-    number: -1,
+    number: '-1',
     scoreId: -1,
   };
 
@@ -258,7 +258,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   }
 
   storeNewNumberChange(value: VmValidFormTypes): void {
-    this.#musicSheetTeaser.number = parseInt(value as string);
+    this.#musicSheetTeaser.number = value.toString();
   }
 
   storeNewScoreChange(value: VmValidFormTypes): void {
@@ -272,7 +272,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
       }
       this.#storeDeletedGroupValue(event.rowData);
     } else if (event.key === 'add') {
-      if (this.#musicSheetTeaser.number !== -1 && this.#musicSheetTeaser.scoreId !== -1) {
+      if (this.#musicSheetTeaser.scoreId !== -1) {
         this.#storeNewGroupValue(this.#musicSheetTeaser);
       } // todo far: handle error
     }

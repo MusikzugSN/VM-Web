@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 
 import {BehaviorSubject, switchMap} from 'rxjs';
 import {Score, ScoreService} from '@vm-utils/services';
@@ -28,6 +28,8 @@ export class AppRepositoryComponent {
   #reload = new BehaviorSubject(false);
 
   data$ = this.#reload.pipe(switchMap((_) => this.#scoresService.load$()));
+
+  searchterm = signal<string | undefined>(undefined);
 
   toolbarItems: VmToolbarItem[] = [
     {
