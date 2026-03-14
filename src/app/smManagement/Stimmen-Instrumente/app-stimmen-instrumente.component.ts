@@ -92,9 +92,8 @@ export class AppStimmenInstrumenteComponent {
     {
       key: 'name',
       header: 'Name',
-      field: 'voiceId',
       type: 'converter',
-      converter: (rowData) => [rowData.instrumentName, rowData.name].filter(Boolean).join(' '),
+      converter: (rowData) => rowData.instrumentName + ' ' + rowData.name,
     },
     { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },

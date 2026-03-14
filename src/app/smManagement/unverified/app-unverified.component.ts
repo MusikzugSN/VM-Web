@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
-import { MusicSheet } from '@vm-utils/services';
+import { MusicSheet, MusicSheetService } from '@vm-utils/services';
 import { Score, ScoreService } from '@vm-utils/services';
-import { BehaviorSubject, combineLatest, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -12,13 +12,14 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './app-unverified.component.scss',
 })
 export class AppUnverifiedComponent {
+  readonly #MusicSheetService = inject(MusicSheetService);
   readonly #ScoreService = inject(ScoreService);
 
   #reload = new BehaviorSubject(false);
 
-  // Das Backend bietet keinen GET-Endpunkt fuer /musicSheet ohne Parameter.
-  // Deshalb hier kein direkter List-Call, um 405-Fehler zu vermeiden.
-  sheet$: Observable<MusicSheet[]> = of([]);
+  sheet$: Observable<MusicSheet[]> = this.#reload.pipe(
+    switchMap((_x) => this.#MusicSheetService.load$()),
+  );
   score$: Observable<Score[]> = this.#reload.pipe(switchMap((_x) => this.#ScoreService.load$()));
 
   data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$]).pipe(
@@ -30,7 +31,6 @@ export class AppUnverifiedComponent {
             return undefined; //todo far: fehlerbehandlung
           }
           return {
-            notesId: x.musicSheetId,
             name: currentScore.title,
             composer: currentScore.composer,
             folders: currentScore.folders
@@ -44,8 +44,4 @@ export class AppUnverifiedComponent {
         .filter((x) => x !== undefined);
     }),
   );
-
-  reloadData(): void {
-    this.#reload.next(true);
-  }
 }

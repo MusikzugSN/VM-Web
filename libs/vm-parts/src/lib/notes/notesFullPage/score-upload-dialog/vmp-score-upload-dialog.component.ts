@@ -3,7 +3,7 @@ import {
   FileData,
   VmcFileUploader,
   VmcInputField,
-  VmFormField, VmValidFormTypes,
+  VmFormField, VmSelectOption, VmValidFormTypes,
 } from '@vm-components';
 import {BehaviorSubject, firstValueFrom, map, Observable, shareReplay} from 'rxjs';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
@@ -13,10 +13,11 @@ import {AsyncPipe} from '@angular/common';
 import {Dictionary} from '@vm-utils';
 import {FileService, UploadScoreFilesRequest} from './file.service';
 import {SnackbarService} from '@vm-utils/snackbar';
+import {VmcSelect} from '@vm-components';
 
 @Component({
   selector: 'app-score-upload-step',
-  imports: [VmcInputField, VmcFileUploader, AsyncPipe],
+  imports: [VmcInputField, VmcFileUploader, AsyncPipe, VmcSelect],
   templateUrl: './vmp-score-upload-dialog.component.html',
   styleUrl: './vmp-score-upload-dialog.component.scss',
 })
@@ -48,27 +49,21 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
     };
   }));
 
-  voiceFieldPlaceholder: VmFormField = {
-    type: 'select',
-    label: 'Stimme',
-    key: 'voiceId',
-    options: []
-  };
-
-  voiceField$: Observable<VmFormField> = this.#voiceService.load$({ includeInstrumentName: true }).pipe(
-    shareReplay({ bufferSize: 1, refCount: true}),
-    map(x => {
-      return {
-        key: 'voiceId',
-        label: 'Stimme',
-        type: 'select',
-        enableSearch: true,
-        options: x.map(v => ({
+  voices$ = this.#voiceService.load$({ includeInstrumentName: true })
+    .pipe(shareReplay({ bufferSize: 1, refCount: true}), map(x => {
+      return x.map(v => {
+        return {
           value: v.voiceId.toString(),
-          label: [v.name, v.instrumentName].filter(Boolean).join(' '),
-        })),
-      } as VmFormField;
-    })
+          label: v.instrumentName + ' ' + v.name,
+        } as VmSelectOption;
+      })
+    }));
+
+  selectedVoiceIds$ = this.#voiceIdToFilePath$.pipe(
+    map(dict =>
+      Object.keys(dict)
+        .map(k => k)
+    )
   );
 
 

@@ -1,6 +1,5 @@
-import { Component, computed, inject, input, InputSignal, output, signal } from '@angular/core';
+import { Component, inject, input, InputSignal } from '@angular/core';
 import { BehaviorSubject} from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
   VmcDataGrid,
   VmcInputField,
@@ -13,7 +12,6 @@ import {
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
 import { VmpNotesFullpageDialogService } from './vmp-notes-fullPage-dialog.service';
-import { VoiceService } from '@vm-utils/services';
 
 export interface AllNotesData {
   notesId: number;
@@ -34,17 +32,13 @@ export interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
-  itemAdded = output<boolean>();
 
 
   readonly #printService = inject(VmpNotesFullpageDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
-  readonly #voiceService = inject(VoiceService);
 
   #reload = new BehaviorSubject(false);
   #selectnext = new BehaviorSubject<number[]>([]);
-  #selectedVoiceFilter = signal<string>('');
-  voices = toSignal(this.#voiceService.load$(), { initialValue: [] });
   selectedNotesIds: number[] = [];
 
   toolbarItems: VmToolbarItem[] = [
@@ -53,10 +47,7 @@ export class VmpNotesFullPageComponent {
       icon: 'add',
       label: 'Notenblatt hinzufügen',
       acton: async (): Promise<void> => {
-        const result = await this.#printService.openAddNoteSheetDialog();
-        if (result) {
-          this.itemAdded.emit(true);
-        }
+        await this.#printService.openAddNoteSheetDialog();
         this.#reload.next(true);
       },
     },
@@ -79,37 +70,21 @@ export class VmpNotesFullPageComponent {
     },
   ];
 
-  filter = computed<VmFormField>(() => {
-    const voiceOptions = this.voices()
-      .map(v => [v.instrumentName, v.name].filter(Boolean).join(' ').trim())
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b))
-      .map(v => ({ label: v, value: v }));
-
-    return {
-      key: 'voiceSelect',
-      type: 'select',
-      label: 'Filter',
-      options: voiceOptions,
-    };
-  });
-
-  filteredData = computed<AllNotesData[]>(() => {
-    const selectedVoice = this.#selectedVoiceFilter().trim();
-    if (!selectedVoice) {
-      return this.data();
-    }
-
-    return this.data().filter(x => x.voiceName === selectedVoice);
-  });
+  filter: VmFormField = {
+    key: 'voiceSelect',
+    type: 'select',
+    label: 'Filter',
+    options: [],
+  };
   suchleiste: VmInputField = {
     key: 'searchbar',
     type: 'search',
     label: 'Suchen',
   };
 
-  filterSelectionChange(event: VmValidFormTypes): void {
-    this.#selectedVoiceFilter.set((event ?? '').toString());
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  filterSelectionChange(event: VmValidFormTypes) {
+    return console.log(event);
   }
 
   columns: VmColumn<AllNotesData>[] = [
