@@ -36,4 +36,3 @@ export class ScoreService extends BaseCrudService<Score> {
     return this.httpClient.post<Score[]>(this.url + '/multiple', data);
   }
 }
-
