@@ -6,6 +6,8 @@ export interface Voice extends IMetaData{
   name: string;
   instrumentId: number;
   instrumentName: string;
+  alternativeVoiceId?: number;
+  alternateVoiceIds?: number[];
   countOfMusicsheets?: number;
   countOfAlternatives?: number;
 }

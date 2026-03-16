@@ -1,4 +1,4 @@
-import { Component, inject, input, InputSignal } from '@angular/core';
+import { Component, inject, input, InputSignal, signal } from '@angular/core';
 import {
   VmcDataGrid,
   VmcInputField,
@@ -76,11 +76,14 @@ export class TagsConfComponent {
     label: 'Suchen',
   };
 
+  searchterm = signal<string | undefined>(undefined);
+
   column: VmColumn<Tag>[] = [
-    { key: 'name', header: 'Name', field: 'name' },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
-    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', type: 'date' },
+    { key: 'name', header: 'Name', field: 'name', filterable: true },
+    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date', filterable: true },
+    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', type: 'date', filterable: true },
   ];
+
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   filterSelectionChange(event: VmValidFormTypes) {
     return console.log(event);

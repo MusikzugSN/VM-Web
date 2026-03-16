@@ -1,4 +1,4 @@
-<vmc-toolbar [items]="toolbarItems" [useNgContentForRightside]="true">
+<vmc-toolbar [items]="(toolbarItems$ | async) ?? []" [useNgContentForRightside]="true">
   <div class="gap">
     <vmc-input-field
       [formField]="suchleiste"> <!-- todo wer auch immer bitte mach mal inputchange rein -->
@@ -11,16 +11,10 @@
   </div>
 </vmc-toolbar>
 <vmc-data-grid
-  [dataSource]="filteredData()"
+  [dataSource]="data()"
   [columns]="columns"
-  [rowActions]="showEditAction()
-    ? (showDeleteAction()
-      ? [{ key: 'edit', icon: 'edit' }, { key: 'delete', icon: 'delete' }]
-      : [{ key: 'edit', icon: 'edit' }])
-    : (showDeleteAction() ? [{ key: 'delete', icon: 'delete' }] : [])"
   [selectionMode]="'multi'"
   [selectionKey]="'notesId'"
-  (clickedAction)="execGridAction($event)"
   (selectionChanged)="selectionChanged($event)"
 />
 

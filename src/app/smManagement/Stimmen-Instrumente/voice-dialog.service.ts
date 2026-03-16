@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
-import { InstrumentService, Voice } from '@vm-utils/services';
+import { InstrumentService, Voice, VoiceService } from '@vm-utils/services';
 import { AppVoiceDataDialog, VoiceDialogData } from './dataDialog/app-voice-data-dialog.component';
 import { VoiceDeleteDialog } from './deleteDialog/voice-delete-dialog-component';
 import { firstValueFrom } from 'rxjs';
@@ -11,18 +11,29 @@ import { firstValueFrom } from 'rxjs';
 export class VoiceDialogService {
   readonly #dialogService = inject(VmDialogService);
   readonly #instrumentService = inject(InstrumentService);
+  readonly #voiceService = inject(VoiceService);
 
   async openAddVoiceDialog(): Promise<boolean | undefined> {
-    const instruments = await firstValueFrom(this.#instrumentService.load$());
+    const [instruments, voices] = await Promise.all([
+      firstValueFrom(this.#instrumentService.load$()),
+      firstValueFrom(this.#voiceService.load$({ includeInstrumentName: true })),
+    ]);
+
     const instrumentOptions = instruments.map((i) => ({
       label: i.name,
       value: i.instrumentId.toString(),
+    }));
+
+    const alternativeVoiceOptions = voices.map((v) => ({
+      label: `${v.instrumentName ?? ''} ${v.name}`.trim(),
+      value: v.voiceId.toString(),
     }));
 
     return this.#dialogService.open<boolean, VoiceDialogData>(AppVoiceDataDialog, {
       title: 'Stimme hinzufügen',
       data: {
         instrumentOptions,
+        alternativeVoiceOptions,
       },
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
@@ -35,17 +46,29 @@ export class VoiceDialogService {
   }
 
   async openEditVoiceDialog(data: Voice): Promise<boolean | undefined> {
-    const instruments = await firstValueFrom(this.#instrumentService.load$());
+    const [instruments, voices] = await Promise.all([
+      firstValueFrom(this.#instrumentService.load$()),
+      firstValueFrom(this.#voiceService.load$({ includeInstrumentName: true })),
+    ]);
+
     const instrumentOptions = instruments.map((i) => ({
       label: i.name,
       value: i.instrumentId.toString(),
     }));
+
+    const alternativeVoiceOptions = voices
+      .filter((v) => v.voiceId !== data.voiceId)
+      .map((v) => ({
+        label: `${v.instrumentName ?? ''} ${v.name}`.trim(),
+        value: v.voiceId.toString(),
+      }));
 
     return this.#dialogService.open<boolean, VoiceDialogData>(AppVoiceDataDialog, {
       title: 'Stimme bearbeiten',
       data: {
         voice: data,
         instrumentOptions,
+        alternativeVoiceOptions,
       },
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },

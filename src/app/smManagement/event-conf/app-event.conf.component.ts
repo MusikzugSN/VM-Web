@@ -1,10 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   VmcDataGrid,
   VmcInputField,
   VmColumn,
   VmcToolbar,
-  VmFormField,
+  VmInputField,
   VmRowClickedEvent,
   VmToolbarItem,
 } from '@vm-components';
@@ -26,6 +26,8 @@ export class AppEventConfComponent {
 
   #reload = new BehaviorSubject(false);
   eventListe$ = this.#reload.pipe(switchMap(_ => this.eventService.load$()));
+
+  searchterm = signal<string | undefined>(undefined);
 
 
   items: VmToolbarItem[] = [
@@ -58,16 +60,16 @@ export class AppEventConfComponent {
     }
   }
 
-  suchleiste: VmFormField = {
-    key: 'suchleiste',
+  suchleiste: VmInputField = {
+    key: 'searchbar',
     type: 'search',
-    label: 'Suchleiste',
+    label: 'Suchen',
   };
 
   column: VmColumn<Event>[] = [
-    { key: 'name', header: 'Name', field: 'name' },
-    { key: 'activUntil', header: 'Aktiv bis', field: 'activUntil', type: 'date' },
-    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time' },
+    { key: 'name', header: 'Name', field: 'name', filterable: true },
+    { key: 'activUntil', header: 'Aktiv bis', field: 'activUntil', type: 'date', filterable: true },
+    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', filterable: true },
+    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time', filterable: true },
   ];
 }

@@ -1,11 +1,15 @@
 <vmc-toolbar [items]="items" [useNgContentForRightside]="true">
-  <vmc-input-field [formField]="suchleiste">
+  <vmc-input-field
+    [formField]="suchleiste"
+    (inputChanged)="searchterm.set($event.toString())"
+  >
   </vmc-input-field>
 </vmc-toolbar>
 
 <vmc-data-grid
   [dataSource]="tagListe ?? []"
   [columns]="column"
+  [filterTerm]="searchterm()"
   [rowActions]="[
     {
       key: 'edit',

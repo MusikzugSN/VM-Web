@@ -3,7 +3,7 @@ import {
   FileData,
   VmcFileUploader,
   VmcInputField,
-  VmFormField, VmValidFormTypes,
+  VmFormField, VmSelectOption, VmValidFormTypes,
 } from '@vm-components';
 import {BehaviorSubject, firstValueFrom, map, Observable, shareReplay} from 'rxjs';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
@@ -13,10 +13,11 @@ import {AsyncPipe} from '@angular/common';
 import {Dictionary} from '@vm-utils';
 import {FileService, UploadScoreFilesRequest} from './file.service';
 import {SnackbarService} from '@vm-utils/snackbar';
+import {VmcSelect} from '@vm-components';
 
 @Component({
   selector: 'app-score-upload-step',
-  imports: [VmcInputField, VmcFileUploader, AsyncPipe],
+  imports: [VmcInputField, VmcFileUploader, AsyncPipe, VmcSelect],
   templateUrl: './vmp-score-upload-dialog.component.html',
   styleUrl: './vmp-score-upload-dialog.component.scss',
 })
@@ -48,27 +49,21 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
     };
   }));
 
-  voiceFieldPlaceholder: VmFormField = {
-    type: 'select',
-    label: 'Stimme',
-    key: 'voiceId',
-    options: []
-  };
-
-  voiceField$: Observable<VmFormField> = this.#voiceService.load$({ includeInstrumentName: true }).pipe(
-    shareReplay({ bufferSize: 1, refCount: true}),
-    map(x => {
-      return {
-        key: 'voiceId',
-        label: 'Stimme',
-        type: 'select',
-        enableSearch: true,
-        options: x.map(v => ({
+  voices$ = this.#voiceService.load$({ includeInstrumentName: true })
+    .pipe(shareReplay({ bufferSize: 1, refCount: true}), map(x => {
+      return x.map(v => {
+        return {
           value: v.voiceId.toString(),
-          label: [v.name, v.instrumentName].filter(Boolean).join(' '),
-        })),
-      } as VmFormField;
-    })
+          label: v.instrumentName + ' ' + v.name,
+        } as VmSelectOption;
+      })
+    }));
+
+  selectedVoiceIds$ = this.#voiceIdToFilePath$.pipe(
+    map(dict =>
+      Object.keys(dict)
+        .map(k => k)
+    )
   );
 
 
@@ -92,11 +87,6 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
         const files = this.files();
         const voiceMap = this.#voiceIdToFilePath$.getValue(); // { [voiceId]: filePath }
 
-        if (files.length === 0) {
-          this.#snackbarService.raiseError('Es muss mindestens eine Datei ausgewaehlt sein.');
-          return;
-        }
-
 
         if (files.length > Object.values(voiceMap).length) {
           console.log(voiceMap)
@@ -104,39 +94,24 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
           return;
         }
 
-        const mappedFiles = files.map((f, index) => {
-          const voiceId = Number(
-            Object.keys(voiceMap).find(v => voiceMap[v] === f.path)
-          );
-          const normalizedPath = (f.path ?? '').trim();
-          const safePath = normalizedPath.length > 0
-            ? normalizedPath
-            : `${scoreId}-${Date.now()}-${index}-${f.file.name}`;
-
-          return {
-            fileName: f.file.name,
-            filePath: safePath,
-            voiceId,
-            file: f.file,
-          };
-        });
-
-        if (mappedFiles.some(f => Number.isNaN(f.voiceId) || f.voiceId <= 0)) {
-          this.#snackbarService.raiseError('Mindestens einer Datei ist keine gueltige Stimme zugeordnet.');
-          return;
-        }
-
         const req: UploadScoreFilesRequest = {
           scoreId: Number(scoreId),
-          files: mappedFiles,
+          files: files.map(f => {
+            // passende voiceId anhand des file.path finden
+            const voiceId = Number(
+              Object.keys(voiceMap).find(v => voiceMap[v] === f.path)
+            );
+
+            return {
+              fileName: f.file.name,
+              voiceId,
+              file: f.file
+            };
+          })
         };
 
-        try {
-          await firstValueFrom(this.#fileService.uploadScoreFiles$(req));
-          super.closeDialog(true);
-        } catch {
-          this.#snackbarService.raiseError('Hinzufuegen fehlgeschlagen. Bitte Backend-Fehler pruefen.');
-        }
+        await firstValueFrom(this.#fileService.uploadScoreFiles$(req));
+        super.closeDialog(true);
         return;
       }
 

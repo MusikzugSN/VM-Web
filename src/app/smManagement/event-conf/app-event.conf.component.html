@@ -1,13 +1,15 @@
-
 <vmc-toolbar [items]="items" [useNgContentForRightside]="true">
   <vmc-input-field
-    [formField]="suchleiste">
+    [formField]="suchleiste"
+    (inputChanged)="searchterm.set($event.toString())"
+  >
   </vmc-input-field>
 </vmc-toolbar>
 
 <vmc-data-grid
   [dataSource]="(eventListe$ | async) ?? []"
   [columns]="column"
+  [filterTerm]="searchterm()"
   [rowActions]="[
     {
       key: 'edit',

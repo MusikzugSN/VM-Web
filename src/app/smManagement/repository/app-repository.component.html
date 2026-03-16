@@ -1,13 +1,14 @@
 <vmc-toolbar [items]="toolbarItems" [useNgContentForRightside]="true">
   <div class="gap">
     <vmc-input-field
-      [formField]="suchleiste"> <!-- todo wer auch immer bitte mach mal inputchange rein -->
+      [formField]="suchleiste" (inputChanged)="searchterm.set($event.toString())"> <!-- todo wer auch immer bitte mach mal inputchange rein -->
     </vmc-input-field>
   </div>
 </vmc-toolbar>
 <vmc-data-grid
   [dataSource]="(data$ | async) ?? []"
   [columns]="columns"
+  [filterTerm]="searchterm()"
   [templates]="[
     { keys: ['customActions'], templateRef: actionTemplate }
   ]"
