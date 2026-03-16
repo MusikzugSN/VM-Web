@@ -2,7 +2,7 @@ name: Neuen Release erstellen
 
 on:
   create:
-    ranches-ignore:
+    branches-ignore:
       - '*'
     tags:
       - 'v*.*.*'
