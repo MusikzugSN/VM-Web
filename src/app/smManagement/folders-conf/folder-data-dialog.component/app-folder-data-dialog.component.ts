@@ -17,7 +17,7 @@ import {
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import { GroupService} from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
-import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '../../../../../libs/vm-utils/services/src/lib/folders.service';
+import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '@vm-utils/services';
 import {Score, ScoreService} from '@vm-utils/services';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 import { SnackbarService } from '@vm-utils/snackbar'
@@ -43,7 +43,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   folderMusicSheetsData$: BehaviorSubject<FolderMusicSheetTeaser[]> = new BehaviorSubject<FolderMusicSheetTeaser[]>(
     this.#data?.sheets ?? [],
   );
-
+//lädt auswählbare Stücke
   #scoresOptions$: Observable<VmSelectOption[]> = combineLatest([this.#scores$, this.folderMusicSheetsData$]).pipe(
     map(([scores, setScores]) => {
       const usedScoreIds = setScores.map((x) => x.scoreId);
@@ -260,7 +260,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   storeNewNumberChange(value: VmValidFormTypes): void {
     this.#musicSheetTeaser.number = value.toString();
   }
-
+  // merkt sich auswgewähltes Stück
   storeNewScoreChange(value: VmValidFormTypes): void {
     this.#musicSheetTeaser.scoreId = parseInt(value as string);
   }
