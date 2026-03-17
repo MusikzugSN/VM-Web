@@ -14,6 +14,7 @@ COPY libs ./libs
 RUN npm ci
 
 # Build the Angular app using the correct project name
+RUN npx syncfusion-license activate
 RUN npx nx build Vereinsmanager-Web --configuration=production
 
 # -----------------------------
