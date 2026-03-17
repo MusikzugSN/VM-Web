@@ -5,6 +5,7 @@ WORKDIR /workspace
 # Copy workspace files
 COPY package.json package-lock.json ./
 COPY nx.json project.json tsconfig.base.json tsconfig.app.json tsconfig.json ./
+copy syncfusion-license.txt ./
 
 # Copy source code
 COPY src ./src
@@ -12,9 +13,9 @@ COPY public ./public
 COPY libs ./libs
 
 RUN npm ci
+RUN npx syncfusion-license activate
 
 # Build the Angular app using the correct project name
-RUN npx syncfusion-license activate
 RUN npx nx build Vereinsmanager-Web --configuration=production
 
 # -----------------------------
