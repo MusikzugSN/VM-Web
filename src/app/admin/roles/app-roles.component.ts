@@ -59,9 +59,9 @@ export class AppRoles {
   columns: VmColumn<Role>[] = [
     { key: 'groupId', header: '', field: 'roleId' },
     { key: 'name', header: 'Name', field: 'name' },
-    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },
-    { key: 'createdAt', header: 'Erstellt am', field: 'createdAt', type: 'date' },
+    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date-time' },
     { key: 'updatedBy', header: 'Geändert von', field: 'updatedBy' },
+    { key: 'createdAt', header: 'Erstellt am', field: 'createdAt', type: 'date-time' },
     { key: 'createdBy', header: 'Erstellt von', field: 'createdBy' },
   ];
 }

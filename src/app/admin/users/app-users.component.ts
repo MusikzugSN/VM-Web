@@ -68,7 +68,7 @@ export class AppUsers {
     { key: 'name', header: 'Name', field: 'username' },
     { key: 'oAuthProvider', header: 'OAuth-Provider', type: 'template' },
     { key: 'updatedBy', header: 'Geändert von', field: 'updatedBy' },
-    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },
+    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date-time' },
     { key: 'customActions', header: '', type: 'template' },
   ];
 
