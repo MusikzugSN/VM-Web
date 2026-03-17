@@ -1,10 +1,8 @@
-import { Component, inject } from '@angular/core';
-import { VmSidebarGroup } from '@vm-components';
-import { RouterOutlet } from '@angular/router';
-import { VmpSidebar } from '@vm-parts';
-import { FoldersService } from '@vm-utils/services';
-import { EventService } from '@vm-utils/services';
-import { TagsService } from '@vm-utils/services';
+import {Component, inject} from '@angular/core';
+import {VmSidebarGroup} from '@vm-components';
+import {RouterOutlet} from '@angular/router';
+import {VmpSidebar} from '@vm-parts';
+import {EventService, FoldersService, TagsService} from '@vm-utils/services';
 import {combineLatest, map, Observable} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 
@@ -18,9 +16,10 @@ import {AsyncPipe} from '@angular/common';
 export class AppMeLayout {
   readonly #foldersService = inject(FoldersService);
   readonly #eventsService = inject(EventService);
-  private tagsService = inject(TagsService);
+  readonly #tagsService = inject(TagsService);
+  //readonly #permissionService = inject(PermissionService);
 
-  eventGroup$: Observable<VmSidebarGroup> = this.#eventsService.load$()
+  eventGroup$: Observable<VmSidebarGroup> = this.#eventsService.loadForMyArea$()
     .pipe(map(event => {
       return {
         groupName: 'Events',
@@ -33,13 +32,13 @@ export class AppMeLayout {
 
   tagItems: VmSidebarGroup = {
     groupName: 'Tags',
-    items: this.tagsService.tagListe.map((tag) => ({
+    items: this.#tagsService.tagListe.map((tag) => ({
       name: tag.name,
       route: `/me/tag/${tag.tagId}`,
     }))
   };
 
-  folderGroup$: Observable<VmSidebarGroup> = this.#foldersService.load$()
+  folderGroup$: Observable<VmSidebarGroup> = this.#foldersService.loadForMyArea$()
     .pipe(map(folders => {
       return {
           groupName: 'Mappen',

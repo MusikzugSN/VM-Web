@@ -14,6 +14,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService, OAuthProvider } from './config.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import {PermissionType} from './permission.service';
 
 const storage = window.sessionStorage;
 const accessTokenKey = 'accessToken';
@@ -24,12 +25,19 @@ interface LoginResponse {
 }
 
 export type LoginResult = { success: true } | { success: false; message: string };
+export interface PermissionTeaserWithGroupId {
+  groupId: number;
+  permissionType: PermissionType;
+  permissionValue: number;
+}
 
 export interface MeInformation {
   id: string;
   username: string;
   provider?: string;
   oAuthSubject?: string;
+  isAdmin?: boolean;
+  permissions?: PermissionTeaserWithGroupId[];
 }
 
 @Injectable({
@@ -139,7 +147,16 @@ export class AuthService {
     const response = await firstValueFrom(request);
     if (response.token !== null) {
       this.#storeAccessToken(response.token, 'local');
-      await this.#loadMyInformation();
+      if (username !== 'install') {
+        await this.#loadMyInformation();
+      } else {
+        this.#myInformation$.next({
+          id: '-1',
+          username: username,
+          isAdmin: true,
+        } as MeInformation);
+      }
+
       return { success: true };
     }
 

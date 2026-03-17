@@ -8,12 +8,12 @@ export abstract class BaseCrudService<TDto extends IMetaData, TChangeDto = TDto,
 
   abstract url: string;
 
-  create$(group: Partial<TChangeDto>): Observable<TDto> {
-    return this.httpClient.post<TDto>(this.url, group);
+  create$(data: Partial<TChangeDto>): Observable<TDto> {
+    return this.httpClient.post<TDto>(this.url, data);
   }
 
-  change$(groupPatch: Partial<TChangeDto>, dtoId: number): Observable<TDto> {
-    return this.httpClient.patch<TDto>(`${this.url}/${dtoId}`, groupPatch);
+  change$(data: Partial<TChangeDto>, dtoId: number): Observable<TDto> {
+    return this.httpClient.patch<TDto>(`${this.url}/${dtoId}`, data);
   }
 
   delete$(dtoId: number): Observable<boolean> {

@@ -1,7 +1,7 @@
 import { HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { filter, Observable, switchMap, take } from 'rxjs';
 import { inject } from '@angular/core';
-import { ConfigService } from '../config.service';
+import { ConfigService } from '../../../services/src/lib/config.service';
 
 export function baseUrlInterceptor(
   req: HttpRequest<unknown>,
