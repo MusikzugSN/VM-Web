@@ -11,9 +11,9 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import { BehaviorSubject } from 'rxjs';
-import { Tag, TagsService } from '@vm-utils/services';
 import { TagDialogService } from './tags-conf-dialog.service';
-import {AllNotesData} from '@vm-parts';
+import { AllNotesData } from '@vm-parts';
+import { Tag, TagsService } from '@vm-utils/services';
 
 @Component({
   selector: 'app-tags-conf.component',

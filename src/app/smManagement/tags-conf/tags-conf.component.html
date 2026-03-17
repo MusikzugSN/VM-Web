@@ -7,7 +7,7 @@
 </vmc-toolbar>
 
 <vmc-data-grid
-  [dataSource]="tagListe"
+  [dataSource]="tagListe ?? []"
   [columns]="column"
   [filterTerm]="searchterm()"
   [rowActions]="[

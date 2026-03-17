@@ -7,7 +7,7 @@ import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
 
 
 @Component({
-  selector: 'app-folders.component',
+  selector: 'app-folders',
   imports: [ VmpNotesFullPageComponent],
   templateUrl: './app-folders.component.html',
   styleUrl: './app-folders.component.scss',

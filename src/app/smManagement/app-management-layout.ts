@@ -47,6 +47,10 @@ export class AppManagementLayout {
         {
           name: 'Tags',
           route: '/scores/tags',
+        },
+        {
+          name: 'Druckereinstellungen',
+          route: '/scores/print-conf',
         }
       ],
     };

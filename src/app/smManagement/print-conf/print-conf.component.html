@@ -1,0 +1,42 @@
+<vmc-toolbar [items]="items" [useNgContentForRightside]="true"/>
+<div class="flex-row ">
+  <div class="configList">
+    @for(printconf of (printconfs$ | async) ?? [] ; track printconf.pageCount ) {
+      <div>
+        <button class="configList__btn" (click)="selectConfig(printconf)">{{printconf.pageCount}}</button>
+      </div>
+    }
+  </div>
+
+  <div class="flex-column" style="gap: 16px">
+    <div class="überschrift">
+    @if((selectedConfigId$ | async) === -1) {
+      <label class="text-normal">Neue Konfig Konfiguration</label>
+    } @else {
+    <label class="text-normal">Konfig Einstellungen</label>
+    }
+    </div>
+    <div class="flex-row" style="gap: 16px">
+      <vmc-input-field
+        style="width: 200px"
+      [formField]="(pageCountField | async) ?? pageCountFieldPlaceholder"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'pageCount')" />
+
+      <vmc-button-toggle
+        [selectOptions]="selectoptions"
+        [value]="(selectedConfig$ | async)?.mode?.toString()" />
+      </div>
+      <div class="flex-column">
+        <vmc-input-field
+          [formField]="(duplexField | async) ?? duplexFieldPlaceholder"
+          [shouldInitChange]="false"
+          (inputChanged)="storeChangedValue($event, 'duplex')" />
+        <vmc-input-field
+          [formField]="(fileFormatField | async) ?? fileFormatFieldPlaceholder"
+          [shouldInitChange]="false"
+          (inputChanged)="storeChangedValue($event, 'fileFormat')" />
+      </div>
+    <button class="save_button" (click)="saveConfig()">Änderungen speichern</button>
+  </div>
+</div>
