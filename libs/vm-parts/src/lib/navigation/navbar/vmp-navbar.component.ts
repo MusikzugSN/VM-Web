@@ -1,8 +1,10 @@
-import { Component, inject, input, InputSignal, output } from '@angular/core';
-import { VmNavbarItem, VmcIconButton, VmcNavbar } from '@vm-components';
-import { filter, map, Observable } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
-import { ConfigService, CurrentRouteService } from '@vm-utils';
+import {Component, computed, inject, input, InputSignal, output, Signal} from '@angular/core';
+import {VmcIconButton, VmcNavbar, VmNavbarItem} from '@vm-components';
+import {filter, map} from 'rxjs';
+import {AsyncPipe} from '@angular/common';
+import {ConfigService, CurrentRouteService} from '@vm-utils';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {PermissionService, PermissionType} from '@vm-utils/services';
 
 @Component({
   selector: 'vmp-navbar',
@@ -13,6 +15,7 @@ import { ConfigService, CurrentRouteService } from '@vm-utils';
 export class VmpNavbar {
   readonly #currentRouteService = inject(CurrentRouteService);
   readonly #config = inject(ConfigService);
+  readonly #permissionService = inject(PermissionService);
 
   isLoggedIn: InputSignal<boolean> = input(false);
   logoutClicked = output<boolean>();
@@ -23,15 +26,34 @@ export class VmpNavbar {
     map((x) => '/static' + x),
   );
 
-  toolbarItems$: Observable<VmNavbarItem[]> = this.#currentRouteService.route$.pipe(
-    map((route) => {
-      return [
-        this.#createToolbarItem('Mein Bereich', '/me', route),
-        this.#createToolbarItem('Notenverwaltung', '/scores', route),
-        this.#createToolbarItem('Systemverwaltung', '/admin', route),
-      ];
-    }),
-  );
+  isMeAllowed = toSignal(this.#permissionService.hasPermissionFromMany$([PermissionType.OpenMyNotes]));
+  isScoreManagementAllowed = toSignal(this.#permissionService.hasPermissionFromMany$([PermissionType.OpenScores, PermissionType.OpenEvent, PermissionType.OpenMusicFolder, PermissionType.OpenValidateNotes, PermissionType.OpenVoice]));
+  isSysAdminAllowed = toSignal(this.#permissionService.hasPermissionFromMany$([PermissionType.OpenGroup, PermissionType.OpenRole, PermissionType.OpenUser, PermissionType.OpenLoginSettings]));
+
+  currentRoute = toSignal(this.#currentRouteService.route$)
+  toolbarItems: Signal<VmNavbarItem[]> = computed(() => {
+    const route = this.currentRoute();
+
+    if (route === undefined) {
+      return [];
+    }
+
+    const navbarItems: VmNavbarItem[] = [];
+
+    if (this.isMeAllowed()) {
+      navbarItems.push(this.#createToolbarItem('Mein Bereich', '/me', route));
+    }
+
+    if (this.isScoreManagementAllowed()) {
+      navbarItems.push(this.#createToolbarItem('Notenverwaltung', '/scores', route))
+    }
+
+    if (this.isSysAdminAllowed()) {
+      navbarItems.push(this.#createToolbarItem('Systemverwaltung', '/admin', route));
+    }
+
+    return navbarItems;
+  });
 
   #createToolbarItem(name: string, route: string, currentRoute: string): VmNavbarItem {
     return {

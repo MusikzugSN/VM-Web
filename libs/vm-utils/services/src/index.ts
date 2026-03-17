@@ -8,4 +8,7 @@ export * from './lib/score.service';
 export * from './lib/instrumente.service';
 export * from './lib/voice.service';
 export * from './lib/musicSheet.service';
+export * from './lib/auth.service';
+export * from './lib/config.service';
+export * from './lib/permission.service';
 export * from './lib/Print-conf.service';

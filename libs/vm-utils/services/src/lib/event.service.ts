@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BaseCrudService, IMetaData } from '@vm-utils';
+import {BaseCrudService, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
+import {map, Observable} from 'rxjs';
 
 export interface Event extends IMetaData {
   eventId: number;
@@ -21,4 +22,10 @@ export interface EventMusicSheetTeaser {
 })
 export class EventService extends BaseCrudService<Event> {
   override url = 'event';
+
+  loadForMyArea$(): Observable<Event[]> {
+    return this.httpClient
+      .get<Event[]>(this.url + '/forMyArea')
+      .pipe(map(event => convertMetaDataFromDtos(event)));
+  }
 }

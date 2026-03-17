@@ -2,7 +2,7 @@
   [showToolbarItems]="isLoggedIn()"
   [applicationName]="'Musikzug Schloss Neuhaus'"
   [iconLink]="(iconLink$ | async) ?? undefined"
-  [toolbarItems]="(toolbarItems$ | async) ?? []"
+  [toolbarItems]="toolbarItems()"
 >
   <vmc-icon-button
     [iconColor]="'white'"
