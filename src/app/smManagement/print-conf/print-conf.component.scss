@@ -1,3 +1,19 @@
 :host {
   width: 100%;
 }
+
+.configList {
+  display: flex;
+  min-width: 250px;
+  height: 100%;
+  border-right: 5px solid black;
+}
+
+.configsettings {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  width: 400px;
+  gap: 16px
+}

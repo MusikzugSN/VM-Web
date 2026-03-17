@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, input, InputSignal, Output } from '@angular/core';
+import { Component, input, InputSignal, output } from '@angular/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { VmSelectOption } from '@vm-components';
-import { Mode } from '@vm-utils/services'
+
 @Component({
   selector: 'vmc-button-toggle',
   imports: [MatButtonToggleModule],
@@ -11,6 +11,6 @@ import { Mode } from '@vm-utils/services'
 export class VmcButtonToggle {
   selectOptions: InputSignal<VmSelectOption[]> = input.required();
 
-  @Input() value!: Mode;
-  @Output() buttonClicked = new EventEmitter<Mode>();
+  value: InputSignal<string | undefined> = input<string | undefined>(undefined);
+  buttonClicked = output<string>();
 }
