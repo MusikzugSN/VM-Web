@@ -7,6 +7,13 @@ export interface Event extends IMetaData {
   groupId?: number;
   disbaledAb?: string;
   activUntil?: string;
+  sheets?: EventMusicSheetTeaser[];
+}
+
+export interface EventMusicSheetTeaser {
+  number: string;
+  scoreId: number;
+  deleted?: boolean;
 }
 
 @Injectable({

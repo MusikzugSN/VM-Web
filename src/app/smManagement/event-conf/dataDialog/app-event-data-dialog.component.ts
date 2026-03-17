@@ -1,53 +1,94 @@
 import { Component, inject } from '@angular/core';
-import { VmcInputField, VmFormField, VmSelectOption, VmValidFormTypes } from '@vm-components';
-import {
-  convertToPatch,
-  Dictionary,
-  nameOf,
-  NumDictionary,
-} from '@vm-utils';
-import { Event, EventService } from '@vm-utils/services';
-import { distinctUntilChanged, firstValueFrom, map, Observable } from 'rxjs';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Group, GroupService } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
-import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
-
-const noGroupOption: VmSelectOption = {
-  label: 'Keine Gruppe',
-  value: '',
-};
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  firstValueFrom,
+  map,
+  Observable,
+} from 'rxjs';
+import {
+  VmcDataGrid,
+  VmcInputField,
+  VmColumn,
+  VmFormField,
+  VmRowAction,
+  VmRowClickedEvent,
+  VmValidFormTypes,
+  VmSelectOption,
+} from '@vm-components';
+import { AsPipe, convertToPatch, Dictionary, nameOf, NumDictionary } from '@vm-utils';
+import {
+  Event,
+  EventMusicSheetTeaser,
+  EventService,
+  Group,
+  GroupService,
+  Score,
+  ScoreService,
+} from '@vm-utils/services';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
+import { SnackbarService } from '@vm-utils/snackbar';
 
 @Component({
   selector: 'app-event-data-dialog.component',
-  imports: [VmcInputField, AsyncPipe],
+  imports: [VmcInputField, VmcDataGrid, AsyncPipe, AsPipe],
   templateUrl: './app-event-data-dialog.component.html',
   styleUrl: './app-event-data-dialog.component.scss',
 })
 export class AppEventDataDialog extends DialogBase<boolean> {
   readonly #data = inject<Event | undefined>(DIALOG_DATA);
   readonly #groupService = inject(GroupService);
+  readonly #scoreService = inject(ScoreService);
   readonly #eventService = inject(EventService);
+  readonly #snackbarService = inject(SnackbarService);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  groupsdata$: Observable<Group[]> = this.#groupService.load$();
 
-  #groupOptions$: Observable<VmSelectOption[]> = this.groupsdata$.pipe(
-    map((x) => x.map((group) => ({ label: group.name, value: group.groupId.toString() }))),
+  groupsdata$: Observable<Group[]> = this.#groupService.load$();
+  #scores$: Observable<Score[]> = this.#scoreService.load$(); //Stücke laden
+
+  //Datenquelle
+  eventMusicSheetsData$: BehaviorSubject<EventMusicSheetTeaser[]> = new BehaviorSubject<
+    EventMusicSheetTeaser[]
+  >(this.#data?.sheets ?? []);
+
+  #scoresOptions$: Observable<VmSelectOption[]> = combineLatest([
+    this.#scores$,
+    this.eventMusicSheetsData$,
+  ]).pipe(
+    map(([scores, setScores]) => {
+      const usedScoreIds = setScores.map((x) => x.scoreId);
+      return scores.filter((score) => !usedScoreIds.includes(score.scoreId));
+    }),
+    map((x) => x.map((score) => ({ label: score.title, value: score.scoreId.toString() }))),
   );
 
-  groupOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#groupOptions$, {
+  scoreOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#scoresOptions$, {
     initialValue: [],
   });
 
-  #groupsById$: Observable<NumDictionary<Group>> = this.groupsdata$.pipe(
+  #scoresById$: Observable<NumDictionary<Score>> = this.#scores$.pipe(
     map((x) =>
-      x.reduce((acc, group) => ({ ...acc, [group.groupId]: group }), {} as NumDictionary<Group>),
+      x.reduce((acc, score) => ({ ...acc, [score.scoreId]: score }), {} as NumDictionary<Score>),
     ),
   );
 
-  groupsById = toSignal<NumDictionary<Group>, NumDictionary<Group>>(this.#groupsById$, {
+  scoresById = toSignal<NumDictionary<Score>, NumDictionary<Score>>(this.#scoresById$, {
     initialValue: {},
   });
+
+  // @ts-expect-error
+  ScoreType: EventMusicSheetTeaser;
+
+  #changedValues: Dictionary<VmValidFormTypes | EventMusicSheetTeaser[]> = {};
+  #changedSheetValues: EventMusicSheetTeaser[] = [];
+
+  #musicSheetTeaser: EventMusicSheetTeaser = {
+    number: '-1',
+    scoreId: -1,
+  };
 
   eventNameField: VmFormField = {
     type: 'text',
@@ -62,6 +103,27 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     key: nameOf<Event>('activUntil'),
     label: 'Datum',
     required: true,
+    value: this.#data?.activUntil ?? '',
+  };
+
+  numberOfScoreField$: Observable<VmFormField> = this.eventMusicSheetsData$.pipe(
+    map((sheets) => {
+      const numbers = sheets.map((x) => Number(x.number)).filter((x) => !Number.isNaN(x)).sort((a, b) => a - b);
+      const maxNumber = numbers[numbers.length - 1] ?? 0;
+      return {
+        key: nameOf<EventMusicSheetTeaser>('number'),
+        label: 'Nummer',
+        type: 'text',
+        value: (maxNumber + 1).toString(),
+      } as VmFormField;
+    }),
+  );
+
+  numberOfScoreFieldPlaceholder: VmFormField = {
+    key: nameOf<EventMusicSheetTeaser>('number'),
+    label: 'Nummer',
+    type: 'text',
+    placeholder: 'z. B. 1',
   };
 
   groupSelectorField$: Observable<VmFormField> = this.groupsdata$.pipe(
@@ -82,12 +144,46 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     key: nameOf<Group>('name'),
     label: 'Gruppe',
     type: 'select',
-    options: [noGroupOption],
+    options: [],
   };
+
+  eventScoreColumns: VmColumn<EventMusicSheetTeaser>[] = [
+    {
+      key: 'number',
+      header: 'Nummer',
+      field: nameOf<EventMusicSheetTeaser>('number'),
+      footerAsTemplate: true,
+    },
+    {
+      key: 'score',
+      header: 'Stück',
+      field: nameOf<EventMusicSheetTeaser>('scoreId'),
+      type: 'template',
+      footerAsTemplate: true,
+    },
+  ];
+
+  eventScoresActions: VmRowAction[] = [
+    {
+      key: 'delete',
+      icon: 'delete',
+    },
+  ];
+
+  footerActions: VmRowAction[] = [
+    {
+      key: 'add',
+      icon: 'add',
+    },
+  ];
+
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<Event, string>(this.changedValues);
+      const patch = convertToPatch<Event, VmValidFormTypes | EventMusicSheetTeaser[]>(
+        this.#changedValues,
+      );
+
       if (x === 'save') {
         patch.eventId = this.#data?.eventId ?? -1;
         await firstValueFrom(this.#eventService.change$(patch, patch.eventId));
@@ -107,9 +203,88 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     });
   }
 
-  changedValues: Dictionary<string> = {};
+  storeChangedValue(newValue: VmValidFormTypes | EventMusicSheetTeaser[], key: string): void {
+    this.#changedValues[key] = newValue;
+  }
 
-  storeChangedValue(newValue: VmValidFormTypes, key: string): void {
-    this.changedValues[key] = newValue as string;
+  #storeChangedSheetValues(): void {
+    this.storeChangedValue(this.#changedSheetValues, nameOf<Event>('sheets'));
+
+    const oldData = this.#data?.sheets ?? [];
+    let newData = [...oldData];
+    for (const changedSheetValue of this.#changedSheetValues) {
+      if (changedSheetValue.deleted) {
+        newData = newData.filter(
+          (x) => !(x.number === changedSheetValue.number && x.scoreId === changedSheetValue.scoreId),
+        );
+      } else {
+        newData.push(changedSheetValue);
+      }
+    }
+
+    this.eventMusicSheetsData$.next(newData);
+  }
+
+  #storeNewSheetValue(newValue: EventMusicSheetTeaser): void {
+    const currentValues = this.eventMusicSheetsData$.getValue();
+    if (currentValues.find((x) => x.number === newValue.number || x.scoreId === newValue.scoreId)) {
+      this.#snackbarService.raiseError('Die Nummer oder das Stück existiert bereits im Event.', 2500);
+      return;
+    }
+
+    if (
+      this.#changedSheetValues.find(
+        (x) => (x.number === newValue.number || x.scoreId === newValue.scoreId) && x.deleted,
+      )
+    ) {
+      this.#changedSheetValues = this.#changedSheetValues.filter(
+        (x) => !((x.number === newValue.number || x.scoreId === newValue.scoreId) && x.deleted),
+      );
+    } else {
+      this.#changedSheetValues.push({
+        scoreId: newValue.scoreId,
+        number: newValue.number,
+      });
+    }
+
+    this.#storeChangedSheetValues();
+  }
+
+  #storeDeletedSheetValue(deletedValue: EventMusicSheetTeaser): void {
+    if (
+      this.#changedSheetValues.find(
+        (x) => x.number === deletedValue.number && x.scoreId === deletedValue.scoreId,
+      )
+    ) {
+      this.#changedSheetValues = this.#changedSheetValues.filter(
+        (x) => !(x.number === deletedValue.number && x.scoreId === deletedValue.scoreId),
+      );
+    } else {
+      deletedValue.deleted = true;
+      this.#changedSheetValues.push(deletedValue);
+    }
+    this.#storeChangedSheetValues();
+  }
+
+  storeNewNumberChange(value: VmValidFormTypes): void {
+    this.#musicSheetTeaser.number = value.toString();
+  }
+
+  storeNewScoreChange(value: VmValidFormTypes): void {
+    this.#musicSheetTeaser.scoreId = parseInt(value as string, 10);
+  }
+
+  execActionFromRow(event: VmRowClickedEvent<EventMusicSheetTeaser>): void {
+    if (event.key === 'delete') {
+      if (event.rowData === null) {
+        return;
+      }
+      this.#storeDeletedSheetValue(event.rowData);
+      return;
+    }
+
+    if (event.key === 'add' && this.#musicSheetTeaser.scoreId !== -1) {
+      this.#storeNewSheetValue(this.#musicSheetTeaser);
+    }
   }
 }

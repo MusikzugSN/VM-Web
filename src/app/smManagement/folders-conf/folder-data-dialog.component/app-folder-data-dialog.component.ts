@@ -43,7 +43,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   folderMusicSheetsData$: BehaviorSubject<FolderMusicSheetTeaser[]> = new BehaviorSubject<FolderMusicSheetTeaser[]>(
     this.#data?.sheets ?? [],
   );
-//lädt auswählbare Stücke
+  //lädt auswählbare Stücke
   #scoresOptions$: Observable<VmSelectOption[]> = combineLatest([this.#scores$, this.folderMusicSheetsData$]).pipe(
     map(([scores, setScores]) => {
       const usedScoreIds = setScores.map((x) => x.scoreId);

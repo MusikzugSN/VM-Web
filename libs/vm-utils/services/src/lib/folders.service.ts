@@ -15,7 +15,7 @@ export interface UpdateFolder {
   name: string;
   groupId: number;
   notes?: AllNotesData[];
-  membercount: number;
+  membercount?: number;
   sheets?: FolderMusicSheetTeaser[];
 }
 export interface FolderMusicSheetTeaser {
