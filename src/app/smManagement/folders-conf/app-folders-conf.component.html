@@ -1,0 +1,34 @@
+<vmc-toolbar [items]="items" [useNgContentForRightside]="true">
+  <vmc-input-field
+    [formField]="suchleiste"
+    (inputChanged)="filterInputChanged($event)">
+  </vmc-input-field>
+</vmc-toolbar>
+
+<vmc-data-grid
+  [dataSource]="(folderListe$ | async) ?? []"
+  [columns]="column"
+  [filterTerm]="filterTerm()"
+  [templates]="[
+    {
+      keys: ['groupId'],
+      templateRef: groupTemplate,
+    },
+  ]"
+  [rowActions]="[
+    {
+      key: 'edit',
+      icon: 'edit',
+    },
+    {
+      key: 'delete',
+      icon: 'delete',
+    },
+  ]"
+  (clickedAction)="execAction($event)"/>
+
+<ng-template #groupTemplate let-rowDataRaw="rowData">
+  @let groups = groupsById();
+  @let rowData = rowDataRaw | as: FolderType;
+  {{ groups[rowData.groupId]?.name ?? 'N/A' }}
+</ng-template>

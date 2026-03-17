@@ -1,0 +1,77 @@
+<div class="flex-column" style="gap: 16px">
+  <div style="display: flex; gap: 16px">
+    <div class="data-container" style="flex-grow: 1">
+      <label class="text-normal">Eventinformationen</label>
+      <div class="flex-row gap-medium">
+      <vmc-input-field
+        [formField]="eventNameField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'name')"
+        />
+
+      <vmc-input-field
+        [formField]="(groupSelectorField$ | async) ?? groupSelectorFieldPlaceholder"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'groupId')"
+        />
+
+      <vmc-input-field
+        [formField]="eventDateField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'activUntil')"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="data-container">
+    <label class="text-normal">Stücke zuweisen</label>
+    <vmc-data-grid
+      [columns]="eventScoreColumns"
+      [rowActions]="eventScoresActions"
+      [footerActions]="footerActions"
+      [dataSource]="(eventMusicSheetsData$ | async) ?? []"
+      [templates]="[
+        {
+          keys: ['score'],
+          templateRef: scoreTemplate,
+        },
+        {
+          keys: ['numberFooter'],
+          templateRef: numberFooterTemplate,
+        },
+        {
+          keys: ['scoreFooter'],
+          templateRef: scoreFooterTemplate,
+        },
+      ]"
+      (clickedAction)="execActionFromRow($event)"
+    />
+  </div>
+
+  <ng-template #scoreTemplate let-rowDataRaw="rowData">
+    @let scores = scoresById();
+    @let rowData = rowDataRaw | as: ScoreType;
+    {{ scores[rowData.scoreId]?.title ?? 'N/A' }}
+  </ng-template>
+
+  <ng-template #scoreFooterTemplate>
+    <vmc-input-field
+      [formField]="{
+        label: 'Stücke',
+        key: 'scoreId',
+        type: 'select',
+        options: scoreOptions(),
+        enableSearch: true,
+      }"
+      (inputChanged)="storeNewScoreChange($event)"
+    />
+  </ng-template>
+
+  <ng-template #numberFooterTemplate>
+    <vmc-input-field
+      [formField]="(numberOfScoreField$ | async) ?? numberOfScoreFieldPlaceholder"
+      (inputChanged)="storeNewNumberChange($event)"
+    />
+  </ng-template>
+</div>

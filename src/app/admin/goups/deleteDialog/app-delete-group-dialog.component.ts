@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { GroupService, Group } from '../group.service';
-import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils';
+import { GroupService, Group } from '@vm-utils/services';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 

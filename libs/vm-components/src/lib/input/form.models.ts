@@ -13,7 +13,7 @@ export interface VmForm {
   submitButtonPosition?: 'left' | 'right' | 'center' | 'full';
 }
 
-export type VmFormField = VmInputField | VmCheckboxField | VmSelect;
+export type VmFormField = VmInputField | VmCheckboxField | VmSelect ;
 
 export interface VmBaseField {
   label: string;
@@ -47,6 +47,7 @@ export interface VmCheckboxField extends VmBaseField {
 }
 export interface VmSelect extends VmBaseField {
   type: 'select';
+  enableSearch?: boolean;
   options: VmSelectOption[];
   value?: string;
 }

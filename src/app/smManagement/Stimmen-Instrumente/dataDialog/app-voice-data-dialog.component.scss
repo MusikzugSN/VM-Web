@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  box-sizing: border-box;
+  overflow: visible;
+
+  ::ng-deep {
+    .mat-mdc-dialog-content {
+      overflow: visible;
+    }
+  }
+}
+
+.data-container {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: var(--vm-secondary-gray);
+  flex-grow: 1;
+  gap: 12px;
+
+  vmc-input-field {
+    min-height: 56px;
+  }
+}

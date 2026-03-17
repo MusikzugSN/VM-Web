@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+.drop-zone {
+  border: 2px dashed #888;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  color: #555;
+  transition: background 0.2s;
+}
+
+.drop-zone.dragover {
+  background: #e3f2fd;
+  border-color: #1976d2;
+}
+
+.file-list {
+  //height: calc(100% - 86px);
+  overflow: auto;
+}
+
+.allowed-ext {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-top: -8px;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  color: #c00;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+
+  &:hover {
+    color: #900;
+  }
+}
+

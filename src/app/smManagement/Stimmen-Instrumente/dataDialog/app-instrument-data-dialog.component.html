@@ -1,0 +1,18 @@
+<div class="flex-column" style="gap: 16px">
+  <div style="display: flex; gap: 16px">
+    <div class="data-container flex-column">
+      <label class="text-normal">Instrument konfigurieren</label>
+      <vmc-input-field
+        [formField]="nameField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'name')"
+      />
+
+      <vmc-input-field
+        [formField]="typeField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'type')"
+      />
+    </div>
+  </div>
+</div>

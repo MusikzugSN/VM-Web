@@ -4,6 +4,7 @@
 @let _rowActions = rowActions();
 @let _footerActions = footerActions();
 @let _templates = transformedTemplates();
+@let _calcValues = calculatedColumns();
 @let _selectionMode = selectionMode();
 
 @if (_columns.length > 0 && _displayColumns.length > 0) {
@@ -64,10 +65,12 @@
         }
         <td *matCellDef="let row" class="col-row-{{ column.key }}" mat-cell>
           @if (column.type === 'converter') {
-            {{ column.converter ? ((column.converter(row) | async) ?? '') : row[column.field] }}
+            {{ _calcValues[`${column.key}-${row[column.field]}`]  }}
           } @else if (column.type === undefined || column.type === 'text') {
             {{ row[column.field] }}
           } @else if (column.type === 'date') {
+            {{ row[column.field] | date: 'dd.MM.yyyy' }}
+          } @else if (column.type === 'date-time') {
             {{ row[column.field] | date: 'dd.MM.yyyy HH:mm' }}
           } @else if (column.type === 'template') {
             @let template = _templates[column.key];

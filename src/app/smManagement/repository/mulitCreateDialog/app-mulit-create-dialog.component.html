@@ -1,0 +1,27 @@
+<vmc-file-uploader [width]="'100%'" [onlySingleFile]="true" [allowedExtensions]="['csv']" (filesChanged)="filesChanged($event)"/>
+
+@let _headers = (headers$ | async) ?? [];
+
+@if (_headers.length > 0) {
+  <div class="mapping-container">
+    <h3>CSV‑Spalten zuordnen</h3>
+
+    @for (field of dtoFields; track $index) {
+      <div class="flex-row">
+        <label>{{ field }}</label>
+
+        <vmc-select
+          style="width: 200px"
+          [label]="field"
+          [options]="_headers"
+          [hideIfNotSelected]="(selectedHeaders$ | async) ?? []"
+          [enableSearch]="true"
+          (inputChanged)="updateMapping(field, $event)"
+        />
+      </div>
+    }
+  </div>
+}
+
+
+

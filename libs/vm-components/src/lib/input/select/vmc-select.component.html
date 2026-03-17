@@ -1,0 +1,27 @@
+<mat-form-field class="vm-input" style="width: 100%">
+  <mat-label>{{ label() }}</mat-label>
+
+  <mat-select
+    [value]="value()"
+    (selectionChange)="selectCallChangeEvent($event)"
+    (openedChange)="onOpened($event)"
+  >
+    @if(enableSearch()) {
+      <mat-option class="search-option" disabled>
+        <input
+          #searchInput
+          class="search-input"
+          type="text"
+          placeholder="Search..."
+          (keydown)="onSearchKeydown($event)"
+          (input)="genericCallChangeEvent($event)"
+        />
+      </mat-option>
+    }
+
+    @for (option of (filteredOptions$ | async) ?? []; track option.value) {
+      <mat-option [value]="option.value">{{ option.label }}</mat-option>
+    }
+
+  </mat-select>
+</mat-form-field>

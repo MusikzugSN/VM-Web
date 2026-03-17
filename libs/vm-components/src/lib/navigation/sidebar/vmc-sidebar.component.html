@@ -11,6 +11,8 @@
           >
             {{ item.name }}
           </div>
+        } @empty {
+          <p>Keine {{group.groupName}} gefunden.</p>
         }
       </vmc-extention-pannel>
     }

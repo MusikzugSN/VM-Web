@@ -28,17 +28,17 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, NgTemplateOutlet} from '@angular/common';
 import { Dictionary } from '@vm-utils';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
-export type VmColumnType = 'text' | 'date' | 'template' | 'converter'; //| 'boolean' | 'number' ;
+export type VmColumnType = 'text' | 'date' | 'date-time' | 'template' | 'converter'; //| 'boolean' | 'number' ;
 export type VmSelectType = 'multi' | 'single' | 'none';
 
 export interface VmColumn<TElement> {
@@ -48,7 +48,7 @@ export interface VmColumn<TElement> {
   sortable?: boolean;
   field?: keyof TElement & string;
   type?: VmColumnType;
-  converter?: (rowData: TElement) => Observable<string>;
+  converter?: (rowData: TElement) => string;
   footerAsTemplate?: boolean; // das Template muss über -- key + 'Footer' -- bereitgestellt werden
 }
 
@@ -92,7 +92,6 @@ export interface VmRowClickedEvent<TRow> {
     MatCheckbox,
     MatSortHeader,
     MatSort,
-    AsyncPipe,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
@@ -120,6 +119,8 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   );
   isAllSelected = computed(() => this.#convertAllSelected());
 
+  calculatedColumns = computed(() => this.#calcColumnValues());
+
   tableData = new MatTableDataSource<TRow>();
 
   displayedColumns = computed(() => this.#mapColumnsToDisplay());
@@ -140,8 +141,13 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
         .filter((x) => x.filterable ?? false)
         .some((col) => {
           if (!col.field) return false;
-          const value = data[col.field];
-          return value?.toString().toLowerCase().includes(filterTerm);
+          let value = data[col.field]?.toString();
+
+          if (col.type === 'converter') {
+            value = this.calculatedColumns()[`${col.key}-${value}`] ?? value;
+          }
+
+          return value?.toLowerCase().includes(filterTerm);
         });
     };
 
@@ -213,6 +219,24 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
 
     selection.forEach((key) => {
       dict[key.toString()] = true;
+    });
+
+    return dict;
+  }
+
+  #calcColumnValues(): Dictionary<string> {
+    const columns = this.columns();
+    const data = this.dataSource();
+    const dict: Dictionary<string> = {};
+
+    columns.forEach((col) => {
+      if (col.type == 'converter') {
+        data.forEach((row) => {
+          if (col.converter) {
+            dict[`${col.key}-${row[col.field as keyof TRow]}`] = col.converter(row);
+          }
+        });
+      }
     });
 
     return dict;
