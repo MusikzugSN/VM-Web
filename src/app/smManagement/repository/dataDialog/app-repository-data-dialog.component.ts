@@ -1,18 +1,36 @@
 import { Component, inject } from '@angular/core';
 import {
-  convertToDisplayMinutes, convertToDurationValue,
+  AsPipe,
+  convertToDisplayMinutes,
+  convertToDurationValue,
   convertToPatch,
   Dictionary,
-  nameOf
+  nameOf,
+  NumDictionary,
 } from '@vm-utils';
-import {VmcInputField, VmFormField, VmValidFormTypes} from '@vm-components';
-import {Score, ScoreService} from '@vm-utils/services';
+import {
+  VmcDataGrid,
+  VmcInputField,
+  VmColumn,
+  VmFormField,
+  VmRowAction,
+  VmRowClickedEvent, VmSelectOption,
+  VmValidFormTypes,
+} from '@vm-components';
+import {
+  Folder,
+  FoldersService,
+  Score,
+  ScoreFolderEntry,
+  ScoreService,
+} from '@vm-utils/services';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {firstValueFrom, Observable} from 'rxjs';
+import {takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable } from 'rxjs';
 import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 import { SnackbarService } from '@vm-utils/snackbar';
+import { AsyncPipe } from '@angular/common';
 
 // Titel & Link: Buchstaben, Zahlen, Leerzeichen und gängige Sonderzeichen
 const TITLE_PATTERN = /^[a-zA-ZäöüÄÖÜß0-9\s\-.,!?()&'"/+]*$/;
@@ -23,7 +41,16 @@ const LINK_PATTERN = /^[a-zA-Z0-9äöüÄÖÜß\s\-._~:/?#[\]@!$&'()*+,;=%]*$/;
 
 @Component({
   selector: 'app-score-info-step',
-  imports: [VmcInputField, FormsModule, MatInput, MatLabel, MatFormField],
+  imports: [
+    VmcInputField,
+    FormsModule,
+    MatInput,
+    MatLabel,
+    MatFormField,
+    AsyncPipe,
+    VmcDataGrid,
+    AsPipe,
+  ],
   templateUrl: './app-repository-data-dialog.component.html',
   styleUrl: './app-repository-data-dialog.component.scss',
 })
@@ -32,10 +59,33 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #scoreService = inject(ScoreService);
   readonly #snackbar = inject(SnackbarService);
+  readonly #snackbarService = inject(SnackbarService);
+  readonly #foldersService = inject(FoldersService);
+
+  scoreData: BehaviorSubject<ScoreFolderEntry[]> = new BehaviorSubject<ScoreFolderEntry[]>([]);
+  #scores$: Observable<ScoreFolderEntry[]> = this.scoreData.asObservable();
+  #folders$: Observable<Folder[]> = this.#foldersService.load$();
 
   #changedValues: Dictionary<string> = {};
-
+  #changedValuesFolderEntry: Dictionary<VmValidFormTypes | boolean | ScoreFolderEntry[]> = {};
+  #changedScoreValues: ScoreFolderEntry[] = [];
   durationDisplay = '';
+
+  #scoresById$: Observable<NumDictionary<ScoreFolderEntry>> = this.#scores$.pipe(
+    map((x) =>
+      x.reduce(
+        (acc, score) => ({ ...acc, [score.number]: score }),
+        {} as NumDictionary<ScoreFolderEntry>,
+      ),
+    ),
+  );
+
+  scoresById = toSignal<NumDictionary<ScoreFolderEntry>, NumDictionary<ScoreFolderEntry>>(
+    this.#scoresById$,
+    {
+      initialValue: {},
+    },
+  );
 
   titleField: VmFormField = {
     label: 'Titel',
@@ -43,7 +93,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     key: nameOf<Score>('title'),
     value: this.#data?.title ?? '',
     placeholder: 'z. B. Pirates of the Caribbean',
-    required: true
+    required: true,
   };
 
   composerField: VmFormField = {
@@ -52,7 +102,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     key: nameOf<Score>('composer'),
     value: this.#data?.composer ?? '',
     placeholder: 'z. B. Hans Zimmer',
-    required: true
+    required: true,
   };
 
   linkField: VmFormField = {
@@ -61,6 +111,77 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     key: nameOf<Score>('link'),
     value: this.#data?.link ?? '',
     placeholder: 'z. B. https://youtube.com/',
+  };
+
+  scoreColumns: VmColumn<ScoreFolderEntry>[] = [
+    {
+      key: 'number',
+      header: 'Nummer',
+      field: nameOf<ScoreFolderEntry>('number'),
+      footerAsTemplate: true,
+    },
+    {
+      key: 'foldername',
+      header: 'Mappenname',
+      field: nameOf<ScoreFolderEntry>('musicFolderName'),
+      type: 'template',
+      footerAsTemplate: true,
+    },
+  ];
+  ScoresActions: VmRowAction[] = [
+    {
+      key: 'delete',
+      icon: 'delete',
+    },
+  ];
+  footerActions: VmRowAction[] = [
+    {
+      key: 'add',
+      icon: 'add',
+    },
+  ];
+
+  #folderEntry: ScoreFolderEntry = {
+    number: -1,
+    musicFolderName: '-1',
+  };
+
+  // @ts-ignore
+  ScoreType: Score;
+
+  #foldersOptions$: Observable<VmSelectOption[]> = combineLatest([
+    this.#folders$,
+    this.scoreData.asObservable(),
+  ]).pipe(
+    map(([folders, setFolders]) => {
+      const usedFolderNames = new Set(setFolders.map((x) => x.musicFolderName));
+      return folders.filter((folder) => !usedFolderNames.has(folder.name));
+    }),
+    map((folders) => folders.map((folder) => ({ label: folder.name, value: folder.name }))),
+  );
+
+  folderOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#foldersOptions$, {
+    initialValue: [],
+  });
+
+  numberOfScoreField$: Observable<VmFormField> = this.scoreData.asObservable().pipe(
+    map((entries) => {
+      const maxNumber = entries.length > 0 ? Math.max(...entries.map((x) => Number(x.number) || 0)) : 0;
+
+      return {
+        key: nameOf<ScoreFolderEntry>('number'),
+        label: 'Nummer',
+        type: 'text',
+        value: maxNumber + 1,
+      } as VmFormField;
+    }),
+  );
+
+  numberOfScoreFieldPlaceholder: VmFormField = {
+    key: nameOf<ScoreFolderEntry>('number'),
+    label: 'Nummer',
+    type: 'text',
+    placeholder: 'z. B. 1',
   };
 
   constructor() {
@@ -91,7 +212,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
         const link = this.#changedValues['link'] ?? '';
 
         if (!TITLE_PATTERN.test(title)) {
-          this.#snackbar.raiseError('Titel darf nur Buchstaben, Zahlen und gängige Sonderzeichen enthalten.');
+          this.#snackbar.raiseError(
+            'Titel darf nur Buchstaben, Zahlen und gängige Sonderzeichen enthalten.',
+          );
           return;
         }
         if (!COMPOSER_PATTERN.test(composer)) {
@@ -110,7 +233,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       const patch: Partial<Score> = Object.fromEntries(
         Object.entries(rawPatch)
           .filter(([k, v]) => v !== '' && v !== null && !(k === 'duration' && !Number(v)))
-          .map(([k, v]) => k === 'duration' ? [k, Number(v)] : [k, v])
+          .map(([k, v]) => (k === 'duration' ? [k, Number(v)] : [k, v])),
       ) as Partial<Score>;
 
       if (x === 'save') {
@@ -177,5 +300,104 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     }
 
     this.#changedValues[key] = strValue;
+  }
+  storeChangedScoreValue(
+    newValue: VmValidFormTypes | boolean | ScoreFolderEntry[],
+    key: string,
+  ): void {
+    this.#changedValuesFolderEntry[key] = newValue;
+  }
+  #storeChangedScoreValues(): void {
+    this.storeChangedScoreValue(this.#changedScoreValues, nameOf<ScoreFolderEntry>('number'));
+
+    const oldData = this.#data?.folders ?? [];
+    let newData = [...oldData];
+    for (const changedScoreValue of this.#changedScoreValues) {
+      if (changedScoreValue.deleted) {
+        newData = newData.filter(
+          (x) =>
+            !(
+              x.number === changedScoreValue.number &&
+              x.musicFolderName === changedScoreValue.musicFolderName
+            ),
+        );
+      } else {
+        newData.push(changedScoreValue);
+      }
+    }
+
+    this.scoreData.next(newData);
+  }
+  #storeNewGroupValue(newValue: ScoreFolderEntry): void {
+    // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
+    const currentValues = this.scoreData.getValue();
+    if (
+      currentValues.find(
+        (x) => x.number === newValue.number || x.musicFolderName === newValue.musicFolderName,
+      )
+    ) {
+      this.#snackbarService.raiseError(
+        'Die Nummer oder das Stück existiert bereits in der Mappe.',
+        2500,
+      );
+      return;
+    }
+
+    // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
+    if (
+      this.#changedScoreValues.find(
+        (x) => x.number === newValue.number || x.musicFolderName === newValue.musicFolderName,
+      )
+    ) {
+      this.#changedScoreValues = this.#changedScoreValues.filter(
+        (x) => !(x.number === newValue.number || x.musicFolderName === newValue.musicFolderName),
+      );
+    } else {
+      this.#changedScoreValues.push({
+        musicFolderName: newValue.musicFolderName,
+        number: newValue.number,
+      });
+    }
+
+    this.#storeChangedScoreValues();
+  }
+  #storeDeletedScoreValue(deletedValue: ScoreFolderEntry): void {
+    if (
+      this.#changedScoreValues.find(
+        (x) =>
+          x.number === deletedValue.number && x.musicFolderName === deletedValue.musicFolderName,
+      )
+    ) {
+      // Wenn die gelöschte Gruppe bereits in den Änderungen enthalten ist, muss sie entfernt werden, da sie sonst fälschlicherweise als neue Gruppe interpretiert werden könnte
+      this.#changedScoreValues = this.#changedScoreValues.filter(
+        (x) =>
+          !(x.number === deletedValue.number && x.musicFolderName === deletedValue.musicFolderName),
+      );
+    } else {
+      // Wenn die gelöschte Gruppe nicht in den Änderungen enthalten ist, muss sie mit dem "deleted"-Flag gespeichert werden, damit sie beim Speichern gelöscht wird
+      this.#changedScoreValues.push(deletedValue);
+    }
+    this.#storeChangedScoreValues();
+  }
+
+  storeNewNumberChange(value: VmValidFormTypes): void {
+    this.#folderEntry.number = Number(value);
+  }
+
+  storeNewFolderChange(value: VmValidFormTypes): void {
+    this.#folderEntry.musicFolderName = String(value);
+  }
+
+  execActionFromRow(score: VmRowClickedEvent<ScoreFolderEntry>): void {
+    if (score.key === 'delete') {
+      if (score.rowData === null) {
+        return;
+      }
+      this.#storeDeletedScoreValue(score.rowData);
+    } else if (score.key === 'add') {
+      if (this.#folderEntry.number !== -1) {
+        this.#storeNewGroupValue(this.#folderEntry);
+      } // todo far: handle error
+    }
   }
 }

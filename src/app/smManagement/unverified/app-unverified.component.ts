@@ -1,9 +1,11 @@
 import { Component, inject } from '@angular/core';
 import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
-import { MusicSheet, MusicSheetService } from '@vm-utils/services';
+import { MusicSheet, MusicSheetService} from '@vm-utils/services';
 import { Score, ScoreService } from '@vm-utils/services';
 import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { VmRowClickedEvent } from '@vm-components';
+import { UnverifiedDialogService } from './unverified-dialog.service';
 
 @Component({
   selector: 'app-unverified',
@@ -14,6 +16,7 @@ import { AsyncPipe } from '@angular/common';
 export class AppUnverifiedComponent {
   readonly #MusicSheetService = inject(MusicSheetService);
   readonly #ScoreService = inject(ScoreService);
+  readonly #UnverifiedDataDialogService = inject(UnverifiedDialogService);
 
   #reload = new BehaviorSubject(false);
 
@@ -21,6 +24,25 @@ export class AppUnverifiedComponent {
     switchMap((_x) => this.#MusicSheetService.load$()),
   );
   score$: Observable<Score[]> = this.#reload.pipe(switchMap((_x) => this.#ScoreService.load$()));
+
+  async execAction(action: VmRowClickedEvent<Score>): Promise<void> {
+    if (action.key === 'edit') {
+      if (action.rowData === null) return;
+      const reload = await this.#UnverifiedDataDialogService.openEditScoreDialog(action.rowData);
+      if (reload) {
+        this.#reload.next(true);
+      }
+      return;
+    }
+
+    if (action.key === 'delete') {
+      if (action.rowData === null) return;
+      const reload = await this.#UnverifiedDataDialogService.openDeleteScoreDialog(action.rowData);
+      if (reload) {
+        this.#reload.next(true);
+      }
+    }
+  }
 
   data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$]).pipe(
     map(([sheet, score]) => {
@@ -44,4 +66,5 @@ export class AppUnverifiedComponent {
         .filter((x) => x !== undefined);
     }),
   );
+
 }

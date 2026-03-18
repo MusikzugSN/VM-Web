@@ -33,4 +33,54 @@
       </mat-form-field>
     </div>
   </div>
+  <div class="data-container">
+    <label class="text-normal">Stücke zuweisen</label>
+    <vmc-data-grid
+      [columns]="scoreColumns"
+      [rowActions]="ScoresActions"
+      [footerActions]="footerActions"
+      [dataSource]="(scoreData | async) ?? []"
+      [templates]="[
+        {
+          keys: ['score'],
+          templateRef: scoreTemplate,
+        },
+        {
+          keys: ['numberFooter'],
+          templateRef: numberFooterTemplate,
+        },
+        {
+          keys: ['scoreFooter'],
+          templateRef: scoreFooterTemplate,
+        },
+      ]"
+      (clickedAction)="execActionFromRow($event)"
+    />
+  </div>
+
+  <ng-template #scoreTemplate let-rowDataRaw="rowData">
+    @let scores = scoresById();
+    @let rowData = rowDataRaw | as: ScoreType;
+    {{ scores[rowData.scoreId]?.musicFolderName ?? 'N/A' }}
+  </ng-template>
+
+  <ng-template #scoreFooterTemplate>
+    <vmc-input-field
+      [formField]="{
+        label: 'Mappen',
+        key: 'musicFolderId',
+        type: 'select',
+        options: folderOptions(),
+        enableSearch: true,
+      }"
+      (inputChanged)="storeNewFolderChange($event)"
+    />
+  </ng-template>
+
+  <ng-template #numberFooterTemplate>
+    <vmc-input-field
+      [formField]="(numberOfScoreField$ | async) ?? numberOfScoreFieldPlaceholder"
+      (inputChanged)="storeNewNumberChange($event)"
+    />
+  </ng-template>
 </div>

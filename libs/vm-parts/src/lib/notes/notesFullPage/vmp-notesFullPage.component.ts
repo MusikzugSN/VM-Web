@@ -6,7 +6,10 @@ import {
   VmColumn,
   VmcToolbar,
   VmFormField,
-  VmInputField, VmSelectOption,
+  VmInputField,
+  VmRowAction,
+  VmRowClickedEvent,
+  VmSelectOption,
   VmToolbarItem,
   VmValidFormTypes,
 } from '@vm-components';
@@ -35,6 +38,8 @@ export interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
+  zusatzAktion: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
+  buttonClicked = output<string>();
   itemAdded = output<boolean>();
 
   readonly #printService = inject(VmpNotesFullpageDialogService);
@@ -58,6 +63,22 @@ export class VmpNotesFullPageComponent {
     };
   });
 
+  async execAction(
+    action: VmRowClickedEvent<AllNotesData>,
+  ): Promise<void> {
+    if (action.rowData === null) {
+      return;
+    }
+
+    if(action.key === 'edit') {
+      //todo: Dialog öffnen
+
+      return;
+    }
+
+    this.buttonClicked.emit(action.key);
+  }
+
   filteredData = computed<AllNotesData[]>(() => {
     const selectedVoice = this.#selectedVoiceFilter();
     if (selectedVoice === undefined) {
@@ -66,6 +87,7 @@ export class VmpNotesFullPageComponent {
 
     return this.data().filter(x => x.voiceId === selectedVoice);
   });
+
 
   toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(map(x => {
     const toolbarItems = [
@@ -143,4 +165,3 @@ export class VmpNotesFullPageComponent {
     this.#selectedIds$.next(event);
   }
 }
-

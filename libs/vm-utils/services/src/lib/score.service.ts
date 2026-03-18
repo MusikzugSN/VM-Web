@@ -5,13 +5,14 @@ import {Observable} from 'rxjs';
 export interface ScoreFolderEntry {
   musicFolderName: string;
   number: number;
+  deleted?: boolean;
 }
 
 export interface Score extends IMetaData {
   scoreId: number;
   title: string;
   composer: string;
-  link: string;
+  link?: string;
   duration?: number;
   folders: ScoreFolderEntry[];
 }
