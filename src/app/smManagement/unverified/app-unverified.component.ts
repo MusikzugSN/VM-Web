@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
 import { MusicSheet, MusicSheetService} from '@vm-utils/services';
 import { Score, ScoreService } from '@vm-utils/services';
-import { BehaviorSubject, combineLatest, map, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { VmRowClickedEvent } from '@vm-components';
 import { UnverifiedDialogService } from './unverified-dialog.service';
@@ -21,9 +21,11 @@ export class AppUnverifiedComponent {
   #reload = new BehaviorSubject(false);
 
   sheet$: Observable<MusicSheet[]> = this.#reload.pipe(
-    switchMap((_x) => this.#MusicSheetService.load$()),
+    switchMap((_x) => this.#MusicSheetService.load$().pipe(catchError(() => of([])))),
   );
-  score$: Observable<Score[]> = this.#reload.pipe(switchMap((_x) => this.#ScoreService.load$()));
+  score$: Observable<Score[]> = this.#reload.pipe(
+    switchMap((_x) => this.#ScoreService.load$().pipe(catchError(() => of([])))),
+  );
 
   async execAction(action: VmRowClickedEvent<Score>): Promise<void> {
     if (action.key === 'edit') {
@@ -53,6 +55,7 @@ export class AppUnverifiedComponent {
             return undefined; //todo far: fehlerbehandlung
           }
           return {
+            notesId: x.musicSheetId,
             name: currentScore.title,
             composer: currentScore.composer,
             folders: currentScore.folders

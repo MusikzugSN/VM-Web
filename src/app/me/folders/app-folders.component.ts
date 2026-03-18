@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Folder, FoldersService } from '@vm-utils/services';
-import { ActivatedRoute} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';
 import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
@@ -19,6 +19,7 @@ export class AppFolderMeComponent {
 
   notes: AllNotesData[] = [];
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   protected foldersService = inject(FoldersService);
 
   constructor() {
@@ -31,19 +32,37 @@ export class AppFolderMeComponent {
       .subscribe(async (folderId) => {
         this.isError = false;
 
-
-
         if (!folderId) {
-          this.isError = true;
+          try {
+            const myFolders = await firstValueFrom(this.foldersService.loadForMyArea$());
+            const firstFolderId = myFolders[0]?.musicFolderId;
+
+            if (firstFolderId == null) {
+              this.folder = undefined;
+              this.isError = true;
+              return;
+            }
+
+            await this.router.navigate(['/me/folders', firstFolderId], { replaceUrl: true });
+          } catch {
+            this.folder = undefined;
+            this.isError = true;
+          }
           return;
         }
 
-        const found = await firstValueFrom(this.foldersService.loadById$(+folderId));
+        try {
+          const found = await firstValueFrom(this.foldersService.loadById$(+folderId));
 
-        if (found) {
-          this.folder = found;
-          this.isError = false;
-        } else {
+          if (found) {
+            this.folder = found;
+            this.isError = false;
+            return;
+          }
+
+          this.isError = true;
+          this.folder = undefined;
+        } catch {
           this.isError = true;
           this.folder = undefined;
         }

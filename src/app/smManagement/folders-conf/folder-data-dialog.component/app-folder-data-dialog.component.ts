@@ -18,7 +18,7 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { GroupService } from '@vm-utils/services';
+import { EventMusicSheetTeaser, GroupService } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
 import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '@vm-utils/services';
 import {Score, ScoreService} from '@vm-utils/services';
@@ -40,12 +40,14 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   readonly #scoreService = inject(ScoreService);
   readonly #snackbarService = inject(SnackbarService);
 
+  readonly #sheets: FolderMusicSheetTeaser[] = this.#data?.scores ?? [];
+
   #scores$: Observable<Score[]> = this.#scoreService.load$();
 
   // Datasource für die FolderMusicSheetTeaser, damit Änderungen direkt in der Tabelle sichtbar sind
   folderMusicSheetsData$: BehaviorSubject<FolderMusicSheetTeaser[]> = new BehaviorSubject<
     FolderMusicSheetTeaser[]
-  >(this.#data?.sheets ?? []);
+  >(this.#sheets);
   //lädt auswählbare Stücke
   #scoresOptions$: Observable<VmSelectOption[]> = combineLatest([
     this.#scores$,
@@ -90,13 +92,16 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
 
   numberOfScoreField$: Observable<VmFormField> = this.folderMusicSheetsData$.pipe(
     map((sheets) => {
-      const numbers = sheets.map((x) => x.number).sort();
-      const maxNumber = numbers[numbers.length - 1] ?? '0';
+      const numbers = sheets
+        .map((x) => Number(x.number))
+        .filter((x) => !Number.isNaN(x))
+        .sort((a, b) => a - b);
+      const maxNumber = numbers[numbers.length - 1] ?? 0;
       return {
-        key: nameOf<FolderMusicSheetTeaser>('number'),
+        key: nameOf<EventMusicSheetTeaser>('number'),
         label: 'Nummer',
         type: 'text',
-        value: maxNumber + 1,
+        value: (maxNumber + 1).toString(),
       } as VmFormField;
     }),
   );
@@ -181,16 +186,23 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
         this.#changedValues,
       );
       if (x === 'save') {
-        console.log(this.#data);
-        patch.musicFolderId = this.#data?.musicFolderId ?? -1;
-        await firstValueFrom(this.#folderService.change$(patch, patch.musicFolderId));
-        super.closeDialog(true);
+        try {
+          patch.musicFolderId = this.#data?.musicFolderId ?? -1;
+          await firstValueFrom(this.#folderService.change$(patch, patch.musicFolderId));
+          super.closeDialog(true);
+        } catch {
+          this.#snackbarService.raiseError('Speichern fehlgeschlagen. Bitte pruefe die Zuordnungen.', 5000);
+        }
         return;
       }
 
       if (x === 'create') {
-        await firstValueFrom(this.#folderService.create$(patch));
-        super.closeDialog(true);
+        try {
+          await firstValueFrom(this.#folderService.create$(patch));
+          super.closeDialog(true);
+        } catch {
+          this.#snackbarService.raiseError('Erstellen fehlgeschlagen. Bitte pruefe die Eingaben.', 5000);
+        }
         return;
       }
 
@@ -212,9 +224,9 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   }
 
   #storeChangedGroupValues(): void {
-    this.storeChangedValue(this.#changedGroupValues, nameOf<Folder>('sheets'));
+    this.storeChangedValue(this.#changedGroupValues, nameOf<Folder>('scores'));
 
-    const oldData = this.#data?.sheets ?? [];
+    const oldData = this.#sheets;
     let newData = [...oldData];
     for (const changedGroupValue of this.#changedGroupValues) {
       if (changedGroupValue.deleted) {
@@ -230,10 +242,17 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     this.folderMusicSheetsData$.next(newData);
   }
 
-  #storeNewGroupValue(newValue: FolderMusicSheetTeaser): void {
+  #storeNewScoreValue(newValue: FolderMusicSheetTeaser): void {
+    const normalizedNumber = newValue.number.trim();
+
+    const normalizedValue: FolderMusicSheetTeaser = {
+      ...newValue,
+      number: normalizedNumber.toString(),
+    };
+
     // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
     const currentValues = this.folderMusicSheetsData$.getValue();
-    if (currentValues.find((x) => x.number === newValue.number || x.scoreId === newValue.scoreId)) {
+    if (currentValues.find((x) => x.number === normalizedValue.number || x.scoreId === normalizedValue.scoreId)) {
       this.#snackbarService.raiseError(
         'Die Nummer oder das Stück existiert bereits in der Mappe.',
         2500,
@@ -244,23 +263,23 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
     if (
       this.#changedGroupValues.find(
-        (x) => x.number === newValue.number || (x.scoreId === newValue.scoreId && x.deleted),
+        (x) => x.number === normalizedValue.number || (x.scoreId === normalizedValue.scoreId && x.deleted),
       )
     ) {
       this.#changedGroupValues = this.#changedGroupValues.filter(
-        (x) => !((x.number === newValue.number || x.scoreId === newValue.scoreId) && x.deleted),
+        (x) => !((x.number === normalizedValue.number || x.scoreId === normalizedValue.scoreId) && x.deleted),
       );
     } else {
       this.#changedGroupValues.push({
-        scoreId: newValue.scoreId,
-        number: newValue.number,
+        scoreId: normalizedValue.scoreId,
+        number: normalizedValue.number,
       });
     }
 
     this.#storeChangedGroupValues();
   }
 
-  #storeDeletedGroupValue(deletedValue: FolderMusicSheetTeaser): void {
+  #storeDeletedScoreValue(deletedValue: FolderMusicSheetTeaser): void {
     if (
       this.#changedGroupValues.find(
         (x) => x.number === deletedValue.number && x.scoreId === deletedValue.scoreId,
@@ -279,11 +298,11 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   }
 
   storeNewNumberChange(value: VmValidFormTypes): void {
-    this.#musicSheetTeaser.number = value.toString();
+    this.#musicSheetTeaser.number = value.toString().trim();
   }
   // merkt sich auswgewähltes Stück
   storeNewScoreChange(value: VmValidFormTypes): void {
-    this.#musicSheetTeaser.scoreId = parseInt(value as string);
+    this.#musicSheetTeaser.scoreId = Number.parseInt(value as string, 10);
   }
 
   execActionFromRow(event: VmRowClickedEvent<FolderMusicSheetTeaser>): void {
@@ -291,10 +310,10 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
       if (event.rowData === null) {
         return;
       }
-      this.#storeDeletedGroupValue(event.rowData);
+      this.#storeDeletedScoreValue(event.rowData);
     } else if (event.key === 'add') {
       if (this.#musicSheetTeaser.scoreId !== -1) {
-        this.#storeNewGroupValue(this.#musicSheetTeaser);
+        this.#storeNewScoreValue(this.#musicSheetTeaser);
       } // todo far: handle error
     }
   }

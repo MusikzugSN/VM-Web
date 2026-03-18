@@ -308,4 +308,17 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       await this.#liveAnnouncer.announce('Sortierung gelöscht');
     }
   }
+
+  isDateValue(value: unknown): boolean {
+    if (value === null || value === undefined || value === '') {
+      return false;
+    }
+
+    if (value instanceof Date) {
+      return !Number.isNaN(value.getTime());
+    }
+
+    const date = new Date(value as string | number);
+    return !Number.isNaN(date.getTime());
+  }
 }
