@@ -87,7 +87,7 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   #changedSheetValues: EventMusicSheetTeaser[] = [];
 
   #musicSheetTeaser: EventMusicSheetTeaser = {
-    number: '-1',
+    number: '',
     scoreId: -1,
   };
 
@@ -105,29 +105,6 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     label: 'Datum',
     required: true,
     value: this.#data?.activUntil ?? '',
-  };
-
-  numberOfScoreField$: Observable<VmFormField> = this.eventMusicSheetsData$.pipe(
-    map((sheets) => {
-      const numbers = sheets
-        .map((x) => Number(x.number))
-        .filter((x) => !Number.isNaN(x))
-        .sort((a, b) => a - b);
-      const maxNumber = numbers[numbers.length - 1] ?? 0;
-      return {
-        key: nameOf<EventMusicSheetTeaser>('number'),
-        label: 'Nummer',
-        type: 'text',
-        value: (maxNumber + 1).toString(),
-      } as VmFormField;
-    }),
-  );
-
-  numberOfScoreFieldPlaceholder: VmFormField = {
-    key: nameOf<EventMusicSheetTeaser>('number'),
-    label: 'Nummer',
-    type: 'text',
-    placeholder: 'z. B. 1',
   };
 
   groupSelectorField$: Observable<VmFormField> = this.groupsdata$.pipe(
@@ -156,7 +133,6 @@ export class AppEventDataDialog extends DialogBase<boolean> {
       key: 'number',
       header: 'Nummer',
       field: nameOf<EventMusicSheetTeaser>('number'),
-      footerAsTemplate: true,
     },
     {
       key: 'score',
@@ -282,8 +258,13 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     this.#storeChangedSheetValues();
   }
 
-  storeNewNumberChange(value: VmValidFormTypes): void {
-    this.#musicSheetTeaser.number = value.toString();
+  #getNextScoreNumber(): string {
+    const currentValues = this.eventMusicSheetsData$.getValue();
+    const numbers = currentValues
+      .map((x) => Number.parseInt(String(x.number), 10))
+      .filter((x) => !Number.isNaN(x));
+    const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
+    return (maxNumber + 1).toString();
   }
 
   storeNewScoreChange(value: VmValidFormTypes): void {
@@ -300,7 +281,10 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     }
 
     if (event.key === 'add' && this.#musicSheetTeaser.scoreId !== -1) {
-      this.#storeNewSheetValue(this.#musicSheetTeaser);
+      this.#storeNewSheetValue({
+        scoreId: this.#musicSheetTeaser.scoreId,
+        number: this.#getNextScoreNumber(),
+      });
     }
   }
   storeBooleanChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
