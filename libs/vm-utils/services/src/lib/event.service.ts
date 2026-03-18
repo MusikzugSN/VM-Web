@@ -8,6 +8,7 @@ export interface Event extends IMetaData {
   groupId?: number;
   disbaledAb?: string;
   activUntil?: string;
+  showInMyArea: boolean;
   sheets?: EventMusicSheetTeaser[];
 }
 

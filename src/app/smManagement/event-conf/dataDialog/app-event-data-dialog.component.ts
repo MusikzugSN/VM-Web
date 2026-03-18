@@ -18,6 +18,7 @@ import {
   VmRowClickedEvent,
   VmValidFormTypes,
   VmSelectOption,
+  VmCheckboxValues,
 } from '@vm-components';
 import { AsPipe, convertToPatch, Dictionary, nameOf, NumDictionary } from '@vm-utils';
 import {
@@ -82,7 +83,7 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   // @ts-expect-error
   ScoreType: EventMusicSheetTeaser;
 
-  #changedValues: Dictionary<VmValidFormTypes | EventMusicSheetTeaser[]> = {};
+  #changedValues: Dictionary<VmValidFormTypes | boolean | EventMusicSheetTeaser[]> = {};
   #changedSheetValues: EventMusicSheetTeaser[] = [];
 
   #musicSheetTeaser: EventMusicSheetTeaser = {
@@ -108,7 +109,10 @@ export class AppEventDataDialog extends DialogBase<boolean> {
 
   numberOfScoreField$: Observable<VmFormField> = this.eventMusicSheetsData$.pipe(
     map((sheets) => {
-      const numbers = sheets.map((x) => Number(x.number)).filter((x) => !Number.isNaN(x)).sort((a, b) => a - b);
+      const numbers = sheets
+        .map((x) => Number(x.number))
+        .filter((x) => !Number.isNaN(x))
+        .sort((a, b) => a - b);
       const maxNumber = numbers[numbers.length - 1] ?? 0;
       return {
         key: nameOf<EventMusicSheetTeaser>('number'),
@@ -177,10 +181,18 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     },
   ];
 
+  showInMyAreaField: VmFormField = {
+    label: 'Zeig in Meinem Bereich',
+    type: 'checkbox',
+    key: nameOf<Event>('showInMyArea'),
+    value: this.#data?.showInMyArea ? 'checked' : 'unchecked',
+    labelPosition: 'before',
+  };
+
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<Event, VmValidFormTypes | EventMusicSheetTeaser[]>(
+      const patch = convertToPatch<Event, VmValidFormTypes | boolean | EventMusicSheetTeaser[]>(
         this.#changedValues,
       );
 
@@ -203,7 +215,7 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: VmValidFormTypes | EventMusicSheetTeaser[], key: string): void {
+  storeChangedValue(newValue: VmValidFormTypes | boolean | EventMusicSheetTeaser[], key: string): void {
     this.#changedValues[key] = newValue;
   }
 
@@ -215,7 +227,8 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     for (const changedSheetValue of this.#changedSheetValues) {
       if (changedSheetValue.deleted) {
         newData = newData.filter(
-          (x) => !(x.number === changedSheetValue.number && x.scoreId === changedSheetValue.scoreId),
+          (x) =>
+            !(x.number === changedSheetValue.number && x.scoreId === changedSheetValue.scoreId),
         );
       } else {
         newData.push(changedSheetValue);
@@ -228,7 +241,10 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   #storeNewSheetValue(newValue: EventMusicSheetTeaser): void {
     const currentValues = this.eventMusicSheetsData$.getValue();
     if (currentValues.find((x) => x.number === newValue.number || x.scoreId === newValue.scoreId)) {
-      this.#snackbarService.raiseError('Die Nummer oder das Stück existiert bereits im Event.', 2500);
+      this.#snackbarService.raiseError(
+        'Die Nummer oder das Stück existiert bereits im Event.',
+        2500,
+      );
       return;
     }
 
@@ -286,5 +302,12 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     if (event.key === 'add' && this.#musicSheetTeaser.scoreId !== -1) {
       this.#storeNewSheetValue(this.#musicSheetTeaser);
     }
+  }
+  storeBooleanChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
+    this.storeChangedValue(this.#checkboxToBool(newValue), key);
+  }
+
+  #checkboxToBool(value: VmValidFormTypes | VmCheckboxValues): boolean {
+    return value === 'checked';
   }
 }
