@@ -9,7 +9,7 @@ import {
   VmToolbarItem,
 } from '@vm-components';
 import { Folder, FoldersService } from '@vm-utils/services';
-import {BehaviorSubject, map, Observable, switchMap} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, map, Observable, switchMap} from 'rxjs';
 import {FolderDialogService} from './folder-conf-dialog.service';
 import {AsyncPipe} from '@angular/common';
 import {toSignal} from '@angular/core/rxjs-interop';
@@ -64,8 +64,14 @@ export class AppFoldersConfComponent {
   ];
   async execAction(action: VmRowClickedEvent<Folder>): Promise<void> {
     if (action.key === 'edit') {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const reload = await this.#folderDataDialogService.openEditFolderDialog(action.rowData!);
+      if (!action.rowData) {
+        return;
+      }
+
+      const folderWithSheets = await firstValueFrom(
+        this.#folderService.loadByIdWithSheets$(action.rowData.musicFolderId),
+      );
+      const reload = await this.#folderDataDialogService.openEditFolderDialog(folderWithSheets);
       if (reload) {
         this.#reload.next(true);
       }
@@ -95,7 +101,7 @@ export class AppFoldersConfComponent {
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
 
-  filterInputChanged(term:string | number) {
+  filterInputChanged(term:string | number): void {
     this.#filterTerm$.next(term.toString());
   }
 }

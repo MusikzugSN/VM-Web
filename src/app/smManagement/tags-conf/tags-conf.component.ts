@@ -81,7 +81,7 @@ export class TagsConfComponent {
   column: VmColumn<Tag>[] = [
     { key: 'name', header: 'Name', field: 'name', filterable: true },
     { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date', filterable: true },
-    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', type: 'date', filterable: true },
+    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', filterable: true },
   ];
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

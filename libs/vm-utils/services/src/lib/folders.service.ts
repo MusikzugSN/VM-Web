@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BaseCrudService, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
+import {BaseCrudService, convertMetaDataFromDto, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
 import {AllNotesData} from '@vm-parts';
 import {map, Observable} from 'rxjs';
 
@@ -37,5 +37,17 @@ export class FoldersService extends BaseCrudService<Folder> {
     return this.httpClient
       .get<Folder[]>(this.url + '/forMyArea')
       .pipe(map(folder => convertMetaDataFromDtos(folder)));
+  }
+
+  loadWithSheets$(): Observable<Folder[]> {
+    return this.httpClient
+      .get<Folder[]>(this.url + '?includeSheets=true')
+      .pipe(map(folder => convertMetaDataFromDtos(folder)));
+  }
+
+  loadByIdWithSheets$(id: number): Observable<Folder> {
+    return this.httpClient
+      .get<Folder>(`${this.url}/${id}?includeSheets=true`)
+      .pipe(map(folder => convertMetaDataFromDto(folder)));
   }
 }
