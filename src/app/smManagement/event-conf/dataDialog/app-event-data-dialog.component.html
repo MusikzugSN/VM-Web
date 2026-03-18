@@ -44,10 +44,6 @@
           templateRef: scoreTemplate,
         },
         {
-          keys: ['numberFooter'],
-          templateRef: numberFooterTemplate,
-        },
-        {
           keys: ['scoreFooter'],
           templateRef: scoreFooterTemplate,
         },
@@ -75,10 +71,4 @@
     />
   </ng-template>
 
-  <ng-template #numberFooterTemplate>
-    <vmc-input-field
-      [formField]="(numberOfScoreField$ | async) ?? numberOfScoreFieldPlaceholder"
-      (inputChanged)="storeNewNumberChange($event)"
-    />
-  </ng-template>
 </div>
