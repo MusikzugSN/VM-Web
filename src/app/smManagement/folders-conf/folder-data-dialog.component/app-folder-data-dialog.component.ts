@@ -18,7 +18,7 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { GroupService } from '@vm-utils/services';
+import { EventMusicSheetTeaser, GroupService } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
 import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '@vm-utils/services';
 import {Score, ScoreService} from '@vm-utils/services';
@@ -90,13 +90,16 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
 
   numberOfScoreField$: Observable<VmFormField> = this.folderMusicSheetsData$.pipe(
     map((sheets) => {
-      const numbers = sheets.map((x) => x.number).sort();
-      const maxNumber = numbers[numbers.length - 1] ?? '0';
+      const numbers = sheets
+        .map((x) => Number(x.number))
+        .filter((x) => !Number.isNaN(x))
+        .sort((a, b) => a - b);
+      const maxNumber = numbers[numbers.length - 1] ?? 0;
       return {
-        key: nameOf<FolderMusicSheetTeaser>('number'),
+        key: nameOf<EventMusicSheetTeaser>('number'),
         label: 'Nummer',
         type: 'text',
-        value: maxNumber + 1,
+        value: (maxNumber + 1).toString(),
       } as VmFormField;
     }),
   );
