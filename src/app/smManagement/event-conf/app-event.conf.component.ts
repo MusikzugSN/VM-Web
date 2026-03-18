@@ -9,7 +9,7 @@ import {
   VmToolbarItem,
 } from '@vm-components';
 import { Event, EventService } from '@vm-utils/services';
-import {BehaviorSubject, switchMap} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, switchMap} from 'rxjs';
 import { EventDialogService } from './event-conf-dialog.service';
 import {AsyncPipe} from '@angular/common';
 
@@ -43,8 +43,14 @@ export class AppEventConfComponent {
   ];
   async execAction(action: VmRowClickedEvent<Event>): Promise<void> {
     if (action.key === 'edit') {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const reload = await this.#eventDataDialogService.openEditEventDialog(action.rowData!);
+      if (!action.rowData) {
+        return;
+      }
+
+      const eventWithScores = await firstValueFrom(
+        this.eventService.loadByIdWithScores$(action.rowData.eventId),
+      );
+      const reload = await this.#eventDataDialogService.openEditEventDialog(eventWithScores);
       if (reload) {
         this.#reload.next(true);
       }

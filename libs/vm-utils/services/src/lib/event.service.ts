@@ -1,21 +1,24 @@
 import { Injectable } from '@angular/core';
-import {BaseCrudService, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
+import {BaseCrudService, convertMetaDataFromDto, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
 import {map, Observable} from 'rxjs';
 
 export interface Event extends IMetaData {
   eventId: number;
   name: string;
   groupId?: number;
-  disbaledAb?: string;
+  //disbaledAb?: string;
   activUntil?: string;
   showInMyArea: boolean;
-  sheets?: EventMusicSheetTeaser[];
+  scores?: EventScoreTeaser[];
 }
 
-export interface EventMusicSheetTeaser {
-  number: string;
+export interface EventScoreTeaser {
   scoreId: number;
   deleted?: boolean;
+}
+
+export interface EventMusicSheetTeaser extends EventScoreTeaser {
+  number?: string;
 }
 
 @Injectable({
@@ -28,5 +31,11 @@ export class EventService extends BaseCrudService<Event> {
     return this.httpClient
       .get<Event[]>(this.url + '/forMyArea')
       .pipe(map(event => convertMetaDataFromDtos(event)));
+  }
+
+  loadByIdWithScores$(id: number): Observable<Event> {
+    return this.httpClient
+      .get<Event>(`${this.url}/${id}?includeScores=true`)
+      .pipe(map((event) => convertMetaDataFromDto(event)));
   }
 }

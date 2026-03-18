@@ -23,7 +23,7 @@ import {
 import { AsPipe, convertToPatch, Dictionary, nameOf, NumDictionary } from '@vm-utils';
 import {
   Event,
-  EventMusicSheetTeaser,
+  EventScoreTeaser,
   EventService,
   Group,
   GroupService,
@@ -50,10 +50,13 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   groupsdata$: Observable<Group[]> = this.#groupService.load$();
   #scores$: Observable<Score[]> = this.#scoreService.load$(); //Stücke laden
 
-  //Datenquelle
-  eventMusicSheetsData$: BehaviorSubject<EventMusicSheetTeaser[]> = new BehaviorSubject<
-    EventMusicSheetTeaser[]
-  >(this.#data?.sheets ?? []);
+  readonly #initialScores: EventScoreTeaser[] =
+    this.#data?.scores ?? [];
+
+  // Datenquelle fuer die Event-Scores
+  eventMusicSheetsData$: BehaviorSubject<EventScoreTeaser[]> = new BehaviorSubject<
+    EventScoreTeaser[]
+  >(this.#initialScores);
 
   #scoresOptions$: Observable<VmSelectOption[]> = combineLatest([
     this.#scores$,
@@ -81,15 +84,12 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   });
 
   // @ts-expect-error
-  ScoreType: EventMusicSheetTeaser;
+  ScoreType: EventScoreTeaser;
 
-  #changedValues: Dictionary<VmValidFormTypes | boolean | EventMusicSheetTeaser[]> = {};
-  #changedSheetValues: EventMusicSheetTeaser[] = [];
+  #changedValues: Dictionary<VmValidFormTypes | boolean | EventScoreTeaser[]> = {};
+  #changedScoreValues: EventScoreTeaser[] = [];
 
-  #musicSheetTeaser: EventMusicSheetTeaser = {
-    number: '',
-    scoreId: -1,
-  };
+  #selectedScoreId = -1;
 
   eventNameField: VmFormField = {
     type: 'text',
@@ -114,8 +114,9 @@ export class AppEventDataDialog extends DialogBase<boolean> {
         label: 'Gruppe',
         type: 'select',
         key: nameOf<Event>('groupId'),
-        value: this.#data?.groupId ?? '',
+        value: this.#data?.groupId?.toString() ?? '',
         options: [...groups.map((x) => ({ label: x.name, value: x.groupId + '' }))],
+        required: true,
       } as VmFormField;
     }),
     takeUntilDestroyed(),
@@ -128,16 +129,11 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     options: [],
   };
 
-  eventScoreColumns: VmColumn<EventMusicSheetTeaser>[] = [
-    {
-      key: 'number',
-      header: 'Nummer',
-      field: nameOf<EventMusicSheetTeaser>('number'),
-    },
+  eventScoreColumns: VmColumn<EventScoreTeaser>[] = [
     {
       key: 'score',
       header: 'Stück',
-      field: nameOf<EventMusicSheetTeaser>('scoreId'),
+      field: nameOf<EventScoreTeaser>('scoreId'),
       type: 'template',
       footerAsTemplate: true,
     },
@@ -168,7 +164,7 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      const patch = convertToPatch<Event, VmValidFormTypes | boolean | EventMusicSheetTeaser[]>(
+      const patch = convertToPatch<Event, VmValidFormTypes | boolean | EventScoreTeaser[]>(
         this.#changedValues,
       );
 
@@ -191,100 +187,83 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: VmValidFormTypes | boolean | EventMusicSheetTeaser[], key: string): void {
+  storeChangedValue(newValue: VmValidFormTypes | boolean | EventScoreTeaser[], key: string): void {
     this.#changedValues[key] = newValue;
   }
 
-  #storeChangedSheetValues(): void {
-    this.storeChangedValue(this.#changedSheetValues, nameOf<Event>('sheets'));
+  #storeChangedScoreValues(): void {
+    this.storeChangedValue(this.#changedScoreValues, nameOf<Event>('scores'));
 
-    const oldData = this.#data?.sheets ?? [];
+    const oldData = this.#initialScores;
     let newData = [...oldData];
-    for (const changedSheetValue of this.#changedSheetValues) {
-      if (changedSheetValue.deleted) {
-        newData = newData.filter(
-          (x) =>
-            !(x.number === changedSheetValue.number && x.scoreId === changedSheetValue.scoreId),
-        );
+    for (const changedScoreValue of this.#changedScoreValues) {
+      if (changedScoreValue.deleted) {
+        newData = newData.filter((x) => x.scoreId !== changedScoreValue.scoreId);
       } else {
-        newData.push(changedSheetValue);
+        newData.push(changedScoreValue);
       }
     }
 
     this.eventMusicSheetsData$.next(newData);
   }
 
-  #storeNewSheetValue(newValue: EventMusicSheetTeaser): void {
+  #storeNewScoreValue(newValue: EventScoreTeaser): void {
     const currentValues = this.eventMusicSheetsData$.getValue();
-    if (currentValues.find((x) => x.number === newValue.number || x.scoreId === newValue.scoreId)) {
+    if (currentValues.find((x) => x.scoreId === newValue.scoreId)) {
       this.#snackbarService.raiseError(
-        'Die Nummer oder das Stück existiert bereits im Event.',
+        'Das Stück existiert bereits im Event.',
         2500,
       );
       return;
     }
 
     if (
-      this.#changedSheetValues.find(
-        (x) => (x.number === newValue.number || x.scoreId === newValue.scoreId) && x.deleted,
-      )
+      this.#changedScoreValues.find((x) => x.scoreId === newValue.scoreId && x.deleted)
     ) {
-      this.#changedSheetValues = this.#changedSheetValues.filter(
-        (x) => !((x.number === newValue.number || x.scoreId === newValue.scoreId) && x.deleted),
+      this.#changedScoreValues = this.#changedScoreValues.filter(
+        (x) => !(x.scoreId === newValue.scoreId && x.deleted),
       );
     } else {
-      this.#changedSheetValues.push({
+      this.#changedScoreValues.push({
         scoreId: newValue.scoreId,
-        number: newValue.number,
       });
     }
 
-    this.#storeChangedSheetValues();
+    this.#storeChangedScoreValues();
   }
 
-  #storeDeletedSheetValue(deletedValue: EventMusicSheetTeaser): void {
+  #storeDeletedScoreValue(deletedValue: EventScoreTeaser): void {
     if (
-      this.#changedSheetValues.find(
-        (x) => x.number === deletedValue.number && x.scoreId === deletedValue.scoreId,
-      )
+      this.#changedScoreValues.find((x) => x.scoreId === deletedValue.scoreId)
     ) {
-      this.#changedSheetValues = this.#changedSheetValues.filter(
-        (x) => !(x.number === deletedValue.number && x.scoreId === deletedValue.scoreId),
+      this.#changedScoreValues = this.#changedScoreValues.filter(
+        (x) => x.scoreId !== deletedValue.scoreId,
       );
     } else {
       deletedValue.deleted = true;
-      this.#changedSheetValues.push(deletedValue);
+      this.#changedScoreValues.push(deletedValue);
     }
-    this.#storeChangedSheetValues();
-  }
-
-  #getNextScoreNumber(): string {
-    const currentValues = this.eventMusicSheetsData$.getValue();
-    const numbers = currentValues
-      .map((x) => Number.parseInt(String(x.number), 10))
-      .filter((x) => !Number.isNaN(x));
-    const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
-    return (maxNumber + 1).toString();
+    this.#storeChangedScoreValues();
   }
 
   storeNewScoreChange(value: VmValidFormTypes): void {
-    this.#musicSheetTeaser.scoreId = parseInt(value as string, 10);
+    this.#selectedScoreId = parseInt(value as string, 10);
   }
 
-  execActionFromRow(event: VmRowClickedEvent<EventMusicSheetTeaser>): void {
+  execActionFromRow(event: VmRowClickedEvent<EventScoreTeaser>): void {
     if (event.key === 'delete') {
       if (event.rowData === null) {
         return;
       }
-      this.#storeDeletedSheetValue(event.rowData);
+      this.#storeDeletedScoreValue(event.rowData);
       return;
     }
 
-    if (event.key === 'add' && this.#musicSheetTeaser.scoreId !== -1) {
-      this.#storeNewSheetValue({
-        scoreId: this.#musicSheetTeaser.scoreId,
-        number: this.#getNextScoreNumber(),
+    if (event.key === 'add' && this.#selectedScoreId !== -1) {
+      this.#storeNewScoreValue({
+        scoreId: this.#selectedScoreId,
       });
+      this.#selectedScoreId = -1;
     }
   }
   storeBooleanChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
