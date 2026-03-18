@@ -1,5 +1,5 @@
 <div class="flex-column" style="gap: 16px">
-  <div style="display: flex; gap: 16px">
+  <div class="flex-column" style="display: flex; gap: 16px">
     <div class="data-container" style="flex-grow: 1">
       <label class="text-normal">Allgemeine Informationen</label>
       <div class="flex-row gap-medium">
@@ -14,6 +14,12 @@
           (inputChanged)="storeChangedValue($event, 'groupId')"
         />
       </div>
+      <div class="position-right">
+        <vmc-input-field
+          [formField]="showInMyAreaField"
+          [shouldInitChange]="false"
+          (inputChanged)="storeBooleanChangedValue($event, 'showInMyArea')"
+        />
     </div>
   </div>
 
@@ -67,4 +73,5 @@
       (inputChanged)="storeNewNumberChange($event)"
     />
   </ng-template>
+</div>
 </div>

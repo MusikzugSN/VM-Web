@@ -21,6 +21,13 @@
         (inputChanged)="storeChangedValue($event, 'activUntil')"
         />
       </div>
+      <div class="position-right">
+        <vmc-input-field
+          [formField]="showInMyAreaField"
+          [shouldInitChange]="false"
+          (inputChanged)="storeBooleanChangedValue($event, 'showInMyArea')"
+        />
+      </div>
     </div>
   </div>
 

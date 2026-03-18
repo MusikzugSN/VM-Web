@@ -8,14 +8,17 @@ import {
 import {BehaviorSubject, combineLatest, distinctUntilChanged, firstValueFrom, map, Observable} from 'rxjs';
 import {
   VmcDataGrid,
+  VmCheckboxValues,
   VmcInputField,
   VmColumn,
   VmFormField,
-  VmRowAction, VmRowClickedEvent, VmSelectOption,
+  VmRowAction,
+  VmRowClickedEvent,
+  VmSelectOption,
   VmValidFormTypes,
 } from '@vm-components';
-import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
-import { GroupService} from '@vm-utils/services';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { GroupService } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
 import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '@vm-utils/services';
 import {Score, ScoreService} from '@vm-utils/services';
@@ -40,17 +43,19 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
   #scores$: Observable<Score[]> = this.#scoreService.load$();
 
   // Datasource für die FolderMusicSheetTeaser, damit Änderungen direkt in der Tabelle sichtbar sind
-  folderMusicSheetsData$: BehaviorSubject<FolderMusicSheetTeaser[]> = new BehaviorSubject<FolderMusicSheetTeaser[]>(
-    this.#data?.sheets ?? [],
-  );
+  folderMusicSheetsData$: BehaviorSubject<FolderMusicSheetTeaser[]> = new BehaviorSubject<
+    FolderMusicSheetTeaser[]
+  >(this.#data?.sheets ?? []);
   //lädt auswählbare Stücke
-  #scoresOptions$: Observable<VmSelectOption[]> = combineLatest([this.#scores$, this.folderMusicSheetsData$]).pipe(
+  #scoresOptions$: Observable<VmSelectOption[]> = combineLatest([
+    this.#scores$,
+    this.folderMusicSheetsData$,
+  ]).pipe(
     map(([scores, setScores]) => {
       const usedScoreIds = setScores.map((x) => x.scoreId);
       return scores.filter((score) => !usedScoreIds.includes(score.scoreId));
     }),
-    map((x) => x
-      .map((score) => ({ label: score.title, value: score.scoreId.toString() }))),
+    map((x) => x.map((score) => ({ label: score.title, value: score.scoreId.toString() }))),
   );
 
   scoreOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#scoresOptions$, {
@@ -93,7 +98,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
         type: 'text',
         value: maxNumber + 1,
       } as VmFormField;
-    })
+    }),
   );
 
   numberOfScoreFieldPlaceholder: VmFormField = {
@@ -103,7 +108,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     placeholder: 'z. B. 1',
   };
 
-#groups$ = this.#groupService.load$();
+  #groups$ = this.#groupService.load$();
   groupSelectorField$: Observable<VmFormField> = this.#groups$.pipe(
     distinctUntilChanged(),
     map((groups) => {
@@ -112,9 +117,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
         type: 'select',
         key: nameOf<UpdateFolder>('groupId'),
         value: this.#data?.groupId?.toString() ?? '',
-        options: [
-          ...groups.map((x) => ({ label: x.name, value: x.groupId.toString() })),
-        ],
+        options: [...groups.map((x) => ({ label: x.name, value: x.groupId.toString() }))],
         required: true,
       } as VmFormField;
     }),
@@ -163,6 +166,14 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     scoreId: -1,
   };
 
+  showInMyAreaField: VmFormField = {
+    label: 'Zeig in Meinem Bereich',
+    type: 'checkbox',
+    key: nameOf<Folder>('showInMyArea'),
+    value: this.#data?.showInMyArea ? 'checked' : 'unchecked',
+    labelPosition: 'before',
+  };
+
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
@@ -170,7 +181,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
         this.#changedValues,
       );
       if (x === 'save') {
-        console.log(this.#data)
+        console.log(this.#data);
         patch.musicFolderId = this.#data?.musicFolderId ?? -1;
         await firstValueFrom(this.#folderService.change$(patch, patch.musicFolderId));
         super.closeDialog(true);
@@ -189,8 +200,15 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     });
   }
 
-  storeChangedValue(newValue: VmValidFormTypes | boolean | FolderMusicSheetTeaser[], key: string): void {
+  storeChangedValue(
+    newValue: VmValidFormTypes | boolean | FolderMusicSheetTeaser[],
+    key: string,
+  ): void {
     this.#changedValues[key] = newValue;
+  }
+
+  storeBooleanChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
+    this.storeChangedValue(this.#checkboxToBool(newValue), key);
   }
 
   #storeChangedGroupValues(): void {
@@ -216,14 +234,17 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
     const currentValues = this.folderMusicSheetsData$.getValue();
     if (currentValues.find((x) => x.number === newValue.number || x.scoreId === newValue.scoreId)) {
-      this.#snackbarService.raiseError("Die Nummer oder das Stück existiert bereits in der Mappe.", 2500);
+      this.#snackbarService.raiseError(
+        'Die Nummer oder das Stück existiert bereits in der Mappe.',
+        2500,
+      );
       return;
     }
 
     // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
     if (
       this.#changedGroupValues.find(
-        (x) => x.number === newValue.number || x.scoreId === newValue.scoreId && x.deleted,
+        (x) => x.number === newValue.number || (x.scoreId === newValue.scoreId && x.deleted),
       )
     ) {
       this.#changedGroupValues = this.#changedGroupValues.filter(
@@ -276,5 +297,8 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
         this.#storeNewGroupValue(this.#musicSheetTeaser);
       } // todo far: handle error
     }
+  }
+  #checkboxToBool(value: VmValidFormTypes | VmCheckboxValues): boolean {
+    return value === 'checked';
   }
 }
