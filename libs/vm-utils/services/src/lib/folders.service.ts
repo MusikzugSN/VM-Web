@@ -10,7 +10,7 @@ export interface Folder extends IMetaData {
   showInMyArea: boolean;
   notes?: AllNotesData[];
   membercount: number;
-  sheets?: FolderMusicSheetTeaser[];
+  scores?: FolderMusicSheetTeaser[];
 }
 export interface UpdateFolder {
   musicFolderId: number;
@@ -19,7 +19,7 @@ export interface UpdateFolder {
   showInMyArea: boolean;
   notes?: AllNotesData[];
   membercount?: number;
-  sheets?: FolderMusicSheetTeaser[];
+  scores?: FolderMusicSheetTeaser[];
 }
 export interface FolderMusicSheetTeaser {
   number: string;
