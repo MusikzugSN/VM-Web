@@ -5,8 +5,8 @@ import {
   filter,
   firstValueFrom,
   map,
-  Observable,
-  shareReplay,
+  Observable, of,
+  shareReplay, switchMap,
 } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { HttpClient } from '@angular/common/http';
@@ -65,11 +65,17 @@ export class AuthService {
     shareReplay({ bufferSize: 1, refCount: false }),
   );
 
-  #myInformation$: BehaviorSubject<MeInformation | null> =
-    new BehaviorSubject<MeInformation | null>(null);
-  myInformation$ = this.#myInformation$
-    .asObservable()
-    .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+  myInformation$ = this.#decodedToken$.pipe(distinctUntilChanged(), filter(token => token !== null), switchMap((token) => {
+    if (token.sub !== "-1") {
+      return this.#httpClient.get<MeInformation>('auth/me');
+    } else {
+      return of({
+        id: '-1',
+        username: "Install",
+        isAdmin: true,
+      } as MeInformation);
+    }
+  }), shareReplay({ bufferSize: 1, refCount: true }))
 
   constructor() {
     this.#oAuthService.events
@@ -128,7 +134,6 @@ export class AuthService {
       this.#oAuthService.setupAutomaticSilentRefresh();
       const token = this.#oAuthService.getAccessToken();
       this.#storeAccessToken(token, this.#currentProvider$.getValue() ?? 'local');
-      await this.#loadMyInformation();
     }
   }
 
@@ -147,16 +152,6 @@ export class AuthService {
     const response = await firstValueFrom(request);
     if (response.token !== null) {
       this.#storeAccessToken(response.token, 'local');
-      if (username !== 'install') {
-        await this.#loadMyInformation();
-      } else {
-        this.#myInformation$.next({
-          id: '-1',
-          username: username,
-          isAdmin: true,
-        } as MeInformation);
-      }
-
       return { success: true };
     }
 
@@ -191,11 +186,6 @@ export class AuthService {
         return (token.exp ?? 0) < now;
       }),
     );
-  }
-
-  async #loadMyInformation(): Promise<void> {
-    const me = await firstValueFrom(this.#httpClient.get<MeInformation>('auth/me'));
-    this.#myInformation$.next(me);
   }
 
   #getDecodedToken$(): Observable<JwtPayload | null> {
