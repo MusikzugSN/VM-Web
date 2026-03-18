@@ -2,34 +2,36 @@
   <div style="display: flex; gap: 16px">
     <div class="data-container" style="flex-grow: 1">
       <label class="text-normal">Eventinformationen</label>
-      <div class="flex-row gap-medium">
-      <vmc-input-field
-        [formField]="eventNameField"
-        [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'name')"
-        />
-
-      <vmc-input-field
-        [formField]="(groupSelectorField$ | async) ?? groupSelectorFieldPlaceholder"
-        [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'groupId')"
-        />
-
-      <vmc-input-field
-        [formField]="eventDateField"
-        [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'activUntil')"
-        />
-      </div>
-      <div class="position-right">
+      <div class="flex-column"></div>
+        <div class="flex-row gap-medium">
         <vmc-input-field
-          [formField]="showInMyAreaField"
+          [formField]="eventNameField"
           [shouldInitChange]="false"
-          (inputChanged)="storeBooleanChangedValue($event, 'showInMyArea')"
+          (inputChanged)="storeChangedValue($event, 'name')"
         />
-      </div>
+
+        <vmc-input-field
+          [formField]="(groupSelectorField$ | async) ?? groupSelectorFieldPlaceholder"
+          [shouldInitChange]="false"
+          (inputChanged)="storeChangedValue($event, 'groupId')"
+          />
+        </div>
+          <div class="flex-row">
+        <vmc-input-field
+          [formField]="eventDateField"
+          [shouldInitChange]="false"
+          (inputChanged)="storeChangedValue($event, 'activUntil')"
+          />
+        </div>
+        <div class="position-right">
+          <vmc-input-field
+            [formField]="showInMyAreaField"
+            [shouldInitChange]="false"
+            (inputChanged)="storeBooleanChangedValue($event, 'showInMyArea')"
+          />
+         </div>
+       </div>
     </div>
-  </div>
 
   <div class="data-container">
     <label class="text-normal">Stücke zuweisen</label>

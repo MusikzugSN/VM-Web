@@ -28,6 +28,7 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 import { DatePipe, NgTemplateOutlet} from '@angular/common';
 import { Dictionary } from '@vm-utils';
 import { MatIconButton } from '@angular/material/button';
@@ -92,6 +93,7 @@ export interface VmRowClickedEvent<TRow> {
     MatCheckbox,
     MatSortHeader,
     MatSort,
+    MatPaginator,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
@@ -99,6 +101,7 @@ export interface VmRowClickedEvent<TRow> {
 export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   readonly #liveAnnouncer = inject(LiveAnnouncer);
   readonly sortElement = viewChild(MatSort);
+  readonly paginatorElement = viewChild(MatPaginator);
 
   dataSource: InputSignal<TRow[]> = input.required();
   columns: InputSignal<VmColumn<TRow>[]> = input.required();
@@ -108,6 +111,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   selectionMode: InputSignal<VmSelectType> = input<VmSelectType>('none');
   selectionKey: InputSignal<keyof TRow | undefined> = input<keyof TRow | undefined>(undefined);
   filterTerm: InputSignal<string | undefined> = input<string | undefined>(undefined);
+  paginator: InputSignal<number | undefined> = input<number | undefined>(undefined);
 
   clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
   selectionChanged: OutputEmitterRef<TSelectionKey[]> = output();
@@ -172,6 +176,13 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
         this.tableData.sort = sort;
       }
     });
+
+    effect(() => {
+      const paginator = this.paginatorElement();
+      if(paginator) {
+        this.tableData.paginator = paginator;
+      }
+    })
   }
 
   toggleRowSelection(row: TRow): void {

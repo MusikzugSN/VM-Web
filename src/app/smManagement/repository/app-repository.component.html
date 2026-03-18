@@ -6,6 +6,7 @@
   </div>
 </vmc-toolbar>
 <vmc-data-grid
+  [paginator]="((data$ | async) ?? []).length > 5 ? 10 : 5"
   [dataSource]="(data$ | async) ?? []"
   [columns]="columns"
   [filterTerm]="searchterm()"
