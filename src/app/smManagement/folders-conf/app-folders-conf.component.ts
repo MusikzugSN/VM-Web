@@ -29,7 +29,18 @@ export class AppFoldersConfComponent {
   readonly #groupService = inject(GroupService);
 
   #reload = new BehaviorSubject(false);
-  folderListe$ = this.#reload.pipe(switchMap(_x => this.#folderService.load$()));
+
+  // für jede Mappe membercount aus scores nehmen
+  folderListe$ = this.#reload.pipe(
+    switchMap(() => this.#folderService.loadWithSheets$()),
+    map((folders) =>
+      folders.map((folder) => ({
+        ...folder,
+        // wenn scores fehlt, leeres Array
+        membercount: (folder.scores ?? []).filter((s) => !s.deleted).length,
+      })),
+    ),
+  );
 
   #filterTerm$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   filterTerm = toSignal<string, string>(this.#filterTerm$, {
@@ -101,7 +112,7 @@ export class AppFoldersConfComponent {
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
 
-  filterInputChanged(term:string | number): void {
+  filterInputChanged(term: string | number): void {
     this.#filterTerm$.next(term.toString());
   }
 }
