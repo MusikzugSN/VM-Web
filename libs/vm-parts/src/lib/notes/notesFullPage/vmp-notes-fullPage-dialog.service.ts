@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
 import { VmpPrintDialog } from './print-dialog/vmp-print-dialog.component';
 import {VmpScoreUploadDialogComponent} from './score-upload-dialog/vmp-score-upload-dialog.component';
+import {VmpMultiScoreUploadDialog} from './multi-score-upload-dialog/vmp-multi-score-upload-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,16 @@ export class VmpNotesFullpageDialogService {
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'upload', text: 'Hinzufügen', type: 'filled' },
+      ],
+    });
+  }
+  async openAddMoreNoteSheetDialog(): Promise<boolean | undefined> {
+    return this.#dialogService.open(VmpMultiScoreUploadDialog, {
+      data: undefined,
+      title: 'Mehrere Notenblätter hinzufügen',
+      buttons: [
+        { key: 'close', text: 'Abbrechen', type: 'elevated' },
+        { key: 'toViewer', text: 'Okay', type: 'filled' },
       ],
     });
   }

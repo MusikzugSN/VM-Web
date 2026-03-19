@@ -35,7 +35,7 @@ export class AppEventConfComponent {
       key: 'addEvent',
       icon: 'add',
       label: 'Event hinzugefügen',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#eventDataDialogService.openNewEventDialog();
         this.#reload.next(true);
       },

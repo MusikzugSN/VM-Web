@@ -35,7 +35,7 @@ export class TagsConfComponent {
       key: 'addNotes',
       icon: 'add',
       label: 'Tag hinzufügen',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#tagDataDialogService.openNewTagDialog();
         this.#reload.next(true);
       },

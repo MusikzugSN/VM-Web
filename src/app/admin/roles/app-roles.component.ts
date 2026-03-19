@@ -29,7 +29,7 @@ export class AppRoles {
       key: 'addRole',
       icon: 'add',
       label: 'Neue Role',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#roleDialogService.openCreateRoleDialog();
         this.#reload.next(true);
       },

@@ -87,6 +87,10 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
         const files = this.files();
         const voiceMap = this.#voiceIdToFilePath$.getValue(); // { [voiceId]: filePath }
 
+        if (files.length === 0) {
+          this.#snackbarService.raiseError("Es muss eine Datei ausgewählt sein.")
+          return;
+        }
 
         if (files.length > Object.values(voiceMap).length) {
           this.#snackbarService.raiseError("Allen Datein muss eine Stimme zugeordnet werden.")

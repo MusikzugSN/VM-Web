@@ -85,11 +85,21 @@ export class VmpNotesFullPageComponent {
         key: 'addNotes',
         icon: 'add',
         label: 'Notenblatt hinzufügen',
-        acton: async (): Promise<void> => {
+        action: async (): Promise<void> => {
           const result = await this.#printService.openAddNoteSheetDialog();
           if (result)
             this.itemAdded.emit(true);
         },
+      },
+      {
+        key: 'addMoreNotes',
+        icon: 'add',
+        label: 'Hochladen und Aufteilen von Notenblättern',
+        action: async (): Promise<void> => {
+          const result = await this.#printService.openAddMoreNoteSheetDialog();
+          if (result)
+            this.itemAdded.emit(true);
+        }
       }
     ]
 
@@ -98,7 +108,7 @@ export class VmpNotesFullPageComponent {
           key: 'download',
           icon: 'file_download',
           label: 'Herunterladen',
-          acton: async (): Promise<void> => {
+          action: async (): Promise<void> => {
             this.downloadFile();
           },
         },
@@ -106,7 +116,7 @@ export class VmpNotesFullPageComponent {
           key: 'drucken',
           icon: 'print',
           label: 'Drucken',
-          acton: async (): Promise<void> => {
+          action: async (): Promise<void> => {
             const selectedIds = this.#selectedIds$.getValue();
             await this.#printService.openPrintDialog(selectedIds);
           },

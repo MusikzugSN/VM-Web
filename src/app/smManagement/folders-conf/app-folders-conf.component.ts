@@ -56,7 +56,7 @@ export class AppFoldersConfComponent {
       key: 'addFolder',
       icon: 'add',
       label: 'Mappe hinzufügen',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#folderDataDialogService.openNewFolderDialog();
         this.#reload.next(true);
       },

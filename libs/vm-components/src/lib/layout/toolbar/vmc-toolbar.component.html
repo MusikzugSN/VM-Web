@@ -2,7 +2,7 @@
   @let _items = items();
   @if (_items && _items.length > 0) {
     @for (item of _items; track item.key) {
-      <div class="toolbar-item" (click)="item.acton()">
+      <div class="toolbar-item" (click)="item.action()">
         <vmc-icon
           style="height: 24px; width: 24px"
           [iconName]="item.icon"
