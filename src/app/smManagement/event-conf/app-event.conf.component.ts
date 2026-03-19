@@ -74,7 +74,7 @@ export class AppEventConfComponent {
 
   column: VmColumn<Event>[] = [
     { key: 'name', header: 'Name', field: 'name', filterable: true },
-    { key: 'activUntil', header: 'Aktiv bis', field: 'activUntil', type: 'date', filterable: true },
+    { key: 'date', header: 'Aktiv bis', field: 'date', type: 'date', filterable: true },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', filterable: true },
     { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time', filterable: true },
   ];

@@ -101,10 +101,10 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   };
   eventDateField: VmFormField = {
     type: 'date',
-    key: nameOf<Event>('activUntil'),
+    key: nameOf<Event>('date'),
     label: 'Datum',
     required: true,
-    value: this.#data?.activUntil ?? '',
+    value: this.#data?.date ?? '',
   };
 
   groupSelectorField$: Observable<VmFormField> = this.groupsdata$.pipe(

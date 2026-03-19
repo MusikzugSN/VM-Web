@@ -6,8 +6,7 @@ export interface Event extends IMetaData {
   eventId: number;
   name: string;
   groupId?: number;
-  //disbaledAb?: string;
-  activUntil?: string;
+  date?: string;
   showInMyArea: boolean;
   scores?: EventScoreTeaser[];
 }
