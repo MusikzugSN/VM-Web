@@ -239,6 +239,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
       }
     }
 
+    this.storeChangedValue(newData.filter((x) => !x.deleted).length, nameOf<UpdateFolder>('membercount'));
     this.folderMusicSheetsData$.next(newData);
   }
 
