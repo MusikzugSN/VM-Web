@@ -3,11 +3,14 @@ import { AppMeLayout } from './app-me-layout.component';
 import {AppTagsComponent} from './tags/app-tags.component';
 import { AppEventComponent } from './event/app-event.component';
 import { AppFolderMeComponent } from './folders/app-folders.component';
+import {AuthGuard} from '../auth/auth.guard';
 
 export const ME_ROUTES: Routes = [
   {
     path: '',
     component: AppMeLayout,
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
     children: [
       { path: '', redirectTo: 'folders', pathMatch: 'full' },
       { path: 'event', children: [
