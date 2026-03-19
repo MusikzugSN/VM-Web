@@ -10,7 +10,6 @@ export class VmpNotesFullpageDialogService {
   readonly #dialogService = inject(VmDialogService);
 
   async openPrintDialog(selectedIds?: number[]): Promise<boolean | undefined> {
-    console.log('Opening print dialog with selected notes:', selectedIds);
     return this.#dialogService.open(VmpPrintDialog, {
       data: { selectedIds },
       title: 'Drucken',

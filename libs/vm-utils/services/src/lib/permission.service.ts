@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {AuthService, PermissionTeaserWithGroupId} from './auth.service';
-import {combineLatest, map, Observable, tap} from 'rxjs';
+import {combineLatest, map, Observable} from 'rxjs';
 
 export enum PermissionType {
   Administrator = 0,
@@ -69,7 +69,6 @@ export class PermissionService {
 
   permissions$ = this.#authService.myInformation$
     .pipe(
-      tap(x => console.log('perm service:',x)),
       map(info => info?.permissions ?? []));
 
   isAdmin$ = this.#authService.myInformation$
