@@ -50,8 +50,7 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   groupsdata$: Observable<Group[]> = this.#groupService.load$();
   #scores$: Observable<Score[]> = this.#scoreService.load$(); //Stücke laden
 
-  readonly #initialScores: EventScoreTeaser[] =
-    this.#data?.scores ?? [];
+  readonly #initialScores: EventScoreTeaser[] = this.#data?.scores ?? [];
 
   // Datenquelle fuer die Event-Scores
   eventMusicSheetsData$: BehaviorSubject<EventScoreTeaser[]> = new BehaviorSubject<
@@ -91,6 +90,12 @@ export class AppEventDataDialog extends DialogBase<boolean> {
 
   #selectedScoreId = -1;
 
+  private toDateInputValue(value?: string): string {
+    const v = value ?? '';
+    const idx = v.indexOf('T');
+    return idx >= 0 ? v.substring(0, idx) : v;
+  }
+
   eventNameField: VmFormField = {
     type: 'text',
     key: nameOf<Event>('name'),
@@ -99,12 +104,13 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     value: this.#data?.name ?? '',
     placeholder: 'z. B. Die Schlager Camper',
   };
+
   eventDateField: VmFormField = {
     type: 'date',
     key: nameOf<Event>('date'),
     label: 'Datum',
     required: true,
-    value: this.#data?.date ?? '',
+    value: this.toDateInputValue(this.#data?.date),
   };
 
   groupSelectorField$: Observable<VmFormField> = this.groupsdata$.pipe(
@@ -121,6 +127,13 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     }),
     takeUntilDestroyed(),
   );
+
+  // dateSelectorFieldPlaceholder: VmFormField = {
+  //   key: nameOf<Date>('date'),
+  //   label: 'Datum',
+  //   type: 'date',
+  //   options: []
+  // };
 
   groupSelectorFieldPlaceholder: VmFormField = {
     key: nameOf<Group>('name'),
@@ -210,16 +223,11 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   #storeNewScoreValue(newValue: EventScoreTeaser): void {
     const currentValues = this.eventMusicSheetsData$.getValue();
     if (currentValues.find((x) => x.scoreId === newValue.scoreId)) {
-      this.#snackbarService.raiseError(
-        'Das Stück existiert bereits im Event.',
-        2500,
-      );
+      this.#snackbarService.raiseError('Das Stück existiert bereits im Event.', 2500);
       return;
     }
 
-    if (
-      this.#changedScoreValues.find((x) => x.scoreId === newValue.scoreId && x.deleted)
-    ) {
+    if (this.#changedScoreValues.find((x) => x.scoreId === newValue.scoreId && x.deleted)) {
       this.#changedScoreValues = this.#changedScoreValues.filter(
         (x) => !(x.scoreId === newValue.scoreId && x.deleted),
       );
@@ -233,9 +241,7 @@ export class AppEventDataDialog extends DialogBase<boolean> {
   }
 
   #storeDeletedScoreValue(deletedValue: EventScoreTeaser): void {
-    if (
-      this.#changedScoreValues.find((x) => x.scoreId === deletedValue.scoreId)
-    ) {
+    if (this.#changedScoreValues.find((x) => x.scoreId === deletedValue.scoreId)) {
       this.#changedScoreValues = this.#changedScoreValues.filter(
         (x) => x.scoreId !== deletedValue.scoreId,
       );
