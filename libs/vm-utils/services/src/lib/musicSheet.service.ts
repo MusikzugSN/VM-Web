@@ -11,7 +11,7 @@ export interface MusicSheet extends IMetaData {
   voiceName: string;
 }
 
-interface MusicSheetQuerys {
+export interface MusicSheetQuerys {
   voiceIds: number[];
 }
 

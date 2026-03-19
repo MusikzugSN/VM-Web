@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './auth/auth.guard';
-import {VmpNoteViewer} from '@vm-parts';
+import { authGuard } from './auth/auth.guard';
+import { VmpNoteViewer } from '@vm-parts';
 
 export const routes: Routes = [
   {
@@ -11,12 +11,12 @@ export const routes: Routes = [
   {
     path: 'viewer',
     component: VmpNoteViewer,
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'me',
     loadChildren: () => import('./me/me.routes').then((x) => x.ME_ROUTES),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'auth',
@@ -25,12 +25,12 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.routes').then((x) => x.ADMIN_ROUTES),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'scores',
     loadChildren: () => import('./smManagement/management.routes').then((x) => x.MANAGEMENT_ROUTES),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: '**',

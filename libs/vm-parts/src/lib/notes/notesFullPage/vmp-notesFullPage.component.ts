@@ -1,4 +1,4 @@
-import {Component, computed, inject, input, InputSignal, output, signal} from '@angular/core';
+import {Component, computed, inject, input, InputSignal, output} from '@angular/core';
 import {BehaviorSubject, map, Observable} from 'rxjs';
 import {
   VmcDataGrid,
@@ -26,7 +26,7 @@ export interface AllNotesData {
   folders: string;
   link: string;
   pageCount: number;
-  voiceId: number;
+  voice: string;
 }
 
 @Component({
@@ -41,6 +41,7 @@ export class VmpNotesFullPageComponent {
   zusatzAktion: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
   buttonClicked = output<string>();
   itemAdded = output<boolean>();
+  voiceFilterChanged = output<number>();
 
   readonly #printService = inject(VmpNotesFullpageDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
@@ -49,7 +50,6 @@ export class VmpNotesFullPageComponent {
   #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true}), { initialValue: [] });
 
   #selectedIds$ = new BehaviorSubject<number[]>([]);
-  #selectedVoiceFilter = signal<number | undefined>(undefined);
 
   filter = computed<VmFormField>(() => {
     const voiceOptions = this.#voices()
@@ -78,16 +78,6 @@ export class VmpNotesFullPageComponent {
 
     this.buttonClicked.emit(action.key);
   }
-
-  filteredData = computed<AllNotesData[]>(() => {
-    const selectedVoice = this.#selectedVoiceFilter();
-    if (selectedVoice === undefined) {
-      return this.data();
-    }
-
-    return this.data().filter(x => x.voiceId === selectedVoice);
-  });
-
 
   toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(map(x => {
     const toolbarItems = [
@@ -133,12 +123,12 @@ export class VmpNotesFullPageComponent {
   };
 
   filterSelectionChange(event: VmValidFormTypes): void {
-    this.#selectedVoiceFilter.set(Number(event));
+    this.voiceFilterChanged.emit(Number(event));
   }
 
   columns: VmColumn<AllNotesData>[] = [
     { key: 'name', header: 'Name', field: 'name', filterable: true },
-    { key: 'voiceName', header: 'Stimme', field: 'voiceId' },
+    { key: 'voiceName', header: 'Stimme', field: 'voice' },
     { key: 'composer', header: 'Komponist', field: 'composer', filterable: true },
     { key: 'folders', header: 'Mappen', field: 'folders' },
     { key: 'pageCount', header: 'Seitenanzahl', field: 'pageCount' },
