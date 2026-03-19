@@ -10,7 +10,8 @@ export const routes: Routes = [
   },
   {
     path: 'viewer',
-    component: VmpNoteViewer
+    component: VmpNoteViewer,
+    canActivate: [AuthGuard],
   },
   {
     path: 'me',

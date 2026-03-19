@@ -34,6 +34,13 @@ export class AuthGuard implements CanActivate {
       return new RedirectCommand(loginExpiredPath, { skipLocationChange: false });
     }
 
+    const myInformation = await firstValueFrom(this.#authService.myInformation$);
+    if (myInformation == null || (!myInformation.isAdmin && myInformation.permissions?.length === 0)) {
+      const noPermissionPath = this.#router.parseUrl('/auth/noPermission');
+      return new RedirectCommand(noPermissionPath, { skipLocationChange: false });
+
+    }
+
     return true;
   }
 }

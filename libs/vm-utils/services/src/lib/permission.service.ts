@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {AuthService, PermissionTeaserWithGroupId} from './auth.service';
-import {combineLatest, filter, map, Observable, shareReplay} from 'rxjs';
+import {combineLatest, map, Observable} from 'rxjs';
 
 export enum PermissionType {
   Administrator = 0,
@@ -68,14 +68,11 @@ export class PermissionService {
   readonly #authService = inject(AuthService);
 
   permissions$ = this.#authService.myInformation$
-    .pipe(filter(info => info !== null),
-      map(info => info.permissions ?? []),
-      shareReplay({ bufferSize: 1, refCount: true }));
+    .pipe(
+      map(info => info?.permissions ?? []));
 
   isAdmin$ = this.#authService.myInformation$
-    .pipe(filter(info => info !== null),
-      map(info => info.isAdmin ?? false),
-      shareReplay({ bufferSize: 1, refCount: true }));
+    .pipe(map(info => info?.isAdmin ?? false));
 
   hasPermission$(permissionType: PermissionType, groupId?: number): Observable<boolean> {
     return combineLatest([this.permissions$, this.isAdmin$])

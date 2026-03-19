@@ -89,7 +89,6 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
 
 
         if (files.length > Object.values(voiceMap).length) {
-          console.log(voiceMap)
           this.#snackbarService.raiseError("Allen Datein muss eine Stimme zugeordnet werden.")
           return;
         }

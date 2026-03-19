@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 
 export interface ScoreFolderEntry {
   musicFolderId: number;
-  number: number;
+  number: string;
   deleted?: boolean;
 }
 

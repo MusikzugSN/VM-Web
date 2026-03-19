@@ -66,6 +66,10 @@ export class AuthService {
   );
 
   myInformation$ = this.#decodedToken$.pipe(distinctUntilChanged(), filter(token => token !== null), switchMap((token) => {
+    if (token === null) {
+      return of(null);
+    }
+
     if (token.sub !== "-1") {
       return this.#httpClient.get<MeInformation>('auth/me');
     } else {
@@ -189,7 +193,7 @@ export class AuthService {
   }
 
   #getDecodedToken$(): Observable<JwtPayload | null> {
-    return this.#accessToken$.pipe(
+    return this.accessToken$.pipe(
       map((token) => {
         if (token === null) {
           return null;
