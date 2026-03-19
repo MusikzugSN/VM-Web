@@ -5,7 +5,7 @@ import {HttpClient} from '@angular/common/http';
 export interface UploadScoreFileRequest {
   fileName: string;
   voiceId: number;
-  file: File;
+  file: File | File[];
 }
 
 export interface UploadScoreFilesRequest {
@@ -26,12 +26,22 @@ export class FileService {
 
     form.append('ScoreId', req.scoreId.toString());
 
-    req.files.forEach((f, i) => {
-      form.append(`Files[${i}].FileName`, f.fileName);
-      form.append(`Files[${i}].VoiceId`, f.voiceId.toString());
-      form.append(`Files[${i}].File`, f.file, f.fileName);
-    });
+    let index= 0;
 
-    return this.#httpClient.post('musicSheet', form);
+    req.files.forEach((entry) => {
+      const files = Array.isArray(entry.file) ? entry.file : [entry.file];
+
+      files.forEach((file) => {
+        form.append(`Files[${index}].FileName`, entry.fileName ?? file.name);
+        form.append(`Files[${index}].VoiceId`, entry.voiceId.toString());
+        form.append(`Files[${index}].File`, file, file.name);
+        index += 1;
+      });
+
+    })
+
+
+
+    return this.#httpClient.post<any>('pdf/upload', form);
   }
 }

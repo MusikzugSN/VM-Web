@@ -30,7 +30,7 @@ export class AppUsers {
       key: 'addUser',
       icon: 'add',
       label: 'Neuer Benutzer',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#userDialogService.openCreateUserDialog();
         this.#reload.next(true);
       },

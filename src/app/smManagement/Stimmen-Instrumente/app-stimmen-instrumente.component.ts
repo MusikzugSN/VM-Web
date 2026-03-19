@@ -38,7 +38,7 @@ export class AppStimmenInstrumenteComponent {
       key: 'addVoice',
       icon: 'add',
       label: 'Stimme hinzufügen',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#voiceDialogService.openAddVoiceDialog();
         this.#reload.next(true);
       },
@@ -47,7 +47,7 @@ export class AppStimmenInstrumenteComponent {
       key: 'addInstrument',
       icon: 'add',
       label: 'Instrument hinzufügen',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#instrumentDialogService.openAddInstrumentDialog();
         this.#reload.next(true);
       },

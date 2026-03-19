@@ -110,5 +110,4 @@ export class AppUnverifiedComponent {
   voiceFilterChanged(event: number) {
     this.#voiceFilter.next(event);
   }
-
 }

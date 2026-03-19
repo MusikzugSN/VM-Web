@@ -55,7 +55,7 @@ export class AppRepositoryComponent {
       key: 'addNotes',
       icon: 'add',
       label: 'Stück hinzufügen',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#dataDialogService.openNewScoreDialog();
         this.#reload.next(true);
       },
@@ -64,7 +64,7 @@ export class AppRepositoryComponent {
       key: 'addMultiNotes',
       icon: 'add',
       label: 'Mehrere Stücke hinzufügen',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#dataDialogService.openNewScoreMulitDialog();
         this.#reload.next(true);
       },

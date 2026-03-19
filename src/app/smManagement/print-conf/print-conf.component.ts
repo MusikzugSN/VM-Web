@@ -156,7 +156,7 @@ export class PrintConfComponent {
       key: 'addPreset',
       icon: 'add',
       label: 'Druckereinstellung hinzufügen',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.createConfigClicked();
       },
     },

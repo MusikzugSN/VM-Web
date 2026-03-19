@@ -28,7 +28,7 @@ export class AppGroups {
       key: 'addGroup',
       icon: 'add',
       label: 'Neue Gruppe',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#groupDataDialogService.openNewGroupDialog();
         this.#reload.next(true);
       },

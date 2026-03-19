@@ -6,7 +6,7 @@ export interface VmToolbarItem {
   key: string;
   icon: string;
   label: string;
-  acton: () => void;
+  action: () => void;
 }
 
 @Component({
