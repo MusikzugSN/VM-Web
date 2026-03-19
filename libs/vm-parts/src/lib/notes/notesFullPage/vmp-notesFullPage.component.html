@@ -11,8 +11,8 @@
   </div>
 </vmc-toolbar>
 <vmc-data-grid
-  [paginator]="(filteredData() ?? []).length > 5 ? 10 : 5"
-  [dataSource]="filteredData()"
+  [paginator]="(data() ?? []).length > 5 ? 10 : 5"
+  [dataSource]="data()"
   [columns]="columns"
   [selectionMode]="'multi'"
   [selectionKey]="'notesId'"

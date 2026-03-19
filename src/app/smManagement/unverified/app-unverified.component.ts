@@ -1,6 +1,13 @@
 import { Component, inject } from '@angular/core';
 import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
-import {Folder, FoldersService, MusicSheet, MusicSheetService} from '@vm-utils/services';
+import {
+  Folder,
+  FoldersService,
+  MusicSheet,
+  MusicSheetQuerys,
+  MusicSheetService,
+  VoiceService
+} from '@vm-utils/services';
 import { Score, ScoreService } from '@vm-utils/services';
 import { BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -18,19 +25,33 @@ export class AppUnverifiedComponent {
   readonly #scoreService = inject(ScoreService);
   readonly #unverifiedDataDialogService = inject(UnverifiedDialogService);
   readonly #foldersService = inject(FoldersService);
+  readonly #voiceService = inject(VoiceService);
 
   #reload = new BehaviorSubject(false);
+  #voiceFilter = new BehaviorSubject<number | undefined>(undefined);
 
-  sheet$: Observable<MusicSheet[]> = this.#reload.pipe(
-    switchMap((_x) => this.#musicSheetService.loadForUnverifieed$().pipe(catchError(() => of([])))),
+  sheet$: Observable<MusicSheet[]> = combineLatest([this.#reload, this.#voiceFilter]).pipe(
+    switchMap(([_x, filter]) => {
+      let queryParam: MusicSheetQuerys | undefined = undefined;
+
+      if (filter) {
+        queryParam = { voiceIds: [filter]}
+      }
+
+      return this.#musicSheetService.loadForUnverifieed$(queryParam).pipe(catchError(() => of([])))
+    }),
   );
   score$: Observable<Score[]> = this.#reload.pipe(
     switchMap((_x) => this.#scoreService.load$({ includeMusicFolders: true }).pipe(catchError(() => of([])))),
   );
 
-  folder$: Observable<Folder[]> = this.#reload.pipe(
+  folders$: Observable<Folder[]> = this.#reload.pipe(
     switchMap((_x) => this.#foldersService.load$().pipe(catchError(() => of([])))),
   );
+
+  voices$ = this.#reload.pipe(
+    switchMap(_x => this.#voiceService.load$({ includeInstrumentName: true }).pipe(catchError(() => of([])))),
+  )
 
   async execAction(action: VmRowClickedEvent<Score>): Promise<void> {
     if (action.key === 'edit') {
@@ -51,8 +72,8 @@ export class AppUnverifiedComponent {
     }
   }
 
-  data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$, this.folder$]).pipe(
-    map(([sheet, score, folders]) => {
+  data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$, this.folders$, this.voices$]).pipe(
+    map(([sheet, score, folders, voices]) => {
       return sheet
         .map((x) => {
           const currentScore = score.find((y) => y.scoreId === x.scoreId);
@@ -77,11 +98,17 @@ export class AppUnverifiedComponent {
               .join(', '),
             link: currentScore.link,
             pageCount: x.pageCount,
-            voiceId: x.voiceId,
+            voice: voices
+              .filter(voice => voice.voiceId === x.voiceId)
+              .map(voice => voice.instrumentName + ' ' + voice.name).join(', '),
           } as AllNotesData;
         })
         .filter((x) => x !== undefined);
     }),
   );
+
+  voiceFilterChanged(event: number) {
+    this.#voiceFilter.next(event);
+  }
 
 }
