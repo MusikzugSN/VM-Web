@@ -6,7 +6,8 @@
 @let _templates = transformedTemplates();
 @let _calcValues = calculatedColumns();
 @let _selectionMode = selectionMode();
-
+@let _paginator = paginator();
+<div class="flex-column" style="width: 100%; height: 100%; gap: 16px">
 @if (_columns.length > 0 && _displayColumns.length > 0) {
   <table [dataSource]="tableData" mat-table matSort (matSortChange)="announceSortChange($event)">
     @if (_selectionMode !== 'none') {
@@ -138,8 +139,11 @@
     <tr *matHeaderRowDef="_displayColumns" mat-header-row></tr>
     <tr *matRowDef="let _row; columns: _displayColumns" mat-row></tr>
     <tr *matFooterRowDef="_displayFooter" mat-footer-row></tr>
+
   </table>
 
-  <!--  maybe later! -->
-  <!--  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>-->
+  @if (_paginator !== undefined) {
+  <mat-paginator style="margin-top: auto" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
 }
+}
+</div>

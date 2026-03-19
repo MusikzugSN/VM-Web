@@ -1,7 +1,18 @@
 :host {
+  display: block;
+  overflow: visible;
+
+  vmc-input-field {
+    min-height: 56px;
+  }
+
   ::ng-deep {
-    .vm-input {
-      padding-bottom: 6px;
+    .mat-mdc-table {
+      background-color: var(--vm-secondary-gray);
+    }
+
+    .mat-mdc-dialog-content {
+      overflow: visible;
     }
   }
 }
@@ -11,15 +22,11 @@
   flex-direction: column;
   border-radius: 10px;
   padding: 20px;
+  gap: 16px;
   background-color: var(--vm-secondary-gray);
+  overflow: visible;
 }
 
-.duration-input {
-  display: flex;
-  align-items: center;
-
-  mat-form-field {
-    width: 100%;
-  }
+.position-right {
+  margin-left: auto;
 }
-

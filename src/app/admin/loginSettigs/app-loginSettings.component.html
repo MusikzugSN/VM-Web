@@ -1,1 +1,54 @@
 <vmc-toolbar />
+<h3>Geht aktuell ned!!!</h3>
+<div>
+  <vmc-input-field [formField]="{
+  key: 'oauth_user_create',
+  label: 'Neue OAuth Benutzer automatisch erstellen',
+  type: 'checkbox',
+  required: true
+}"/>
+
+  <vmc-select [label]="'Standard Gruppe'" [options]="[]"/>
+  <vmc-select [label]="'Standard Rolle'" [options]="[]"/>
+</div>
+
+<div>
+  <vmc-input-field [formField]="{
+  key: 'oauth_user_login',
+  label: 'Passwort Login für OAuth Benutzer erlauben',
+  type: 'checkbox',
+  required: true
+}"/>
+
+  <vmc-input-field [formField]="{
+  key: 'oauth_user_login',
+  label: 'Passwort Login deaktivieren',
+  type: 'checkbox',
+  required: true
+}"/>
+</div>
+
+<div>
+  <vmc-input-field [formField]="{
+  key: 'oauth_user_login',
+  label: 'Text der Navigatiosleiste',
+  type: 'text',
+  required: true
+}"/>
+</div>
+
+
+<div>
+  <vmc-input-field [formField]="{
+  key: 'oauth_user_login',
+  label: 'Eigenes Impressum nutzen',
+  type: 'checkbox',
+  required: true
+}"/>
+  <vmc-input-field [formField]="{
+  key: 'oauth_user_login',
+  label: 'Link zum Impressum',
+  type: 'text',
+  required: true
+}"/>
+</div>

@@ -1,4 +1,9 @@
 <div style="display: flex; flex-direction: row" class="full-page">
-  <vmp-sidebar [sidebarItems]="sidebarItems()" />
-  <router-outlet/>
+  <div class="sidebar">
+    <vmp-sidebar [sidebarItems]="sidebarItems()" />
+  </div>
+
+  <div class="content">
+    <router-outlet />
+  </div>
 </div>

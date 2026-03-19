@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
-import { MusicSheet, MusicSheetService} from '@vm-utils/services';
+import {Folder, FoldersService, MusicSheet, MusicSheetService} from '@vm-utils/services';
 import { Score, ScoreService } from '@vm-utils/services';
 import { BehaviorSubject, catchError, combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -14,23 +14,28 @@ import { UnverifiedDialogService } from './unverified-dialog.service';
   styleUrl: './app-unverified.component.scss',
 })
 export class AppUnverifiedComponent {
-  readonly #MusicSheetService = inject(MusicSheetService);
-  readonly #ScoreService = inject(ScoreService);
-  readonly #UnverifiedDataDialogService = inject(UnverifiedDialogService);
+  readonly #musicSheetService = inject(MusicSheetService);
+  readonly #scoreService = inject(ScoreService);
+  readonly #unverifiedDataDialogService = inject(UnverifiedDialogService);
+  readonly #foldersService = inject(FoldersService);
 
   #reload = new BehaviorSubject(false);
 
   sheet$: Observable<MusicSheet[]> = this.#reload.pipe(
-    switchMap((_x) => this.#MusicSheetService.load$().pipe(catchError(() => of([])))),
+    switchMap((_x) => this.#musicSheetService.load$().pipe(catchError(() => of([])))),
   );
   score$: Observable<Score[]> = this.#reload.pipe(
-    switchMap((_x) => this.#ScoreService.load$().pipe(catchError(() => of([])))),
+    switchMap((_x) => this.#scoreService.load$().pipe(catchError(() => of([])))),
+  );
+
+  folder$: Observable<Folder[]> = this.#reload.pipe(
+    switchMap((_x) => this.#foldersService.load$().pipe(catchError(() => of([])))),
   );
 
   async execAction(action: VmRowClickedEvent<Score>): Promise<void> {
     if (action.key === 'edit') {
       if (action.rowData === null) return;
-      const reload = await this.#UnverifiedDataDialogService.openEditScoreDialog(action.rowData);
+      const reload = await this.#unverifiedDataDialogService.openEditScoreDialog(action.rowData);
       if (reload) {
         this.#reload.next(true);
       }
@@ -39,15 +44,15 @@ export class AppUnverifiedComponent {
 
     if (action.key === 'delete') {
       if (action.rowData === null) return;
-      const reload = await this.#UnverifiedDataDialogService.openDeleteScoreDialog(action.rowData);
+      const reload = await this.#unverifiedDataDialogService.openDeleteScoreDialog(action.rowData);
       if (reload) {
         this.#reload.next(true);
       }
     }
   }
 
-  data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$]).pipe(
-    map(([sheet, score]) => {
+  data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$, this.folder$]).pipe(
+    map(([sheet, score, folders]) => {
       return sheet
         .map((x) => {
           const currentScore = score.find((y) => y.scoreId === x.scoreId);
@@ -58,8 +63,16 @@ export class AppUnverifiedComponent {
             notesId: x.musicSheetId,
             name: currentScore.title,
             composer: currentScore.composer,
-            folders: currentScore.folders
-              .map((z) => `${z.musicFolderName} (${z.number})`)
+            folders: currentScore.musicFolders
+              .map((z) => {
+                const folder = folders.find(x => x.musicFolderId === z.musicFolderId);
+                if (folder === undefined) {
+                  return;
+                }
+
+                return folder.name + '(' + z.number + ')';
+              })
+              .filter(x => !!x)
               .join(', '),
             link: currentScore.link,
             pageCount: x.pageCount,

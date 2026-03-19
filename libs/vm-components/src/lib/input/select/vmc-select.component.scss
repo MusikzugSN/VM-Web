@@ -1,7 +1,6 @@
 :host {
   width: 100%;
   display: flex;
-  height: 56px;
 }
 
 /* Entfernt Hover-Hintergrund vom ersten mat-option */
@@ -9,6 +8,9 @@
   background: transparent !important;
 }
 
+mat-form-field {
+  width: 100%;
+}
 
 /* Das eigentliche Inputfeld */
 .search-input {

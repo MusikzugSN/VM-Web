@@ -2,11 +2,12 @@
   <vmc-input-field [formField]="suchleiste" (inputChanged)="searchChanged($event)"/>
 </vmc-toolbar>
 
-<div class="flex-row-fill gap">
+<div class="flex-row-fill gap " style="height: 100%">
   <vmc-data-grid
     [dataSource]="(voiceListe$ | async) ?? []"
     [columns]="columnsVoice"
     [filterTerm]="searchTerm()"
+    [paginator]="((voiceListe$ | async) ?? []).length > 5 ? 10 : 5"
     [rowActions]="[
       { key: 'edit', icon: 'edit' },
       { key: 'delete', icon: 'delete' },
@@ -14,6 +15,7 @@
     (clickedAction)="execActionVoice($event)"/>
   <vmc-data-grid
     [dataSource]="(instrumentListe$ | async) ?? []"
+    [paginator]="((instrumentListe$ | async) ?? []).length > 5 ? 10 : 5"
     [columns]="columnsInstrument"
     [filterTerm]="searchTerm()"
     [rowActions]="[
