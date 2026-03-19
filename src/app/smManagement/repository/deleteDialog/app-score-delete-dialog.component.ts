@@ -5,7 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {Score, ScoreService} from '@vm-utils/services';
 
 @Component({
-  selector: 'app-user-delete-dialog',
+  selector: 'app-score-delete-dialog',
   imports: [],
   templateUrl: './app-score-delete-dialog.component.html',
   styleUrl: './app-score-delete-dialog.component.scss',
