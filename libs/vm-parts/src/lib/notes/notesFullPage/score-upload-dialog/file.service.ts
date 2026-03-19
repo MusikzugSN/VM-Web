@@ -32,6 +32,6 @@ export class FileService {
       form.append(`Files[${i}].File`, f.file, f.fileName);
     });
 
-    return this.#httpClient.post('pdf/upload', form);
+    return this.#httpClient.post('musicSheet', form);
   }
 }

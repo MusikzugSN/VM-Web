@@ -133,7 +133,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   ];
 
   #folderEntry: ScoreFolderEntry = {
-    number: -1,
+    number: '-1',
     musicFolderId: -1,
   };
 
@@ -320,7 +320,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   }
 
   storeNewNumberChange(value: VmValidFormTypes): void {
-    this.#folderEntry.number = Number(value);
+    this.#folderEntry.number = String(value);
   }
 
   storeNewFolderChange(value: VmValidFormTypes): void {
@@ -334,7 +334,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       }
       this.#storeDeletedScoreValue(score.rowData);
     } else if (score.key === 'add') {
-      if (this.#folderEntry.number !== -1) {
+      if (this.#folderEntry.number !== '-1') {
         this.#storeNewGroupValue(this.#folderEntry);
       } // todo far: handle error
     }

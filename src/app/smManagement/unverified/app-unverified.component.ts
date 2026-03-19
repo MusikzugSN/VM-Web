@@ -22,10 +22,10 @@ export class AppUnverifiedComponent {
   #reload = new BehaviorSubject(false);
 
   sheet$: Observable<MusicSheet[]> = this.#reload.pipe(
-    switchMap((_x) => this.#musicSheetService.load$().pipe(catchError(() => of([])))),
+    switchMap((_x) => this.#musicSheetService.loadForUnverifieed$().pipe(catchError(() => of([])))),
   );
   score$: Observable<Score[]> = this.#reload.pipe(
-    switchMap((_x) => this.#scoreService.load$().pipe(catchError(() => of([])))),
+    switchMap((_x) => this.#scoreService.load$({ includeMusicFolders: true }).pipe(catchError(() => of([])))),
   );
 
   folder$: Observable<Folder[]> = this.#reload.pipe(
@@ -66,11 +66,12 @@ export class AppUnverifiedComponent {
             folders: currentScore.musicFolders
               .map((z) => {
                 const folder = folders.find(x => x.musicFolderId === z.musicFolderId);
+                //console.log('for ' + x.musicSheetId, currentScore.composer, currentScore.musicFolders)
                 if (folder === undefined) {
                   return;
                 }
 
-                return folder.name + '(' + z.number + ')';
+                return folder.name + (z.number.trim().length > 0 ? ' (' + z.number + ')' : '');
               })
               .filter(x => !!x)
               .join(', '),

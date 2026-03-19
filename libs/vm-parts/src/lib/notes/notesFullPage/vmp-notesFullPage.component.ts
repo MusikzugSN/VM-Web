@@ -137,11 +137,11 @@ export class VmpNotesFullPageComponent {
   }
 
   columns: VmColumn<AllNotesData>[] = [
-    { key: 'name', header: 'Name', field: 'name' },
-    { key: 'composer', header: 'Komponist', field: 'composer' },
+    { key: 'name', header: 'Name', field: 'name', filterable: true },
+    { key: 'voiceName', header: 'Stimme', field: 'voiceId' },
+    { key: 'composer', header: 'Komponist', field: 'composer', filterable: true },
     { key: 'folders', header: 'Mappen', field: 'folders' },
     { key: 'pageCount', header: 'Seitenanzahl', field: 'pageCount' },
-    { key: 'voiceName', header: 'Stimme', field: 'voiceId' },
   ];
 
   public downloadFile(): void {
