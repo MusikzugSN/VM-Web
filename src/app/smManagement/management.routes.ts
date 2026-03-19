@@ -9,11 +9,14 @@ import { AppFolderScoreComponent } from './folders/app-folders.component';
 import { AppFoldersConfComponent } from './folders-conf/app-folders-conf.component';
 import { TagsConfComponent } from './tags-conf/tags-conf.component';
 import { PrintConfComponent } from './print-conf/print-conf.component';
+import {authGuard} from '../auth/auth.guard';
 
 export const MANAGEMENT_ROUTES: Routes = [
   {
     path: '',
     component: AppManagementLayout,
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       { path: '', redirectTo: 'unverified', pathMatch: 'full' },
       { path: 'unverified', component: AppUnverifiedComponent },
