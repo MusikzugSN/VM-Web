@@ -13,24 +13,26 @@
       (inputChanged)="storeChangedValue($event, 'composer')"
     />
 
-    <vmc-input-field
-      [formField]="linkField"
-      [shouldInitChange]="false"
-      (inputChanged)="storeChangedValue($event, 'link')"
-    />
+    <div class="flex-row gap-large">
+      <vmc-input-field
+        [formField]="linkField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'link')"
+      />
 
-    <div class="duration-input">
-      <mat-form-field class="vm-input">
-        <mat-label>Länge (MM:SS)</mat-label>
-        <input
-          matInput
-          type="text"
-          [ngModel]="durationDisplay"
-          (input)="onDurationInput($event)"
-          placeholder="MM:SS"
-          maxlength="5"
-        />
-      </mat-form-field>
+      <div class="duration-input">
+        <mat-form-field class="vm-input">
+          <mat-label>Länge (MM:SS)</mat-label>
+          <input
+            matInput
+            type="text"
+            [ngModel]="durationDisplay"
+            (input)="onDurationInput($event)"
+            placeholder="MM:SS"
+            maxlength="5"
+          />
+        </mat-form-field>
+      </div>
     </div>
   </div>
   <div class="data-container">
@@ -39,32 +41,32 @@
       [columns]="scoreColumns"
       [rowActions]="ScoresActions"
       [footerActions]="footerActions"
-      [dataSource]="(scoreData | async) ?? []"
+      [dataSource]="(scoreData$ | async) ?? []"
       [templates]="[
         {
-          keys: ['score'],
-          templateRef: scoreTemplate,
+          keys: ['folder'],
+          templateRef: folderTemplate,
         },
         {
           keys: ['numberFooter'],
           templateRef: numberFooterTemplate,
         },
         {
-          keys: ['scoreFooter'],
-          templateRef: scoreFooterTemplate,
+          keys: ['folderFooter'],
+          templateRef: folderFooterTemplate,
         },
       ]"
       (clickedAction)="execActionFromRow($event)"
     />
   </div>
 
-  <ng-template #scoreTemplate let-rowDataRaw="rowData">
-    @let scores = scoresById();
+  <ng-template #folderTemplate let-rowDataRaw="rowData">
+    @let folder = folderById();
     @let rowData = rowDataRaw | as: ScoreType;
-    {{ scores[rowData.scoreId]?.musicFolderName ?? 'N/A' }}
+    {{ folder[rowData.musicFolderId]?.name ?? 'N/A' }}
   </ng-template>
 
-  <ng-template #scoreFooterTemplate>
+  <ng-template #folderFooterTemplate>
     <vmc-input-field
       [formField]="{
         label: 'Mappen',

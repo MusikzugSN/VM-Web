@@ -1,7 +1,7 @@
 import {Component, inject, signal} from '@angular/core';
 
-import {BehaviorSubject, switchMap} from 'rxjs';
-import {Score, ScoreService} from '@vm-utils/services';
+import {BehaviorSubject, map, Observable, switchMap} from 'rxjs';
+import {Folder, FoldersService, Score, ScoreService} from '@vm-utils/services';
 import {
   VmcDataGrid,
   VmcIconButton,
@@ -13,23 +13,42 @@ import {
 } from '@vm-components';
 import {RepositoryDialogService} from './repository-dialog.service';
 import {AsyncPipe} from '@angular/common';
-import {convertToDisplayMinutes} from '@vm-utils';
+import {AsPipe, convertToDisplayMinutes, NumDictionary} from '@vm-utils';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-repository.component',
-  imports: [VmcDataGrid, VmcInputField, VmcToolbar, AsyncPipe, VmcIconButton],
+  imports: [VmcDataGrid, VmcInputField, VmcToolbar, AsyncPipe, VmcIconButton, AsPipe],
   templateUrl: './app-repository.component.html',
   styleUrl: './app-repository.component.scss',
 })
 export class AppRepositoryComponent {
   readonly #scoresService = inject(ScoreService);
   readonly #dataDialogService = inject(RepositoryDialogService);
+  readonly #foldersService = inject(FoldersService);
 
   #reload = new BehaviorSubject(false);
 
-  data$ = this.#reload.pipe(switchMap((_) => this.#scoresService.load$()));
+  data$ = this.#reload.pipe(switchMap((_) => this.#scoresService.load$({ includeMusicFolders: true })));
+  #folders$: Observable<Folder[]> = this.#foldersService.load$();
 
   searchterm = signal<string | undefined>(undefined);
+
+  #folderById$: Observable<NumDictionary<Folder>> = this.#folders$.pipe(
+    map((x) =>
+      x.reduce(
+        (acc, folder) => ({ ...acc, [folder.musicFolderId]: folder }),
+        {} as NumDictionary<Folder>,
+      ),
+    ),
+  );
+
+  folderById = toSignal<NumDictionary<Folder>, NumDictionary<Folder>>(
+    this.#folderById$,
+    {
+      initialValue: {},
+    },
+  );
 
   toolbarItems: VmToolbarItem[] = [
     {
@@ -62,11 +81,14 @@ export class AppRepositoryComponent {
     { key: 'title', header: 'Title', field: 'title', filterable: true },
     { key: 'composer', header: 'Komponist', field: 'composer', filterable: true },
     { key: 'duration', header: 'Länge', field: 'duration', type: "converter", converter: (score: Score) => convertToDisplayMinutes(score.duration ?? 0) + ' min' },
-    { key: 'folders', header: 'Mappen', field: 'folders', type: "converter", converter : (score: Score) => score.folders?.map(x => x.musicFolderName + ' (' + x.number + ')').join(', ') },
+    { key: 'folders', header: 'Mappen', field: 'musicFolders', type: "template" },
     { key: 'changedAt', header: 'Bearbeitet am', field: 'updatedAt', type: 'date-time' },
     { key: 'changedBy', header: 'Bearbeitet von', field: 'updatedBy' },
     { key: 'customActions', header: '', type: 'template' },
   ];
+
+  // @ts-ignore
+  ScoreType: Score;
 
   async execAction(rowData: Score, key: string): Promise<void> {
     if (key === 'edit') {
@@ -78,7 +100,7 @@ export class AppRepositoryComponent {
     }
 
     if (key === 'delete') {
-      const reload = await this.#dataDialogService.openEditScoreDialog(rowData);
+      const reload = await this.#dataDialogService.openDeleteScoreDialog(rowData);
       if (reload) {
         this.#reload.next(true);
       }

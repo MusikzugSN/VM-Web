@@ -20,8 +20,8 @@ export class RepositoryDialogService {
         { key: 'create', text: 'Hinzufügen', type: 'filled' },
       ],
       dialogConfig: {
-        minWidth: '600px',
-      },
+        minWidth: '700px',
+      }
     });
   }
 
@@ -35,7 +35,7 @@ export class RepositoryDialogService {
       ],
       dialogConfig: {
         minWidth: '600px',
-      },
+      }
     });
   }
 
@@ -48,8 +48,8 @@ export class RepositoryDialogService {
         { key: 'save', text: 'Speichern', type: 'filled' },
       ],
       dialogConfig: {
-        minWidth: '600px',
-      },
+        minWidth: '700px',
+      }
     });
   }
 
@@ -59,7 +59,7 @@ export class RepositoryDialogService {
       data: score,
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
-        { key: 'edit', text: 'Löschen', type: 'filled', color: 'error' },
+        { key: 'delete', text: 'Löschen', type: 'filled', color: 'error' },
       ],
       dialogConfig: {
         minWidth: '600px',

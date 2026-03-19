@@ -32,13 +32,6 @@ import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
 import { SnackbarService } from '@vm-utils/snackbar';
 import { AsyncPipe } from '@angular/common';
 
-// Titel & Link: Buchstaben, Zahlen, Leerzeichen und gängige Sonderzeichen
-const TITLE_PATTERN = /^[a-zA-ZäöüÄÖÜß0-9\s\-.,!?()&'"/+]*$/;
-// Komponist: nur Buchstaben, Leerzeichen, Bindestrich, Punkt
-const COMPOSER_PATTERN = /^[a-zA-ZäöüÄÖÜß\s\-.]*$/;
-// Link: alle URL-üblichen Zeichen
-const LINK_PATTERN = /^[a-zA-Z0-9äöüÄÖÜß\s\-._~:/?#[\]@!$&'()*+,;=%]*$/;
-
 @Component({
   selector: 'app-score-info-step',
   imports: [
@@ -58,12 +51,10 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   readonly #data = inject<Score | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #scoreService = inject(ScoreService);
-  readonly #snackbar = inject(SnackbarService);
   readonly #snackbarService = inject(SnackbarService);
   readonly #foldersService = inject(FoldersService);
 
-  scoreData: BehaviorSubject<ScoreFolderEntry[]> = new BehaviorSubject<ScoreFolderEntry[]>([]);
-  #scores$: Observable<ScoreFolderEntry[]> = this.scoreData.asObservable();
+  scoreData$: BehaviorSubject<ScoreFolderEntry[]> = new BehaviorSubject<ScoreFolderEntry[]>(this.#data?.musicFolders ?? []);
   #folders$: Observable<Folder[]> = this.#foldersService.load$();
 
   #changedValues: Dictionary<string> = {};
@@ -71,17 +62,17 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   #changedScoreValues: ScoreFolderEntry[] = [];
   durationDisplay = '';
 
-  #scoresById$: Observable<NumDictionary<ScoreFolderEntry>> = this.#scores$.pipe(
+  #folderById$: Observable<NumDictionary<Folder>> = this.#folders$.pipe(
     map((x) =>
       x.reduce(
-        (acc, score) => ({ ...acc, [score.number]: score }),
-        {} as NumDictionary<ScoreFolderEntry>,
+        (acc, folder) => ({ ...acc, [folder.musicFolderId]: folder }),
+        {} as NumDictionary<Folder>,
       ),
     ),
   );
 
-  scoresById = toSignal<NumDictionary<ScoreFolderEntry>, NumDictionary<ScoreFolderEntry>>(
-    this.#scoresById$,
+  folderById = toSignal<NumDictionary<Folder>, NumDictionary<Folder>>(
+    this.#folderById$,
     {
       initialValue: {},
     },
@@ -121,9 +112,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       footerAsTemplate: true,
     },
     {
-      key: 'foldername',
-      header: 'Mappenname',
-      field: nameOf<ScoreFolderEntry>('musicFolderName'),
+      key: 'folder',
+      header: 'Mappe',
+      field: nameOf<ScoreFolderEntry>('musicFolderId'),
       type: 'template',
       footerAsTemplate: true,
     },
@@ -143,19 +134,19 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
 
   #folderEntry: ScoreFolderEntry = {
     number: -1,
-    musicFolderName: '-1',
+    musicFolderId: -1,
   };
 
   // @ts-ignore
-  ScoreType: Score;
+  ScoreType: ScoreFolderEntry;
 
   #foldersOptions$: Observable<VmSelectOption[]> = combineLatest([
     this.#folders$,
-    this.scoreData.asObservable(),
+    this.scoreData$.asObservable(),
   ]).pipe(
     map(([folders, setFolders]) => {
-      const usedFolderNames = new Set(setFolders.map((x) => x.musicFolderName));
-      return folders.filter((folder) => !usedFolderNames.has(folder.name));
+      const usedFolderIds = new Set(setFolders.map((x) => x.musicFolderId));
+      return folders.filter((folder) => !usedFolderIds.has(folder.musicFolderId));
     }),
     map((folders) => folders.map((folder) => ({ label: folder.name, value: folder.name }))),
   );
@@ -164,7 +155,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     initialValue: [],
   });
 
-  numberOfScoreField$: Observable<VmFormField> = this.scoreData.asObservable().pipe(
+  numberOfScoreField$: Observable<VmFormField> = this.scoreData$.asObservable().pipe(
     map((entries) => {
       const maxNumber = entries.length > 0 ? Math.max(...entries.map((x) => Number(x.number) || 0)) : 0;
 
@@ -187,47 +178,8 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   constructor() {
     super();
 
-    // Im Edit-Modus bestehende Werte vorbelegen
-    if (this.#data) {
-      this.#changedValues['title'] = this.#data.title ?? '';
-      this.#changedValues['composer'] = this.#data.composer ?? '';
-      this.#changedValues['link'] = this.#data.link ?? '';
-    }
-
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
-      // Fallback: Feldwerte aus FormField-Definitionen wenn User sie nicht geändert hat
-      if (!this.#changedValues['title'] && this.titleField.value) {
-        this.#changedValues['title'] = this.titleField.value as string;
-      }
-      if (!this.#changedValues['composer'] && this.composerField.value) {
-        this.#changedValues['composer'] = this.composerField.value as string;
-      }
-      if (!this.#changedValues['link'] && this.linkField.value) {
-        this.#changedValues['link'] = this.linkField.value as string;
-      }
-
-      if (x === 'create' || x === 'save') {
-        const title = this.#changedValues['title'] ?? '';
-        const composer = this.#changedValues['composer'] ?? '';
-        const link = this.#changedValues['link'] ?? '';
-
-        if (!TITLE_PATTERN.test(title)) {
-          this.#snackbar.raiseError(
-            'Titel darf nur Buchstaben, Zahlen und gängige Sonderzeichen enthalten.',
-          );
-          return;
-        }
-        if (!COMPOSER_PATTERN.test(composer)) {
-          this.#snackbar.raiseError('Komponist darf nur Buchstaben enthalten.');
-          return;
-        }
-        if (link && !LINK_PATTERN.test(link)) {
-          this.#snackbar.raiseError('Link enthält ungültige Zeichen.');
-          return;
-        }
-      }
-
-      const rawPatch = convertToPatch<Score, VmValidFormTypes>(this.#changedValues);
+      const rawPatch = convertToPatch<Score, string>(this.#changedValues);
 
       // Leere Strings und null entfernen, duration als number konvertieren
       const patch: Partial<Score> = Object.fromEntries(
@@ -286,20 +238,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   }
 
   storeChangedValue(value: string | number, key: string): void {
-    const strValue = value.toString();
-
-    // Zeichen filtern je nach Feld
-    if (key === 'title' && !TITLE_PATTERN.test(strValue) && strValue !== '') {
-      return; // ungültige Zeichen ignorieren
-    }
-    if (key === 'composer' && !COMPOSER_PATTERN.test(strValue) && strValue !== '') {
-      return;
-    }
-    if (key === 'link' && !LINK_PATTERN.test(strValue) && strValue !== '') {
-      return;
-    }
-
-    this.#changedValues[key] = strValue;
+    this.#changedValues[key] = value.toString();
   }
   storeChangedScoreValue(
     newValue: VmValidFormTypes | boolean | ScoreFolderEntry[],
@@ -310,7 +249,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   #storeChangedScoreValues(): void {
     this.storeChangedScoreValue(this.#changedScoreValues, nameOf<ScoreFolderEntry>('number'));
 
-    const oldData = this.#data?.folders ?? [];
+    const oldData = this.#data?.musicFolders ?? [];
     let newData = [...oldData];
     for (const changedScoreValue of this.#changedScoreValues) {
       if (changedScoreValue.deleted) {
@@ -318,7 +257,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
           (x) =>
             !(
               x.number === changedScoreValue.number &&
-              x.musicFolderName === changedScoreValue.musicFolderName
+              x.musicFolderId === changedScoreValue.musicFolderId
             ),
         );
       } else {
@@ -326,14 +265,14 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       }
     }
 
-    this.scoreData.next(newData);
+    this.scoreData$.next(newData);
   }
   #storeNewGroupValue(newValue: ScoreFolderEntry): void {
     // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
-    const currentValues = this.scoreData.getValue();
+    const currentValues = this.scoreData$.getValue();
     if (
       currentValues.find(
-        (x) => x.number === newValue.number || x.musicFolderName === newValue.musicFolderName,
+        (x) => x.number === newValue.number || x.musicFolderId === newValue.musicFolderId,
       )
     ) {
       this.#snackbarService.raiseError(
@@ -346,15 +285,15 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
     if (
       this.#changedScoreValues.find(
-        (x) => x.number === newValue.number || x.musicFolderName === newValue.musicFolderName,
+        (x) => x.number === newValue.number || x.musicFolderId === newValue.musicFolderId,
       )
     ) {
       this.#changedScoreValues = this.#changedScoreValues.filter(
-        (x) => !(x.number === newValue.number || x.musicFolderName === newValue.musicFolderName),
+        (x) => !(x.number === newValue.number || x.musicFolderId === newValue.musicFolderId),
       );
     } else {
       this.#changedScoreValues.push({
-        musicFolderName: newValue.musicFolderName,
+        musicFolderId: newValue.musicFolderId,
         number: newValue.number,
       });
     }
@@ -365,13 +304,13 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     if (
       this.#changedScoreValues.find(
         (x) =>
-          x.number === deletedValue.number && x.musicFolderName === deletedValue.musicFolderName,
+          x.number === deletedValue.number && x.musicFolderId === deletedValue.musicFolderId,
       )
     ) {
       // Wenn die gelöschte Gruppe bereits in den Änderungen enthalten ist, muss sie entfernt werden, da sie sonst fälschlicherweise als neue Gruppe interpretiert werden könnte
       this.#changedScoreValues = this.#changedScoreValues.filter(
         (x) =>
-          !(x.number === deletedValue.number && x.musicFolderName === deletedValue.musicFolderName),
+          !(x.number === deletedValue.number && x.musicFolderId === deletedValue.musicFolderId),
       );
     } else {
       // Wenn die gelöschte Gruppe nicht in den Änderungen enthalten ist, muss sie mit dem "deleted"-Flag gespeichert werden, damit sie beim Speichern gelöscht wird
@@ -385,7 +324,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   }
 
   storeNewFolderChange(value: VmValidFormTypes): void {
-    this.#folderEntry.musicFolderName = String(value);
+    this.#folderEntry.musicFolderId = Number(value);
   }
 
   execActionFromRow(score: VmRowClickedEvent<ScoreFolderEntry>): void {

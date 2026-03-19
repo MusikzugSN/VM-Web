@@ -11,9 +11,24 @@
   [columns]="columns"
   [filterTerm]="searchterm()"
   [templates]="[
-    { keys: ['customActions'], templateRef: actionTemplate }
+    { keys: ['customActions'], templateRef: actionTemplate },
+    { keys: ['folders'], templateRef: foldersTemplate }
   ]"
 />
+
+<ng-template #foldersTemplate let-rowDataRaw="rowData">
+  @let folder = folderById();
+  @let rowData = rowDataRaw | as: ScoreType;
+  @for (scoreFoder of rowData.musicFolders; track $index) {
+    {{ (folder[scoreFoder.musicFolderId]?.name ?? 'N/A') }}
+    @if (scoreFoder.number) {
+      {{ ' (' + scoreFoder.number + ')' }}
+    }
+    @if (!$last) {
+      ,
+    }
+  }
+</ng-template>
 
 <ng-template #actionTemplate let-rowData="rowData">
   <vmc-icon-button

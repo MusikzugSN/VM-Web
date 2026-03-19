@@ -3,7 +3,7 @@ import { BaseCrudService, IMetaData } from '@vm-utils';
 import {Observable} from 'rxjs';
 
 export interface ScoreFolderEntry {
-  musicFolderName: string;
+  musicFolderId: number;
   number: number;
   deleted?: boolean;
 }
@@ -14,7 +14,7 @@ export interface Score extends IMetaData {
   composer: string;
   link?: string;
   duration?: number;
-  folders: ScoreFolderEntry[];
+  musicFolders: ScoreFolderEntry[];
 }
 
 export interface CreateMultipleScore {
@@ -26,11 +26,15 @@ export interface CreateMultipleScore {
   number?: string;
 }
 
+interface ScoreQueryParams {
+  includeSheets?: boolean;
+  includeMusicFolders?: boolean;
+}
 
 @Injectable({
   providedIn: 'root',
 })
-export class ScoreService extends BaseCrudService<Score> {
+export class ScoreService extends BaseCrudService<Score, Score, ScoreQueryParams> {
   override url: string = 'score';
 
   createMultiple$(data: CreateMultipleScore[]): Observable<Score[]> {
