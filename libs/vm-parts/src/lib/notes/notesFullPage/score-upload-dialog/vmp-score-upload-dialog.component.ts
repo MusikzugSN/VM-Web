@@ -2,8 +2,7 @@ import {Component, inject, Signal} from '@angular/core';
 import {
   FileData,
   VmcFileUploader,
-  VmcInputField,
-  VmFormField, VmSelectOption, VmValidFormTypes,
+  VmSelectOption, VmValidFormTypes,
 } from '@vm-components';
 import {BehaviorSubject, firstValueFrom, map, Observable, shareReplay} from 'rxjs';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
@@ -17,7 +16,7 @@ import {VmcSelect} from '@vm-components';
 
 @Component({
   selector: 'app-score-upload-step',
-  imports: [VmcInputField, VmcFileUploader, AsyncPipe, VmcSelect],
+  imports: [VmcFileUploader, AsyncPipe, VmcSelect],
   templateUrl: './vmp-score-upload-dialog.component.html',
   styleUrl: './vmp-score-upload-dialog.component.scss',
 })
@@ -32,22 +31,10 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
   #voiceIdToFilePath$ = new BehaviorSubject<Dictionary<string>>({});
   #scoreId = new BehaviorSubject<string | undefined>(undefined);
 
-  scoreFieldPlaceholder: VmFormField = {
-    type: 'select',
-    label: 'Stück',
-    key: 'scoreId',
-    options: []
-  };
-
-  scoreField$: Observable<VmFormField> = this.#scoreService.load$().pipe(map(x => {
-    return {
-      key: 'scoreId',
-      label: 'Stück',
-      type: 'select',
-      enableSearch: true,
-      options: x.map(s => ({ label: s.title, value: s.scoreId.toString() })),
-    };
-  }));
+  scoreOptions$: Observable<VmSelectOption[]> = this.#scoreService.load$().pipe(
+    map(x => x.map(s => ({ label: s.title, value: s.scoreId.toString() }))),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
   voices$ = this.#voiceService.load$({ includeInstrumentName: true })
     .pipe(shareReplay({ bufferSize: 1, refCount: true}), map(x => {
