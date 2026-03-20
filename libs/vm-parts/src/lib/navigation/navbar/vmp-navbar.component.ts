@@ -4,7 +4,7 @@ import {filter, map} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
 import {ConfigService, CurrentRouteService} from '@vm-utils';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {PermissionService, PermissionType} from '@vm-utils/services';
+import {LoginConfigService, PermissionService, PermissionType} from '@vm-utils/services';
 
 @Component({
   selector: 'vmp-navbar',
@@ -15,7 +15,19 @@ import {PermissionService, PermissionType} from '@vm-utils/services';
 export class VmpNavbar {
   readonly #currentRouteService = inject(CurrentRouteService);
   readonly #config = inject(ConfigService);
+  readonly #loginConfigService = inject(LoginConfigService);
   readonly #permissionService = inject(PermissionService);
+
+  loginConfig = toSignal(this.#loginConfigService.settings$);
+  displayText = computed(() => {
+    const settings = this.loginConfig();
+    console.log('toolbar', settings);
+    if (settings === undefined) {
+      return '';
+    }
+
+    return settings.navigationBarText;
+  })
 
   isLoggedIn: InputSignal<boolean> = input(false);
   logoutClicked = output<boolean>();
