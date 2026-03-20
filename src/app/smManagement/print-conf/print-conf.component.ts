@@ -128,9 +128,9 @@ export class PrintConfComponent {
         ({
           type: 'select',
           label: 'Dateiformat',
-          key: nameOf<Printconf>('fileformat'),
+          key: nameOf<Printconf>('fileFormat'),
           required: true,
-          value: selectedConfig?.fileformat ?? '',
+          value: selectedConfig?.fileFormat ?? '',
           options: [
             { label: 'A4', value: '4' },
             { label: 'A3', value: '3' },
@@ -143,7 +143,7 @@ export class PrintConfComponent {
     value: '',
   };
   fileFormatFieldPlaceholder: VmFormField = {
-    key: nameOf<Printconf>('fileformat'),
+    key: nameOf<Printconf>('fileFormat'),
     label: 'Dateiformat',
     type: 'select',
     required: true,
