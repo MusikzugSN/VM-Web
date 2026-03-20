@@ -1,3 +1,4 @@
+<div>
 <vmc-toolbar [items]="items" [useNgContentForRightside]="true">
   <vmc-input-field
     [formField]="suchleiste"
@@ -33,3 +34,4 @@
   @let rowData = rowDataRaw | as: FolderType;
   {{ groups[rowData.groupId]?.name ?? 'N/A' }}
 </ng-template>
+</div>

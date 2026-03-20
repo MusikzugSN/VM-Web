@@ -1,19 +1,25 @@
-
-import {map, Observable} from 'rxjs';
-import {inject} from '@angular/core';
-import {ConfigService} from '@vm-utils';
+import { map, Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { ConfigService } from '@vm-utils';
 import { HttpClient } from '@angular/common/http';
 
-export interface VoicePageRangeDTO {
+export interface ScorePageRangeDTO {
+  scoreId: number;
+  fromPage: number;
+  toPage: number;
+}
+
+export interface ScoreVoicePageRangeDTO {
+  scoreId: number;
   voiceId: number;
   fromPage: number;
   toPage: number;
 }
 
-export interface CropPdfByVoicesRequest {
-  scoreId: number;
+export interface CropPdfSeparateRangesRequest {
   file: File;
-  ranges: VoicePageRangeDTO[];
+  scoreRanges: ScorePageRangeDTO[];
+  voiceRanges: ScoreVoicePageRangeDTO[];
 }
 
 export class NotesViewerService {
@@ -21,14 +27,15 @@ export class NotesViewerService {
   readonly #httpClient = inject(HttpClient);
 
   hostedUrl$: Observable<string> = this.#config.config$.pipe(
-    map(x => x?.backedApiUrl + '/PdfViewer'));
+    map((x) => x?.backedApiUrl + '/PdfViewer'),
+  );
 
-  cropPdfByVoices$(req: CropPdfByVoicesRequest): Observable<unknown> {
+  cropPdfByScoreVoices$(req: CropPdfSeparateRangesRequest): Observable<unknown> {
     const form = new FormData();
-    form.append('ScoreId', req.scoreId.toString());
     form.append('File', req.file, req.file.name);
-    form.append('RangesJson', JSON.stringify(req.ranges));
+    form.append('ScoreRangesJson', JSON.stringify(req.scoreRanges));
+    form.append('VoiceRangesJson', JSON.stringify(req.voiceRanges));
 
-    return this.#httpClient.post('pdf/crop-by-voices', form)
+    return this.#httpClient.post('pdf/crop-by-pdf', form);
   }
 }

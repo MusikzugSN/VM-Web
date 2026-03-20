@@ -18,6 +18,7 @@ import { VmpNotesFullpageDialogService } from './vmp-notes-fullPage-dialog.servi
 import {VoiceService} from '@vm-utils/services';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
+import { Router } from '@angular/router';
 
 export interface AllNotesData {
   notesId: number;
@@ -46,10 +47,25 @@ export class VmpNotesFullPageComponent {
   readonly #printService = inject(VmpNotesFullpageDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
   readonly #voiceService = inject(VoiceService);
+  readonly #router = inject(Router);
 
   #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true}), { initialValue: [] });
 
   #selectedIds$ = new BehaviorSubject<number[]>([]);
+
+  rowActions = computed<VmRowAction[]>(() => {
+    const extraActions = this.zusatzAktion();
+
+    if (this.#router.url.startsWith('/me')) {
+      return extraActions;
+    }
+
+    return [
+      { key: 'edit', icon: 'edit' },
+      { key: 'delete', icon: 'delete' },
+      ...extraActions,
+    ];
+  });
 
   filter = computed<VmFormField>(() => {
     const voiceOptions = this.#voices()
@@ -79,30 +95,29 @@ export class VmpNotesFullPageComponent {
     this.buttonClicked.emit(action.key);
   }
 
-  toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(map(x => {
-    const toolbarItems = [
+  toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(map((x) => {
+    const toolbarItems: VmToolbarItem[] = [
       {
         key: 'addNotes',
         icon: 'add',
         label: 'Notenblatt hinzufügen',
         action: async (): Promise<void> => {
           const result = await this.#printService.openAddNoteSheetDialog();
-          if (result)
-            this.itemAdded.emit(true);
+          if (result) this.itemAdded.emit(true);
         },
       },
-      {
+    ];
+    if (this.#router.url.startsWith('/scores')) {
+      toolbarItems.push({
         key: 'addMoreNotes',
         icon: 'add',
-        label: 'Hochladen und Aufteilen von Notenblättern',
+        label: 'Hochladen und aufteilen von Notenblättern',
         action: async (): Promise<void> => {
           const result = await this.#printService.openAddMoreNoteSheetDialog();
-          if (result)
-            this.itemAdded.emit(true);
-        }
-      }
-    ]
-
+          if (result) this.itemAdded.emit(true);
+        },
+      });
+    }
     if (x.length > 0) {
       toolbarItems.push({
           key: 'download',

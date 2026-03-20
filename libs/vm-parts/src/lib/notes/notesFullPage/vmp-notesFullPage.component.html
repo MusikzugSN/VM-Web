@@ -17,15 +17,6 @@
   [selectionMode]="'multi'"
   [selectionKey]="'notesId'"
   (selectionChanged)="selectionChanged($event)"
-  [rowActions]="[
-   {
-     key: 'edit',
-     icon: 'edit',
-      },
-    {
-     key: 'delete',
-     icon: 'delete',
-     },
-    ]"
+  [rowActions]="rowActions()"
   (clickedAction)="execAction($event)"
     />

@@ -69,7 +69,7 @@ export class PrintConfComponent {
   }
 
   selectoptions: VmSelectOption[] = [
-    { label: 'Exact', value: '0' },
+    { label: 'Genau', value: '0' },
     { label: 'Über', value: '1' },
     { label: 'Unter', value: '2' },
   ];
