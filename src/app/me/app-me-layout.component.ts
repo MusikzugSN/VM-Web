@@ -30,13 +30,16 @@ export class AppMeLayout {
       };
     }));
 
-  tagItems: VmSidebarGroup = {
-    groupName: 'Tags',
-    items: this.#tagsService.tagListe.map((tag) => ({
-      name: tag.name,
-      route: `/me/tag/${tag.tagId}`,
+  tagGroup$: Observable<VmSidebarGroup> = this.#tagsService.loadForMyArea$()
+    .pipe(map(tags => {
+      return {
+        groupName: 'Tags',
+        items: tags.map((tag) => ({
+          name: tag.name,
+          route: `/me/tags/${tag.tagId}`,
+        }))
+      }
     }))
-  };
 
   folderGroup$: Observable<VmSidebarGroup> = this.#foldersService.loadForMyArea$()
     .pipe(map(folders => {
@@ -49,8 +52,8 @@ export class AppMeLayout {
         };
     }));
 
-  sidebarItems$: Observable<VmSidebarGroup[]> = combineLatest([this.folderGroup$, this.eventGroup$])
-    .pipe(map(([folderGroup, eventGroup]) => [folderGroup, eventGroup, this.tagItems]));
+  sidebarItems$: Observable<VmSidebarGroup[]> = combineLatest([this.folderGroup$,this.tagGroup$, this.eventGroup$])
+    .pipe(map(([folderGroup, eventGroup, tagGroup]) => [folderGroup, eventGroup, tagGroup]));
 
 
 }

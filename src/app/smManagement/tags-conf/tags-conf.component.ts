@@ -10,14 +10,15 @@ import {
   VmToolbarItem,
   VmValidFormTypes,
 } from '@vm-components';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, switchMap } from 'rxjs';
 import { TagDialogService } from './tags-conf-dialog.service';
 import { AllNotesData } from '@vm-parts';
 import { Tag, TagsService } from '@vm-utils/services';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-tags-conf.component',
-  imports: [VmcDataGrid, VmcInputField, VmcToolbar],
+  imports: [VmcDataGrid, VmcInputField, VmcToolbar, AsyncPipe],
   templateUrl: './tags-conf.component.html',
   styleUrl: './tags-conf.component.scss',
 })
@@ -27,8 +28,7 @@ export class TagsConfComponent {
 
   #reload = new BehaviorSubject(false);
   tagService = inject(TagsService);
-
-  tagListe = this.tagService.tagListe;
+  tagListe$ = this.#reload.pipe(switchMap((_) => this.tagService.load$()));
 
   items: VmToolbarItem[] = [
     {
@@ -80,8 +80,20 @@ export class TagsConfComponent {
 
   column: VmColumn<Tag>[] = [
     { key: 'name', header: 'Name', field: 'name', filterable: true },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date', filterable: true },
-    { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', type: 'date', filterable: true },
+    {
+      key: 'updatedAt',
+      header: 'Bearbeiten am',
+      field: 'updatedAt',
+      type: 'date',
+      filterable: true,
+    },
+    {
+      key: 'updatedBy',
+      header: 'Bearbeitet von',
+      field: 'updatedBy',
+      type: 'date',
+      filterable: true,
+    },
   ];
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

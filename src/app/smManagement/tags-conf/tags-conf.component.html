@@ -8,7 +8,7 @@
 
 <vmc-data-grid
   [paginator]="[5, 10, 20]"
-  [dataSource]="tagListe ?? []"
+  [dataSource]="(tagListe$ | async) ?? []"
   [columns]="column"
   [filterTerm]="searchterm()"
   [rowActions]="[
