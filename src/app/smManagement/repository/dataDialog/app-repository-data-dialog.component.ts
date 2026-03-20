@@ -56,9 +56,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
 
   scoreData$: BehaviorSubject<ScoreFolderEntry[]> = new BehaviorSubject<ScoreFolderEntry[]>(this.#data?.musicFolders ?? []);
   #folders$: Observable<Folder[]> = this.#foldersService.load$();
+  #scoresWithFolders = toSignal(this.#scoreService.load$({ includeMusicFolders: true }), { initialValue: [] as Score[] });
 
   #changedValues: Dictionary<string> = {};
-  #changedValuesFolderEntry: Dictionary<VmValidFormTypes | boolean | ScoreFolderEntry[]> = {};
   #changedScoreValues: ScoreFolderEntry[] = [];
   durationDisplay = '';
 
@@ -133,7 +133,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   ];
 
   #folderEntry: ScoreFolderEntry = {
-    number: '-1',
+    number: this.#computeNextNumber(this.#data?.musicFolders ?? []),
     musicFolderId: -1,
   };
 
@@ -148,7 +148,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       const usedFolderIds = new Set(setFolders.map((x) => x.musicFolderId));
       return folders.filter((folder) => !usedFolderIds.has(folder.musicFolderId));
     }),
-    map((folders) => folders.map((folder) => ({ label: folder.name, value: folder.name }))),
+    map((folders) =>
+      folders.map((folder) => ({ label: folder.name, value: folder.musicFolderId.toString() })),
+    ),
   );
 
   folderOptions = toSignal<VmSelectOption[], VmSelectOption[]>(this.#foldersOptions$, {
@@ -189,6 +191,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       ) as Partial<Score>;
 
       if (x === 'save') {
+        if (this.#changedScoreValues.length > 0) {
+          patch.musicFolders = this.#changedScoreValues;
+        }
         patch.scoreId = this.#data?.scoreId ?? -1;
         await firstValueFrom(this.#scoreService.change$(patch, patch.scoreId));
         super.closeDialog(true);
@@ -197,6 +202,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
 
       if (x === 'create') {
         try {
+          if (this.#changedScoreValues.length > 0) {
+            patch.musicFolders = this.#changedScoreValues;
+          }
           await firstValueFrom(this.#scoreService.create$(patch));
         } catch (err: unknown) {
           const httpErr = err as { status?: number };
@@ -240,15 +248,29 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   storeChangedValue(value: string | number, key: string): void {
     this.#changedValues[key] = value.toString();
   }
-  storeChangedScoreValue(
-    newValue: VmValidFormTypes | boolean | ScoreFolderEntry[],
-    key: string,
-  ): void {
-    this.#changedValuesFolderEntry[key] = newValue;
-  }
-  #storeChangedScoreValues(): void {
-    this.storeChangedScoreValue(this.#changedScoreValues, nameOf<ScoreFolderEntry>('number'));
 
+  #computeNextNumber(entries: ScoreFolderEntry[]): string {
+    const numbers = entries
+      .map((x) => Number(x.number))
+      .filter((x) => !Number.isNaN(x))
+      .sort((a, b) => a - b);
+    const maxNumber = numbers[numbers.length - 1] ?? 0;
+    return (maxNumber + 1).toString();
+  }
+
+  #computeNextNumberForFolder(folderId: number): string {
+    const maxNumber = this.#scoresWithFolders()
+      .flatMap((score) => score.musicFolders ?? [])
+      .filter((entry) => entry.musicFolderId === folderId)
+      .map((entry) => Number(entry.number))
+      .filter((value) => !Number.isNaN(value))
+      .sort((a, b) => a - b)
+      .at(-1) ?? 0;
+
+    return (maxNumber + 1).toString();
+  }
+
+  #storeChangedScoreValues(): void {
     const oldData = this.#data?.musicFolders ?? [];
     let newData = [...oldData];
     for (const changedScoreValue of this.#changedScoreValues) {
@@ -266,13 +288,20 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     }
 
     this.scoreData$.next(newData);
+    this.#folderEntry.number = this.#computeNextNumber(newData.filter((x) => !x.deleted));
   }
   #storeNewGroupValue(newValue: ScoreFolderEntry): void {
+    const normalizedNumber = newValue.number.trim();
+    const normalizedValue: ScoreFolderEntry = {
+      ...newValue,
+      number: normalizedNumber,
+    };
+
     // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
     const currentValues = this.scoreData$.getValue();
     if (
       currentValues.find(
-        (x) => x.number === newValue.number || x.musicFolderId === newValue.musicFolderId,
+        (x) => x.number === normalizedValue.number || x.musicFolderId === normalizedValue.musicFolderId,
       )
     ) {
       this.#snackbarService.raiseError(
@@ -285,16 +314,20 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
     if (
       this.#changedScoreValues.find(
-        (x) => x.number === newValue.number || x.musicFolderId === newValue.musicFolderId,
+        (x) => x.number === normalizedValue.number || x.musicFolderId === normalizedValue.musicFolderId,
       )
     ) {
       this.#changedScoreValues = this.#changedScoreValues.filter(
-        (x) => !(x.number === newValue.number || x.musicFolderId === newValue.musicFolderId),
+        (x) =>
+          !(
+            (x.number === normalizedValue.number || x.musicFolderId === normalizedValue.musicFolderId) &&
+            x.deleted
+          ),
       );
     } else {
       this.#changedScoreValues.push({
-        musicFolderId: newValue.musicFolderId,
-        number: newValue.number,
+        musicFolderId: normalizedValue.musicFolderId,
+        number: normalizedValue.number,
       });
     }
 
@@ -314,17 +347,22 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       );
     } else {
       // Wenn die gelöschte Gruppe nicht in den Änderungen enthalten ist, muss sie mit dem "deleted"-Flag gespeichert werden, damit sie beim Speichern gelöscht wird
+      deletedValue.deleted = true;
       this.#changedScoreValues.push(deletedValue);
     }
     this.#storeChangedScoreValues();
   }
 
   storeNewNumberChange(value: VmValidFormTypes): void {
-    this.#folderEntry.number = String(value);
+    this.#folderEntry.number = String(value).trim();
   }
 
   storeNewFolderChange(value: VmValidFormTypes): void {
     this.#folderEntry.musicFolderId = Number(value);
+
+    if (this.#folderEntry.musicFolderId > 0) {
+      this.#folderEntry.number = this.#computeNextNumberForFolder(this.#folderEntry.musicFolderId);
+    }
   }
 
   execActionFromRow(score: VmRowClickedEvent<ScoreFolderEntry>): void {
@@ -334,9 +372,15 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       }
       this.#storeDeletedScoreValue(score.rowData);
     } else if (score.key === 'add') {
-      if (this.#folderEntry.number !== '-1') {
-        this.#storeNewGroupValue(this.#folderEntry);
-      } // todo far: handle error
+      if (this.#folderEntry.musicFolderId === -1) {
+        return;
+      }
+
+      if (!this.#folderEntry.number || this.#folderEntry.number === '-1') {
+        this.#folderEntry.number = this.#computeNextNumberForFolder(this.#folderEntry.musicFolderId);
+      }
+
+      this.#storeNewGroupValue(this.#folderEntry);
     }
   }
 }

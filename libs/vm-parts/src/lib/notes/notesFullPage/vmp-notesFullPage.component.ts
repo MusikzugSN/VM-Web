@@ -39,7 +39,6 @@ export interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
-  zusatzAktion: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
   buttonClicked = output<string>();
   itemAdded = output<boolean>();
   voiceFilterChanged = output<number>();
@@ -54,16 +53,13 @@ export class VmpNotesFullPageComponent {
   #selectedIds$ = new BehaviorSubject<number[]>([]);
 
   rowActions = computed<VmRowAction[]>(() => {
-    const extraActions = this.zusatzAktion();
-
     if (this.#router.url.startsWith('/me')) {
-      return extraActions;
+      return [];
     }
 
     return [
       { key: 'edit', icon: 'edit' },
       { key: 'delete', icon: 'delete' },
-      ...extraActions,
     ];
   });
 
