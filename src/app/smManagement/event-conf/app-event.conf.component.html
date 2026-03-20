@@ -9,7 +9,7 @@
 <vmc-data-grid
   [dataSource]="(eventListe$ | async) ?? []"
   [columns]="column"
-  [paginator]="((eventListe$ | async) ?? []).length > 5 ? 10 : 5"
+  [paginator]="[5, 10, 20]"
   [filterTerm]="searchterm()"
   [rowActions]="[
     {

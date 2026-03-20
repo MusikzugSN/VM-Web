@@ -32,9 +32,7 @@ export class EventDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'save', text: 'Speichern', type: 'filled'},
       ],
-      dialogConfig: {
-        minWidth: 650
-      }
+
     });
   }
   async openNewEventDialog(): Promise<boolean | undefined> {
@@ -45,9 +43,7 @@ export class EventDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'create', text: 'Erstellen', type: 'filled' },
       ],
-      dialogConfig: {
-        minWidth: 650,
-      },
+
     });
   }
 

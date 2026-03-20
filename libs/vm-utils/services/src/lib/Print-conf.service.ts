@@ -6,7 +6,7 @@ export interface Printconf extends IMetaData {
   pageCount: number;
   mode: Mode;
   duplex: Duplex;
-  fileformat: number;
+  fileFormat: number;
 }
 export enum Mode {
   Exact = 0,

@@ -3,8 +3,10 @@
   <div class="data-container-top">
     <label class="text-normal">Stück auswählen</label>
 
-    <vmc-input-field
-      [formField]="(scoreField$ | async) ?? scoreFieldPlaceholder"
+    <vmc-select
+      [label]="'Stück'"
+      [options]="(scoreOptions$ | async) ?? []"
+      [enableSearch]="true"
       (inputChanged)="storeScoreId($event)"
     />
   </div>

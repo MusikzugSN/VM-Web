@@ -12,3 +12,4 @@ export * from './lib/auth.service';
 export * from './lib/config.service';
 export * from './lib/permission.service';
 export * from './lib/Print-conf.service';
+export * from './lib/loginConfig.service';

@@ -10,7 +10,7 @@
   [dataSource]="(folderListe$ | async) ?? []"
   [columns]="column"
   [filterTerm]="filterTerm()"
-  [paginator]="((folderListe$ | async) ?? []).length > 5 ? 10 : 5"
+  [paginator]="[5, 10, 20]"
   [templates]="[
     {
       keys: ['groupId'],
