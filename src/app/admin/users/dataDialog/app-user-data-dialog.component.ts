@@ -109,6 +109,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     required: true,
     value: this.#data?.username,
     placeholder: 'z. B. max.mustermann',
+    maxLength: 24,
   };
 
   // ToDo Florian: nur gennerieren

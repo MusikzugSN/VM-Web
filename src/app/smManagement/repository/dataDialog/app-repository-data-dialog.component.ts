@@ -85,6 +85,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     value: this.#data?.title ?? '',
     placeholder: 'z. B. Pirates of the Caribbean',
     required: true,
+    maxLength: 48,
   };
 
   composerField: VmFormField = {
@@ -94,6 +95,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     value: this.#data?.composer ?? '',
     placeholder: 'z. B. Hans Zimmer',
     required: true,
+    maxLength: 48,
   };
 
   linkField: VmFormField = {
@@ -102,6 +104,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     key: nameOf<Score>('link'),
     value: this.#data?.link ?? '',
     placeholder: 'z. B. https://youtube.com/',
+    maxLength: 255,
   };
 
   scoreColumns: VmColumn<ScoreFolderEntry>[] = [

@@ -103,6 +103,7 @@ export class AppEventDataDialog extends DialogBase<boolean> {
     required: true,
     value: this.#data?.name ?? '',
     placeholder: 'z. B. Die Schlager Camper',
+    maxLength: 24,
   };
 
   eventDateField: VmFormField = {

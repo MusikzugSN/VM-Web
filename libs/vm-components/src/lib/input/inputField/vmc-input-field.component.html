@@ -25,6 +25,7 @@
       [placeholder]="field.placeholder ?? ''"
       [readonly]="field.readonly ?? false"
       [required]="field.required ?? false"
+      [attr.maxlength]="field.maxLength ?? null"
       [ngModel]="field.value ?? ''"
       (input)="genericCallChangeEvent($event)"
     />

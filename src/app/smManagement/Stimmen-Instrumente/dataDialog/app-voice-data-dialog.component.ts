@@ -28,11 +28,12 @@ export class AppVoiceDataDialog extends DialogBase<boolean> {
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
 
   nameField: VmFormField = {
-    label: 'Name',
+    label: 'Nummer der Stimme',
     type: 'text',
     key: nameOf<Voice>('name'),
     value: this.#data?.voice?.name ?? '',
     placeholder: 'z. B. 1',
+    maxLength: 4,
   };
 
   instrumentField: VmFormField = {

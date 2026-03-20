@@ -88,6 +88,7 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     required: true,
     value: this.#data?.name,
     placeholder: 'z. B. 1. Mappe',
+    maxLength: 24,
   };
 
   numberOfScoreField$: Observable<VmFormField> = this.folderMusicSheetsData$.pipe(

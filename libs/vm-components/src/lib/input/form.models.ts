@@ -38,6 +38,7 @@ export interface VmInputField extends VmBaseField {
     | 'url';
   value?: VmValidFormTypes;
   placeholder?: string;
+  maxLength?: number;
 }
 
 export interface VmCheckboxField extends VmBaseField {

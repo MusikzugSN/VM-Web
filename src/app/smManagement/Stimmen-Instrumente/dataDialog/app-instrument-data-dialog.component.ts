@@ -30,6 +30,7 @@ export class AppInstrumentDataDialog extends DialogBase<boolean> {
     type: 'text',
     key: nameOf<Instrument>('name'),
     value: this.#data?.name ?? '',
+    maxLength: 48,
   };
 
   typeField: VmInputField = {
@@ -37,6 +38,7 @@ export class AppInstrumentDataDialog extends DialogBase<boolean> {
     type: 'text',
     key: nameOf<Instrument>('type'),
     value: this.#data?.type ?? '',
+    maxLength: 48,
   };
 
   #changedValues: Dictionary<string> = {};
