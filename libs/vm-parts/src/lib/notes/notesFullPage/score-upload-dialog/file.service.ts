@@ -42,6 +42,6 @@ export class FileService {
 
 
 
-    return this.#httpClient.post<any>('pdf/upload', form);
+    return this.#httpClient.post<any>('musicSheet/upload', form);
   }
 }
