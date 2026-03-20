@@ -7,7 +7,7 @@
 </vmc-toolbar>
 
 <vmc-data-grid
-  [paginator]="(tagListe  ?? []).length > 5 ? 10 : 5"
+  [paginator]="[5, 10, 20]"
   [dataSource]="tagListe ?? []"
   [columns]="column"
   [filterTerm]="searchterm()"

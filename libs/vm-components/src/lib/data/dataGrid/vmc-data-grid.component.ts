@@ -28,7 +28,7 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import { DatePipe, NgTemplateOutlet} from '@angular/common';
 import { Dictionary } from '@vm-utils';
 import { MatIconButton } from '@angular/material/button';
@@ -111,7 +111,27 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   selectionMode: InputSignal<VmSelectType> = input<VmSelectType>('none');
   selectionKey: InputSignal<keyof TRow | undefined> = input<keyof TRow | undefined>(undefined);
   filterTerm: InputSignal<string | undefined> = input<string | undefined>(undefined);
-  paginator: InputSignal<number | undefined> = input<number | undefined>(undefined);
+  paginator: InputSignal<number[]> = input<number[]>([]);
+
+  pageSizeOptions = computed(() => {
+    const options = this.paginator() ?? [];
+    return [...new Set(options.filter((x) => Number.isFinite(x) && x > 0).map((x) => Math.floor(x)))].sort((a, b) => a - b);
+  });
+
+  defaultPageSize = computed<number>(() => {
+    const options = this.pageSizeOptions();
+    if (options.length === 0) {
+      return 0;
+    }
+
+    const rows = this.dataSource()?.length ?? 0;
+    const matching = options.filter((x) => x <= rows);
+    if (matching.length > 0) {
+      return matching[matching.length - 1] ?? 0;
+    }
+
+    return options[0] ?? 0;
+  });
 
   clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
   selectionChanged: OutputEmitterRef<TSelectionKey[]> = output();
@@ -182,7 +202,33 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       if(paginator) {
         this.tableData.paginator = paginator;
       }
-    })
+    });
+
+    effect(() => {
+      const paginator = this.paginatorElement();
+      const defaultPageSize = this.defaultPageSize();
+
+      if (!paginator || defaultPageSize <= 0) {
+        return;
+      }
+
+      if (paginator.pageSize === defaultPageSize) {
+        return;
+      }
+
+      const previousPageIndex = paginator.pageIndex;
+      paginator.pageSize = defaultPageSize;
+      paginator.pageIndex = 0;
+
+      const event: PageEvent = {
+        pageIndex: paginator.pageIndex,
+        previousPageIndex,
+        pageSize: paginator.pageSize,
+        length: this.tableData.data.length,
+      };
+
+      paginator.page.emit(event);
+    });
   }
 
   toggleRowSelection(row: TRow): void {
