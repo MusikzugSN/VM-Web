@@ -16,7 +16,9 @@ export class VoiceDialogService {
   async openAddVoiceDialog(): Promise<boolean | undefined> {
     const [instruments, voices] = await Promise.all([
       firstValueFrom(this.#instrumentService.load$()),
-      firstValueFrom(this.#voiceService.load$({ includeInstrumentName: true })),
+      firstValueFrom(
+        this.#voiceService.load$({ includeInstrumentName: true, includeAlternateVoices: true }),
+      ),
     ]);
 
     const instrumentOptions = instruments.map((i) => ({
@@ -48,8 +50,12 @@ export class VoiceDialogService {
   async openEditVoiceDialog(data: Voice): Promise<boolean | undefined> {
     const [instruments, voices] = await Promise.all([
       firstValueFrom(this.#instrumentService.load$()),
-      firstValueFrom(this.#voiceService.load$({ includeInstrumentName: true })),
+      firstValueFrom(
+        this.#voiceService.load$({ includeInstrumentName: true, includeAlternateVoices: true }),
+      ),
     ]);
+
+    const selectedVoice = voices.find((voice) => voice.voiceId === data.voiceId) ?? data;
 
     const instrumentOptions = instruments.map((i) => ({
       label: i.name,
@@ -66,7 +72,7 @@ export class VoiceDialogService {
     return this.#dialogService.open<boolean, VoiceDialogData>(AppVoiceDataDialog, {
       title: 'Stimme bearbeiten',
       data: {
-        voice: data,
+        voice: selectedVoice,
         instrumentOptions,
         alternativeVoiceOptions,
       },
