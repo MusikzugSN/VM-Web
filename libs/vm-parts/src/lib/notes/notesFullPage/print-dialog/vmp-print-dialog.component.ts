@@ -1,52 +1,85 @@
 import {Component, inject} from '@angular/core';
 import {PrintService} from './print.service';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
-import { map, Observable} from 'rxjs';
-import {VmcInputField, VmFormField, VmSelect} from '@vm-components';
-import {AsyncPipe} from '@angular/common';
+import { firstValueFrom, Observable} from 'rxjs';
+import {VmcInputField, VmCheckboxValues, VmFormField, VmValidFormTypes} from '@vm-components';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { Dictionary } from '@vm-utils';
+
+interface PrintDialogData {
+  selectedIds?: number[];
+}
+
 @Component({
   selector: 'vmp-print-dialog',
-  imports: [
-    VmcInputField,
-    AsyncPipe
-  ],
+  imports: [VmcInputField],
   templateUrl: './vmp-print-dialog.component.html',
   styleUrl: './vmp-print-dialog.component.scss',
 })
 export class VmpPrintDialog extends DialogBase<boolean> {
-  readonly _data = inject<undefined>(DIALOG_DATA);
+  readonly #data = inject<PrintDialogData | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-
-
   readonly #printService = inject(PrintService);
+
+  #changedValues: Dictionary<boolean> = {};
+
+  marschbuchField: VmFormField = {
+    label: 'Marschbuch',
+    type: 'checkbox',
+    key: 'marschbuch',
+    value: 'unchecked',
+    labelPosition: 'before',
+  };
 
   constructor() {
     super();
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
+      if (x === 'print') {
+        const selectedIds = this.#data?.selectedIds ?? [];
+        if (selectedIds.length === 0) {
+          super.closeDialog(false);
+          return;
+        }
+
+        const marschbuch = this.#changedValues['marschbuch'] ?? false;
+        const token = await firstValueFrom(this.#printService.createPrintUrl$(selectedIds, marschbuch));
+        const file = await firstValueFrom(this.#printService.downloadByToken$(token));
+
+        this.#printPdf(file);
+        super.closeDialog(true);
+        return;
+      }
+
       if (x === 'close') {
         super.closeDialog(false);
       }
     });
   }
 
-  printer$ = this.#printService.getPrinters$();
-  selector$ = this.printer$.pipe(map(x => {
-    return {
-      key: 'printer',
-      type: 'select',
-      label: 'Drucker',
-      options: x.map(printer => ({ value: printer.name, label: printer.name })),
-      required: true,
-    } as VmSelect;
-  }));
+  storeBooleanChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
+    this.#changedValues[key] = this.#checkboxToBool(newValue);
+  }
 
-  selectorPlaceholder: VmFormField = {
-    type: 'select',
-    key: 'printer',
-    label: 'Drucker',
-    options: [],
-    required: true,
-  };
+  #checkboxToBool(value: VmValidFormTypes | VmCheckboxValues): boolean {
+    return value === 'checked';
+  }
+
+  #printPdf(file: Blob): void {
+    const fileUrl = URL.createObjectURL(file);
+    const frame = document.createElement('iframe');
+    frame.style.display = 'none';
+    frame.src = fileUrl;
+
+    frame.onload = (): void => {
+      frame.contentWindow?.focus();
+      frame.contentWindow?.print();
+      setTimeout(() => {
+        URL.revokeObjectURL(fileUrl);
+        frame.remove();
+      }, 1000);
+    };
+
+    document.body.appendChild(frame);
+  }
 
 }
