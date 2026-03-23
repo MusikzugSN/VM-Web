@@ -36,6 +36,6 @@ export class NotesViewerService {
     form.append('ScoreRangesJson', JSON.stringify(req.scoreRanges));
     form.append('VoiceRangesJson', JSON.stringify(req.voiceRanges));
 
-    return this.#httpClient.post('pdf/crop-by-pdf', form);
+    return this.#httpClient.post('musicSheet/cropByVoices', form);
   }
 }

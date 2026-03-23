@@ -1,6 +1,6 @@
 <div class="flex-column" style="gap: 16px">
   <div style="display: flex; gap: 16px">
-    <div class="data-container flex-column">
+    <div class="data-container flex-column" style="flex-grow: 1">
       <label class="text-normal">Stimme konfigurieren</label>
       <vmc-input-field
         [formField]="nameField"
@@ -13,12 +13,45 @@
         [shouldInitChange]="false"
         (inputChanged)="storeChangedValue($event, 'instrumentId')"
       />
-
-      <vmc-input-field
-        [formField]="alternativeVoiceField"
-        [shouldInitChange]="false"
-        (inputChanged)="storeChangedValue($event, 'alternativeVoiceId')"
-      />
     </div>
+  </div>
+
+  <div class="data-container">
+    <label class="text-normal">Alternative Stimmen</label>
+    <vmc-data-grid
+      [columns]="alternativeVoiceColumns"
+      [rowActions]="alternativeVoiceActions"
+      [footerActions]="alternativeVoiceFooterActions"
+      [dataSource]="(alternativeVoicesData$ | async) ?? []"
+      [templates]="[
+        {
+          keys: ['alternativeVoice'],
+          templateRef: alternativeVoiceTemplate,
+        },
+        {
+          keys: ['alternativeVoiceFooter'],
+          templateRef: alternativeVoiceFooterTemplate,
+        },
+      ]"
+      (clickedAction)="execAlternativeVoiceAction($event)"
+    />
+
+    <ng-template #alternativeVoiceTemplate let-rowDataRaw="rowData">
+      @let rowData = rowDataRaw | as: VoiceAlternativeType;
+      {{ resolveAlternativeVoiceName(rowData.alternative) }}
+    </ng-template>
+
+    <ng-template #alternativeVoiceFooterTemplate>
+      <vmc-input-field
+        [formField]="{
+          label: 'Alternative Stimme',
+          key: 'alternativeVoiceId',
+          type: 'select',
+          options: alternativeVoiceOptions(),
+          enableSearch: true,
+        }"
+        (inputChanged)="storeNewAlternativeVoiceChange($event)"
+      />
+    </ng-template>
   </div>
 </div>

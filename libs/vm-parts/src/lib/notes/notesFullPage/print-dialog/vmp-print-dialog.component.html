@@ -1,1 +1,5 @@
-<vmc-input-field [formField]="(selector$ | async) ?? selectorPlaceholder"/>
+<vmc-input-field
+  [formField]="marschbuchField"
+  [shouldInitChange]="false"
+  (inputChanged)="storeBooleanChangedValue($event, 'marschbuch')"
+/>

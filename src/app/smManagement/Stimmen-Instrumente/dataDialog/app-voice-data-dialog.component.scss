@@ -1,9 +1,16 @@
 :host {
-  display: block;
-  box-sizing: border-box;
+  display: flex;
   overflow: visible;
 
+  vmc-input-field {
+    min-height: 56px;
+  }
+
   ::ng-deep {
+    .mat-mdc-table {
+      background-color: var(--vm-secondary-gray);
+    }
+
     .mat-mdc-dialog-content {
       overflow: visible;
     }
@@ -15,11 +22,8 @@
   flex-direction: column;
   border-radius: 10px;
   padding: 20px;
+  gap: 16px;
   background-color: var(--vm-secondary-gray);
-  flex-grow: 1;
-  gap: 12px;
-
-  vmc-input-field {
-    min-height: 56px;
-  }
+  overflow: visible;
 }
+

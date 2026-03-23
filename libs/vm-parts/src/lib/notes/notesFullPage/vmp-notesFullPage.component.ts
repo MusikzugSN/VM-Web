@@ -39,7 +39,6 @@ export interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
-  zusatzAktion: InputSignal<VmRowAction[]> = input<VmRowAction[]>([]);
   buttonClicked = output<string>();
   itemAdded = output<boolean>();
   voiceFilterChanged = output<number>();
@@ -54,16 +53,15 @@ export class VmpNotesFullPageComponent {
   #selectedIds$ = new BehaviorSubject<number[]>([]);
 
   rowActions = computed<VmRowAction[]>(() => {
-    const extraActions = this.zusatzAktion();
-
     if (this.#router.url.startsWith('/me')) {
-      return extraActions;
+      return [];
     }
 
     return [
+      { key: 'download', icon: 'file_download' },
+      { key: 'print', icon: 'print' },
       { key: 'edit', icon: 'edit' },
       { key: 'delete', icon: 'delete' },
-      ...extraActions,
     ];
   });
 
@@ -83,6 +81,16 @@ export class VmpNotesFullPageComponent {
     action: VmRowClickedEvent<AllNotesData>,
   ): Promise<void> {
     if (action.rowData === null) {
+      return;
+    }
+
+    if (action.key === 'download') {
+      this.#downloadFiles([action.rowData.notesId]);
+      return;
+    }
+
+    if (action.key === 'print') {
+      await this.#printService.openPrintDialog([action.rowData.notesId]);
       return;
     }
 
@@ -161,18 +169,27 @@ export class VmpNotesFullPageComponent {
 
   public downloadFile(): void {
     const selectedIds = this.#selectedIds$.getValue();
-    this.#downloadFileService.downloadFile(selectedIds).subscribe((response) => {
-      const fileName = response.headers.get('content-disposition')?.split(';')[1]?.split('=')[1];
+    this.#downloadFiles(selectedIds);
+  }
 
-      if (fileName == undefined) {
-        return;
-      }
+  #downloadFiles(ids: number[]): void {
+    this.#downloadFileService.downloadFile(ids).subscribe((response) => {
+      const headerName = response.headers
+        .get('content-disposition')
+        ?.split(';')
+        .map((x) => x.trim())
+        .find((x) => x.startsWith('filename='))
+        ?.split('=')[1]
+        ?.replace(/"/g, '');
+
+      const fileName = headerName ?? 'notenblaetter.pdf';
 
       const blob: Blob = response.body as Blob;
       const a = document.createElement('a');
       a.download = fileName;
       a.href = URL.createObjectURL(blob);
       a.click();
+      URL.revokeObjectURL(a.href);
     });
   }
 
