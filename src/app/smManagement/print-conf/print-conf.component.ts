@@ -6,15 +6,9 @@ import {
   VmToolbarItem,
   VmValidFormTypes,
 } from '@vm-components';
-import { PrintconfService, Printconf,Duplex} from '@vm-utils/services';
+import { PrintconfService, Printconf, Duplex, Mode } from '@vm-utils/services';
 import { convertToPatch, Dictionary, nameOf } from '@vm-utils';
-import {
-  BehaviorSubject,
-  combineLatest,
-  firstValueFrom,
-  map,
-  Observable, of,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
@@ -24,11 +18,12 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './print-conf.component.scss',
 })
 export class PrintConfComponent {
-  readonly printconfService = inject(PrintconfService);
-  // printconfs$: Observable<Printconf[]> = this.printconfService.load$();
-   printconfs$: Observable<Printconf[]> = of([]);
-  #changedValues: Dictionary<string> = {};
   #reload = new BehaviorSubject(false);
+  readonly printconfService = inject(PrintconfService);
+  printconfs$: Observable<Printconf[]> = this.#reload.pipe(
+    switchMap(() => this.printconfService.load$()),
+  );
+  #changedValues: Dictionary<string> = {};
 
   selectedConfigId$ = new BehaviorSubject<number | undefined>(undefined);
   selectedConfig$ = combineLatest([this.printconfs$, this.selectedConfigId$]).pipe(
@@ -68,6 +63,12 @@ export class PrintConfComponent {
     this.#reload.next(true);
   }
 
+  readonly modeSymbol: Record<number, string> = {
+    [Mode.Exact]: '',
+    [Mode.Over]: '>',
+    [Mode.Under]: '<',
+  };
+
   selectoptions: VmSelectOption[] = [
     { label: 'Genau', value: '0' },
     { label: 'Über', value: '1' },
@@ -82,7 +83,7 @@ export class PrintConfComponent {
           key: nameOf<Printconf>('pageCount'),
           label: 'Seitenanzahl',
           required: true,
-          value: selectedConfig?.pageCount ?? '',
+          value: selectedConfig?.pageCount ?? ''
         }) as VmFormField,
     ),
   );
@@ -93,6 +94,20 @@ export class PrintConfComponent {
     required: true,
     value: '',
   };
+
+  modeField = this.selectedConfig$.pipe(
+    map(
+      (selectedConfig) =>
+        ({
+          type: 'select',
+          label: 'Modus',
+          key: nameOf<Printconf>('mode'),
+          required: true,
+          value: selectedConfig?.mode?.toString() ?? '',
+          options: this.selectoptions,
+        }) as VmFormField
+    )
+  )
   duplexField = this.selectedConfig$.pipe(
     map(
       (selectedConfig) =>
@@ -101,7 +116,7 @@ export class PrintConfComponent {
           label: 'Duplex',
           key: nameOf<Printconf>('duplex'),
           required: true,
-          value: selectedConfig?.duplex ?? '',
+          value: selectedConfig?.duplex?.toString() ?? '',
           options: [
             { label: 'Nein', value: Duplex.No.toString() },
             { label: 'Lange Seite', value: Duplex.Long.toString() },
@@ -130,7 +145,7 @@ export class PrintConfComponent {
           label: 'Dateiformat',
           key: nameOf<Printconf>('fileFormat'),
           required: true,
-          value: selectedConfig?.fileFormat ?? '',
+          value: selectedConfig?.fileFormat?.toString() ?? '',
           options: [
             { label: 'A4', value: '4' },
             { label: 'A3', value: '3' },
@@ -164,4 +179,7 @@ export class PrintConfComponent {
   storeChangedValue(newValue: VmValidFormTypes, key: string): void {
     this.#changedValues[key] = newValue as string;
   }
+
+  protected readonly Duplex = Duplex;
+  protected readonly Mode = Mode;
 }

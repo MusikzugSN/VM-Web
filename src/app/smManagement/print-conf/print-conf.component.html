@@ -3,9 +3,11 @@
 
   <div class="content">
     <div class="config-list">
+      <label class="headline">Druckeinstellungen</label>
       @for (printconf of (printconfs$ | async) ?? []; track printconf.pageCount) {
         <button class="config-list__btn" (click)="selectConfig(printconf)">
-          {{ printconf.pageCount }}
+          {{ "Seite: " + (modeSymbol[printconf.mode] ? modeSymbol[printconf.mode] + ' ' : '') + printconf.pageCount }} <br>
+          {{ "A" + printconf.fileFormat + " - Duplex: " + Duplex[printconf.duplex] }}
         </button>
       }
     </div>
@@ -31,6 +33,7 @@
           class="field"
           [selectOptions]="selectoptions"
           [value]="(selectedConfig$ | async)?.mode?.toString()"
+          (buttonClicked)="storeChangedValue($event, 'mode')"
         />
       </div>
 
@@ -56,4 +59,4 @@
     </div>
   </div>
 </div>
-S
+
