@@ -7,7 +7,7 @@ export interface LoginConfigDto {
   oAuthDefaultGroup: number | null;
   oAuthDefaultRole: number | null;
   oAuthAllowPasswordLogin: boolean;
-  oAuthDisablePasswordLogin: boolean;
+  disablePasswordLogin: boolean;
   navigationBarText: string | null;
   useCustomImprint: boolean;
   customImpressumLink: string | null;
