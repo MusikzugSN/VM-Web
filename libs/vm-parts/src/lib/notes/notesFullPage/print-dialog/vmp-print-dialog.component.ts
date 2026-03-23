@@ -42,8 +42,8 @@ export class VmpPrintDialog extends DialogBase<boolean> {
         }
 
         const marschbuch = this.#changedValues['marschbuch'] ?? false;
-        const token = await firstValueFrom(this.#printService.createPrintUrl$(selectedIds, marschbuch));
-        const file = await firstValueFrom(this.#printService.downloadByToken$(token));
+        const downloadUrl = await firstValueFrom(this.#printService.createPrintDownloadUrl$(selectedIds, marschbuch));
+        const file = await firstValueFrom(this.#printService.downloadByUrl$(downloadUrl));
 
         this.#printPdf(file);
         super.closeDialog(true);

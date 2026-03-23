@@ -39,7 +39,7 @@ export interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
-  buttonClicked = output<string>();
+  buttonClicked = output<VmRowClickedEvent<AllNotesData>>();
   itemAdded = output<boolean>();
   voiceFilterChanged = output<number>();
 
@@ -53,14 +53,17 @@ export class VmpNotesFullPageComponent {
   #selectedIds$ = new BehaviorSubject<number[]>([]);
 
   rowActions = computed<VmRowAction[]>(() => {
-    if (this.#router.url.startsWith('/me')) {
+    const currentUrl = this.#router.url;
+    if (currentUrl.startsWith('/me')) {
       return [];
     }
+
+    const disableEdit = currentUrl.startsWith('/scores/unverified') || currentUrl.startsWith('/scores/folders');
 
     return [
       { key: 'download', icon: 'file_download' },
       { key: 'print', icon: 'print' },
-      { key: 'edit', icon: 'edit' },
+      ...(disableEdit ? [] : [{ key: 'edit', icon: 'edit' }]),
       { key: 'delete', icon: 'delete' },
     ];
   });
@@ -94,13 +97,7 @@ export class VmpNotesFullPageComponent {
       return;
     }
 
-    if(action.key === 'edit') {
-      //todo: Dialog öffnen
-
-      return;
-    }
-
-    this.buttonClicked.emit(action.key);
+    this.buttonClicked.emit(action);
   }
 
   toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(map((x) => {

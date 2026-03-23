@@ -1,9 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
 import { Score } from '@vm-utils/services';
+import { AllNotesData } from '@vm-parts';
 import { UnverifiedDataDialog } from './dataDialog/unverified-data-dialog.component';
 
 import { UnverifiedDeleteDialog } from './deleteDialog/unverified-delete-dialog.component';
+
+export interface DeleteNoteDialogData {
+  note: AllNotesData;
+}
 
 
 @Injectable({
@@ -22,7 +27,7 @@ export class UnverifiedDialogService {
       ],
     });
   }
-  async openDeleteScoreDialog(data: Score): Promise<boolean | undefined> {
+  async openDeleteScoreDialog(data: DeleteNoteDialogData): Promise<boolean | undefined> {
     return this.#dialogService.open(UnverifiedDeleteDialog, {
       data: data,
       title: 'Notenblatt löschen',
