@@ -1,5 +1,27 @@
-<vmc-input-field
-  [formField]="marschbuchField"
-  [shouldInitChange]="false"
-  (inputChanged)="storeBooleanChangedValue($event, 'marschbuch')"
-/>
+
+<div class="modal-overlay">
+  <div class="modal-card">
+    <div class="flex-column" style="gap: 16px">
+      <div style="display: flex; gap: 16px">
+        <div class="data-container flex-column">
+          <label class="text-normal">Druckoptionen</label>
+
+          <vmc-input-field
+            [formField]="(selector$ | async) ?? selectorPlaceholder"
+            [shouldInitChange]="false"
+            (inputChanged)="storePrinterChange($event)"
+          />
+          <vmc-input-field
+            [formField]="marschbuchField"
+            [shouldInitChange]="false"
+            (inputChanged)="storeBooleanChangedValue($event, 'marschbuch')"
+          />
+
+          <div style="padding: 8px 0; font-size: 14px;">
+            Dateien zum Drucken: {{ filestoPrint().length }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

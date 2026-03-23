@@ -37,7 +37,7 @@ export class VmpNotesFullpageDialogService {
       title: 'Mehrere Notenblätter hinzufügen',
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
-        { key: 'toViewer', text: 'Okay', type: 'filled' },
+        { key: 'toViewer', text: 'Weiter', type: 'filled' },
       ],
     });
   }

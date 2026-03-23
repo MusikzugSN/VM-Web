@@ -1,10 +1,11 @@
-import {Component, inject} from '@angular/core';
-import {PrintService} from './print.service';
-import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
-import { firstValueFrom, Observable} from 'rxjs';
-import {VmcInputField, VmCheckboxValues, VmFormField, VmValidFormTypes} from '@vm-components';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { AsyncPipe } from '@angular/common';
+import { Component, inject, input } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { VmcInputField, VmCheckboxValues, VmFormField, VmValidFormTypes } from '@vm-components';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { Dictionary } from '@vm-utils';
+import { firstValueFrom, map, Observable } from 'rxjs';
+import { PrintService } from './print.service';
 
 interface PrintDialogData {
   selectedIds?: number[];
@@ -12,7 +13,7 @@ interface PrintDialogData {
 
 @Component({
   selector: 'vmp-print-dialog',
-  imports: [VmcInputField],
+  imports: [VmcInputField, AsyncPipe],
   templateUrl: './vmp-print-dialog.component.html',
   styleUrl: './vmp-print-dialog.component.scss',
 })
@@ -21,7 +22,10 @@ export class VmpPrintDialog extends DialogBase<boolean> {
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #printService = inject(PrintService);
 
+  filestoPrint = input<{ url: string; filename: string }[]>([]);
+
   #changedValues: Dictionary<boolean> = {};
+  selectedPrinterName = '';
 
   marschbuchField: VmFormField = {
     label: 'Marschbuch',
@@ -31,10 +35,55 @@ export class VmpPrintDialog extends DialogBase<boolean> {
     labelPosition: 'before',
   };
 
+  printer$ = this.#printService.getPrinters$();
+
+  selector$ = this.printer$.pipe(
+    map((printers) => {
+      const defaultPrinter = printers.find((p) => p.is_default)?.name ?? printers[0]?.name ?? '';
+      if (!this.selectedPrinterName && defaultPrinter) {
+        this.selectedPrinterName = defaultPrinter;
+      }
+
+      return {
+        key: 'printer',
+        type: 'select',
+        label: 'Drucker',
+        options: printers.map((printer) => ({ value: printer.name, label: printer.name })),
+        value: this.selectedPrinterName || defaultPrinter || '',
+        required: true,
+      } as VmFormField;
+    }),
+  );
+
+  selectorPlaceholder: VmFormField = {
+    type: 'select',
+    key: 'printer',
+    label: 'Drucker',
+    options: [],
+    required: true,
+    value: '',
+  };
+
   constructor() {
     super();
+
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
       if (x === 'print') {
+        const files = this.filestoPrint();
+
+        // 1) Wenn Dateien aus Upload/Viewer da sind -> direkt an Print-API
+        if (files.length > 0) {
+          if (!this.selectedPrinterName) {
+            super.closeDialog(false);
+            return;
+          }
+
+          await firstValueFrom(this.#printService.printFiles(this.selectedPrinterName, files));
+          super.closeDialog(true);
+          return;
+        }
+
+        // 2) Fallback: altes Verhalten über selectedIds
         const selectedIds = this.#data?.selectedIds ?? [];
         if (selectedIds.length === 0) {
           super.closeDialog(false);
@@ -42,7 +91,9 @@ export class VmpPrintDialog extends DialogBase<boolean> {
         }
 
         const marschbuch = this.#changedValues['marschbuch'] ?? false;
-        const token = await firstValueFrom(this.#printService.createPrintUrl$(selectedIds, marschbuch));
+        const token = await firstValueFrom(
+          this.#printService.createPrintUrl$(selectedIds, marschbuch),
+        );
         const file = await firstValueFrom(this.#printService.downloadByToken$(token));
 
         this.#printPdf(file);
@@ -60,6 +111,10 @@ export class VmpPrintDialog extends DialogBase<boolean> {
     this.#changedValues[key] = this.#checkboxToBool(newValue);
   }
 
+  storePrinterChange(event: string | number): void {
+    this.selectedPrinterName = event.toString();
+  }
+
   #checkboxToBool(value: VmValidFormTypes | VmCheckboxValues): boolean {
     return value === 'checked';
   }
@@ -73,6 +128,7 @@ export class VmpPrintDialog extends DialogBase<boolean> {
     frame.onload = (): void => {
       frame.contentWindow?.focus();
       frame.contentWindow?.print();
+
       setTimeout(() => {
         URL.revokeObjectURL(fileUrl);
         frame.remove();
@@ -81,5 +137,4 @@ export class VmpPrintDialog extends DialogBase<boolean> {
 
     document.body.appendChild(frame);
   }
-
 }
