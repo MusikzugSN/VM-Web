@@ -53,10 +53,10 @@
             key: 'oauthDisablePasswordLogin',
             label: 'Passwort Login deaktivieren',
             type: 'checkbox',
-            value: config.oAuthDisablePasswordLogin ? 'checked' : 'unchecked'
+            value: config.disablePasswordLogin ? 'checked' : 'unchecked'
           }"
           [shouldInitChange]="false"
-          (inputChanged)="updateBoolValue('oAuthDisablePasswordLogin', $event)"
+          (inputChanged)="updateBoolValue('disablePasswordLogin', $event)"
         />
       </div>
     </div>

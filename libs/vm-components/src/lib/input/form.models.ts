@@ -5,7 +5,7 @@ export type VmCheckboxValues = 'checked' | 'unchecked' | 'indeterminate';
 export type VmValidFormTypes = number | string;
 
 export interface VmForm {
-  header: string;
+  header?: string;
   description?: string;
   fields: VmFormField[];
   submitButton?: string;

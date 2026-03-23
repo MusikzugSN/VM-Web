@@ -163,7 +163,7 @@ export class VmpNotesFullPageComponent {
     { key: 'name', header: 'Name', field: 'name', filterable: true },
     { key: 'voiceName', header: 'Stimme', field: 'voice' },
     { key: 'composer', header: 'Komponist', field: 'composer', filterable: true },
-    { key: 'folders', header: 'Mappen', field: 'folders' },
+    { key: 'folders', header: 'Mappen', field: 'folders', filterable: true },
     { key: 'pageCount', header: 'Seitenanzahl', field: 'pageCount' },
   ];
 
