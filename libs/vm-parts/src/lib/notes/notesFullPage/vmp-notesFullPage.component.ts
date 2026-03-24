@@ -65,6 +65,7 @@ export class VmpNotesFullPageComponent {
       { key: 'print', icon: 'print' },
       ...(disableEdit ? [] : [{ key: 'edit', icon: 'edit' }]),
       { key: 'delete', icon: 'delete' },
+      { key: 'tag', icon: 'tag'},
     ];
   });
 
@@ -94,6 +95,11 @@ export class VmpNotesFullPageComponent {
 
     if (action.key === 'print') {
       await this.#printService.openPrintDialog([action.rowData.notesId]);
+      return;
+    }
+
+    if (action.key === 'tag') {
+      await this.#printService.openTagDialog(action.rowData.notesId);
       return;
     }
 

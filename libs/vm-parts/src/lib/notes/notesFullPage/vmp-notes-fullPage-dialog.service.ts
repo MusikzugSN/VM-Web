@@ -3,6 +3,7 @@ import { VmDialogService } from '@vm-utils/dialogs';
 import { VmpPrintDialog } from './print-dialog/vmp-print-dialog.component';
 import {VmpScoreUploadDialogComponent} from './score-upload-dialog/vmp-score-upload-dialog.component';
 import {VmpMultiScoreUploadDialog} from './multi-score-upload-dialog/vmp-multi-score-upload-dialog.component';
+import { VmpNotesTagDialogComponent } from './tag-dialog/vmp-notes-tag-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +40,20 @@ export class VmpNotesFullpageDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'toViewer', text: 'Weiter', type: 'filled' },
       ],
+    });
+  }
+
+  async openTagDialog(notesId: number): Promise<boolean | undefined> {
+    return this.#dialogService.open(VmpNotesTagDialogComponent, {
+      data: { notesId },
+      title: 'Tags zuweisen',
+      buttons: [
+        { key: 'close', text: 'Abbrechen', type: 'elevated' },
+        { key: 'save', text: 'Speichern', type: 'filled' },
+      ],
+      dialogConfig: {
+        minWidth: '700px',
+      },
     });
   }
 }

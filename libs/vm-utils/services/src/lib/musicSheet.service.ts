@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BaseCrudService, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
+import {BaseCrudService, convertMetaDataFromDto, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
 import {map, Observable} from 'rxjs';
 import {HttpParams} from '@angular/common/http';
 
@@ -9,6 +9,12 @@ export interface MusicSheet extends IMetaData {
   scoreId: number;
   voiceId: number;
   voiceName: string;
+  tags?: MusicSheetTagTeaser[];
+}
+
+export interface MusicSheetTagTeaser {
+  tagId: number;
+  deleted?: boolean;
 }
 
 export interface MusicSheetQuerys {
@@ -20,6 +26,16 @@ export interface MusicSheetQuerys {
 })
 export class MusicSheetService extends BaseCrudService<MusicSheet, MusicSheet, MusicSheetQuerys> {
   override url: string = 'musicSheet';
+
+  loadByIdWithTags$(id: number): Observable<MusicSheet> {
+    return this.httpClient
+      .get<MusicSheet>(`${this.url}/${id}?includeTags=true`)
+      .pipe(map((musicSheet) => convertMetaDataFromDto(musicSheet)));
+  }
+
+  changeTags$(musicSheetId: number, tags: MusicSheetTagTeaser[]): Observable<MusicSheet> {
+    return this.change$({ musicSheetId, tags }, musicSheetId);
+  }
 
   loadForUnverifieed$(queryParams?: MusicSheetQuerys | undefined): Observable<MusicSheet[]> {
     let params = new HttpParams();
