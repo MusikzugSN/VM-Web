@@ -137,7 +137,9 @@ export class VmpNoteViewer {
       Number(
         args?.currentPageNumber ?? args?.currentPage ?? this.viewer()?.currentPageNumber ?? 1,
       ) || 1;
+
     this.#currentPage.set(page);
+    this.#syncFieldsToCurrentPage(page);
   }
 
   onDocumentLoad(): void {
@@ -175,8 +177,11 @@ export class VmpNoteViewer {
 
     this.#activeScoreId.set(nextScoreId);
     this.#selectedScoreId.set(nextScoreId);
-    this.#activeVoiceId.set(undefined);
-    this.#selectedVoiceId.set(undefined);
+
+    if (activeVoiceId !== undefined) {
+      this.#activeVoiceId.set(activeVoiceId);
+      this.#selectedVoiceId.set(activeVoiceId);
+    }
   }
 
   voiceChanged(value: VmValidFormTypes): void {
@@ -199,7 +204,7 @@ export class VmpNoteViewer {
     }
 
     if (previousVoiceId !== nextVoiceId) {
-      this.#startVoiceRange(activeScoreId, nextVoiceId, page);
+      this.#ensureVoiceRangeStarted(activeScoreId, nextVoiceId, page);
     }
 
     this.#activeVoiceId.set(nextVoiceId);
@@ -258,6 +263,64 @@ export class VmpNoteViewer {
     this.#location.back();
   }
 
+  #syncFieldsToCurrentPage(page: number): void {
+    const assignment = this.#findAssignmentForPage(page);
+    if (!assignment) {
+      return;
+    }
+
+    this.#activeScoreId.set(assignment.scoreId);
+    this.#selectedScoreId.set(assignment.scoreId);
+    this.#activeVoiceId.set(assignment.voiceId);
+    this.#selectedVoiceId.set(assignment.voiceId);
+  }
+
+  #findAssignmentForPage(page: number): { scoreId: number; voiceId: number } | undefined {
+    const all = this.#voiceRangesByScore();
+
+    let best:
+      | {
+      scoreId: number;
+      voiceId: number;
+      from: number;
+      to?: number;
+    }
+      | undefined;
+
+    for (const [scoreIdRaw, voices] of Object.entries(all)) {
+      const scoreId = Number(scoreIdRaw);
+
+      for (const [voiceIdRaw, ranges] of Object.entries(voices)) {
+        const voiceId = Number(voiceIdRaw);
+
+        for (const range of ranges) {
+          if (page < range.from) {
+            continue;
+          }
+
+          if (range.to !== undefined && page > range.to) {
+            continue;
+          }
+
+          if (!best || range.from >= best.from) {
+            best = {
+              scoreId,
+              voiceId,
+              from: range.from,
+              to: range.to,
+            };
+          }
+        }
+      }
+    }
+
+    if (!best) {
+      return undefined;
+    }
+
+    return { scoreId: best.scoreId, voiceId: best.voiceId };
+  }
+
   #closeOpenVoiceRange(scoreId: number, voiceId: number, toPage: number): void {
     const all = { ...this.#voiceRangesByScore() };
     const scoreVoices = { ...(all[scoreId] ?? {}) };
@@ -293,5 +356,34 @@ export class VmpNoteViewer {
     scoreVoices[voiceId] = ranges;
     all[scoreId] = scoreVoices;
     this.#voiceRangesByScore.set(all);
+  }
+
+  #ensureVoiceRangeStarted(scoreId: number, voiceId: number, fromPage: number): void {
+    const all = this.#voiceRangesByScore();
+    const scoreVoices = all[scoreId];
+    const ranges = scoreVoices?.[voiceId] ?? [];
+
+    const hasOpenRange = ranges.some((r) => r.to === undefined);
+    if (hasOpenRange) {
+      return;
+    }
+
+    const pageAlreadyCovered = ranges.some((r) => {
+      if (fromPage < r.from) {
+        return false;
+      }
+
+      if (r.to === undefined) {
+        return true;
+      }
+
+      return fromPage <= r.to;
+    });
+
+    if (pageAlreadyCovered) {
+      return;
+    }
+
+    this.#startVoiceRange(scoreId, voiceId, fromPage);
   }
 }
