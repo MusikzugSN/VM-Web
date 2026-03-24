@@ -53,19 +53,15 @@ export class AppUnverifiedComponent {
     switchMap(_x => this.#voiceService.load$({ includeInstrumentName: true }).pipe(catchError(() => of([])))),
   )
 
-  async execAction(action: VmRowClickedEvent<Score>): Promise<void> {
-    if (action.key === 'edit') {
-      if (action.rowData === null) return;
-      const reload = await this.#unverifiedDataDialogService.openEditScoreDialog(action.rowData);
-      if (reload) {
-        this.#reload.next(true);
-      }
+  async execAction(action: VmRowClickedEvent<AllNotesData>): Promise<void> {
+    if (action.rowData === null) {
       return;
     }
 
     if (action.key === 'delete') {
-      if (action.rowData === null) return;
-      const reload = await this.#unverifiedDataDialogService.openDeleteScoreDialog(action.rowData);
+      const reload = await this.#unverifiedDataDialogService.openDeleteScoreDialog({
+        note: action.rowData,
+      });
       if (reload) {
         this.#reload.next(true);
       }
@@ -107,7 +103,7 @@ export class AppUnverifiedComponent {
     }),
   );
 
-  voiceFilterChanged(event: number) {
+  voiceFilterChanged(event: number): void {
     this.#voiceFilter.next(event);
   }
 }

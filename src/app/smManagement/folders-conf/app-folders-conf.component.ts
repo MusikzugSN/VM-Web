@@ -108,7 +108,7 @@ export class AppFoldersConfComponent {
     { key: 'name', header: 'Name', field: 'name', filterable: true },
     { key: 'groupId', header: 'Gruppe', field: 'groupId', type: 'template', filterable: true },
     { key: 'membercount', header: 'Anzahl der Stücke', field: 'membercount' },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
+    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time' },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
 

@@ -101,13 +101,13 @@ export class AppStimmenInstrumenteComponent {
       filterable: true,
       converter: (rowData) => this.#computeVoiceName(rowData),
     },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
+    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time' },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
   columnsInstrument: VmColumn<Instrument>[] = [
     { key: 'name', header: 'Name', field: 'name', filterable: true },
     { key: 'type', header: 'Instrumentenart', field: 'type' },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date' },
+    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time' },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
 

@@ -40,7 +40,7 @@ export class UnverifiedDataDialog extends DialogBase<boolean> {
     key: nameOf<Voice>('voiceId'),
     value: this.#dataVoice?.voiceId?.toString() ?? '',
     options: this.#dataVoice
-      ? [{ label: this.#dataVoice?.name, value: this.#dataVoice?.voiceId.toString() }]
+      ? [{ label: this.#dataVoice?.name, value: this.#dataVoice?.voiceId?.toString() ?? '' }]
       : [],
   };
 

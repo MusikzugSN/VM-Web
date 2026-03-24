@@ -1,2 +1,5 @@
-<vmp-notes-full-page [data]="(data$ | async) ?? [] " (voiceFilterChanged)="voiceFilterChanged($event)"/>
+<vmp-notes-full-page
+  [data]="(data$ | async) ?? [] "
+  (voiceFilterChanged)="voiceFilterChanged($event)"
+  (buttonClicked)="execAction($event)"/>
 

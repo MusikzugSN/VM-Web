@@ -84,7 +84,7 @@ export class TagsConfComponent {
       key: 'updatedAt',
       header: 'Bearbeiten am',
       field: 'updatedAt',
-      type: 'date',
+      type: 'date-time',
       filterable: true,
     },
     {
