@@ -29,7 +29,7 @@ export class PrintService {
 
   createPrintUrl$(musicSheetIds: number[], marschbuch = false): Observable<string> {
     return this.#http
-      .post(`${this.API_URL}/print`, { musicSheetIds, marschbuch }, { responseType: 'text' })
+      .post('print', { musicSheetIds, marschbuch }, { responseType: 'text' })
       .pipe(map((token) => token.replace(/^"|"$/g, '')));
   }
 
