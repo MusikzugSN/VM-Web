@@ -10,9 +10,12 @@ import {VmpMultiScoreUploadDialog} from './multi-score-upload-dialog/vmp-multi-s
 export class VmpNotesFullpageDialogService {
   readonly #dialogService = inject(VmDialogService);
 
-  async openPrintDialog(selectedIds?: number[]): Promise<boolean | undefined> {
+  async openPrintDialog(
+    selectedIds?: number[],
+    files?: { url: string; filename: string }[],
+  ): Promise<boolean | undefined> {
     return this.#dialogService.open(VmpPrintDialog, {
-      data: { selectedIds },
+      data: { selectedIds, files },
       title: 'Drucken',
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },

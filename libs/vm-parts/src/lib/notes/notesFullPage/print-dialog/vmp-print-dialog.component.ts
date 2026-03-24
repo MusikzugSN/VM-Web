@@ -1,14 +1,15 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmCheckboxValues, VmFormField, VmValidFormTypes } from '@vm-components';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
-import { Dictionary } from '@vm-utils';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { ConfigService, Dictionary } from '@vm-utils';
+import { firstValueFrom, map, Observable} from 'rxjs';
 import { PrintService } from './print.service';
 
 interface PrintDialogData {
   selectedIds?: number[];
+  files?: { url: string; filename: string }[];
 }
 
 @Component({
@@ -21,8 +22,7 @@ export class VmpPrintDialog extends DialogBase<boolean> {
   readonly #data = inject<PrintDialogData | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #printService = inject(PrintService);
-
-  filestoPrint = input<{ url: string; filename: string }[]>([]);
+  readonly #config = inject(ConfigService);
 
   #changedValues: Dictionary<boolean> = {};
   selectedPrinterName = '';
@@ -94,7 +94,7 @@ export class VmpPrintDialog extends DialogBase<boolean> {
         );
         const file = await firstValueFrom(this.#printService.downloadByToken$(token));
 
-        this.#printPdf(file);
+        await this.#printPdf(file);
         super.closeDialog(true);
         return;
       }
@@ -103,6 +103,10 @@ export class VmpPrintDialog extends DialogBase<boolean> {
         super.closeDialog(false);
       }
     });
+  }
+
+  filestoPrint(): { url: string; filename: string }[] {
+    return this.#data?.files ?? [];
   }
 
   storeBooleanChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
@@ -117,8 +121,9 @@ export class VmpPrintDialog extends DialogBase<boolean> {
     return value === 'checked';
   }
 
-  #printPdf(file: Blob): void {
-    const fileUrl = URL.createObjectURL(file);
+  async #printPdf(file: string): Promise<void> {
+    const config = await firstValueFrom(this.#config.config$);
+    const fileUrl = config?.backedApiUrl + file;
     const frame = document.createElement('iframe');
     frame.style.display = 'none';
     frame.src = fileUrl;

@@ -6,6 +6,7 @@ export interface Printer {
   name: string;
   is_default: boolean;
 }
+
 export interface PrintResponse {
   total: number;
   successful: number;
@@ -26,7 +27,7 @@ export class PrintService {
 
   createPrintUrl$(musicSheetIds: number[], marschbuch = false): Observable<string> {
     return this.#http
-      .post('print', { musicSheetIds, marschbuch }, { responseType: 'text' })
+      .post(`${this.API_URL}/print`, { musicSheetIds, marschbuch }, { responseType: 'text' })
       .pipe(map((token) => token.replace(/^"|"$/g, '')));
   }
 
@@ -36,12 +37,15 @@ export class PrintService {
   ): Observable<PrintResponse> {
     const payload = {
       printer: printerName,
-      files: files,
+      files,
     };
     return this.#http.post<PrintResponse>(`${this.API_URL}/print`, payload);
   }
-  downloadByToken$(token: string): Observable<Blob> {
+
+  downloadByToken$(token: string): Observable<string> {
     const params = new HttpParams().set('token', token);
-    return this.#http.get('print/download', { params, responseType: 'blob' });
+    return this.#http.get<string>(`${this.API_URL}/print/download`, {
+      params,
+    });
   }
 }
