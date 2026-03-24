@@ -12,7 +12,7 @@ import {
 import { NotesViewerService, ScoreVoiceRangesDTO } from './noteViewer.service';
 import { AsyncPipe, Location } from '@angular/common';
 import { NoteViewerSelectionService } from './note-viewer-selection.service';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, map, of } from 'rxjs';
 import {
   VmcInputField,
   VmcToolbar,
@@ -131,6 +131,7 @@ export class VmpNoteViewer {
       return first ? URL.createObjectURL(first) : '';
     }),
   );
+  documentPath = of('vm-web://${musicsheetId}') // documentpath darauf verändern
 
   onPageChange(args: { currentPageNumber?: number; currentPage?: number }): void {
     const page =

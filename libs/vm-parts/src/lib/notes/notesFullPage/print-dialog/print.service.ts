@@ -15,6 +15,11 @@ export interface PrintResponse {
   errors: string[];
 }
 
+export interface PrintServiceHealth {
+  status: string;
+  version: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -22,6 +27,10 @@ export class PrintService {
   private readonly API_URL = 'http://127.0.0.1:1913/api';
   readonly #http = inject(HttpClient);
   readonly #config = inject(ConfigService);
+
+  health$(): Observable<PrintServiceHealth> {
+    return this.#http.get<PrintServiceHealth>(`${this.API_URL}/health`);
+  }
 
   getPrinters$(): Observable<Printer[]> {
     return this.#http.get<Printer[]>(`${this.API_URL}/printers`);
