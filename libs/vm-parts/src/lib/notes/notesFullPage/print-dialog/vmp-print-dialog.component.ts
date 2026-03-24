@@ -71,7 +71,6 @@ export class VmpPrintDialog extends DialogBase<boolean> {
       if (x === 'print') {
         const files = this.filestoPrint();
 
-        // 1) Wenn Dateien aus Upload/Viewer da sind -> direkt an Print-API
         if (files.length > 0) {
           if (!this.selectedPrinterName) {
             super.closeDialog(false);
@@ -83,7 +82,6 @@ export class VmpPrintDialog extends DialogBase<boolean> {
           return;
         }
 
-        // 2) Fallback: altes Verhalten über selectedIds
         const selectedIds = this.#data?.selectedIds ?? [];
         if (selectedIds.length === 0) {
           super.closeDialog(false);
