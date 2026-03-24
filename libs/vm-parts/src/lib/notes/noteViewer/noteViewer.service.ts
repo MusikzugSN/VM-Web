@@ -3,23 +3,16 @@ import { inject } from '@angular/core';
 import { ConfigService } from '@vm-utils';
 import { HttpClient } from '@angular/common/http';
 
-export interface ScorePageRangeDTO {
-  scoreId: number;
-  fromPage: number;
-  toPage: number;
-}
-
-export interface ScoreVoicePageRangeDTO {
+export interface ScoreVoiceRangesDTO {
   scoreId: number;
   voiceId: number;
   fromPage: number;
   toPage: number;
 }
 
-export interface CropPdfSeparateRangesRequest {
-  file: File;
-  scoreRanges: ScorePageRangeDTO[];
-  voiceRanges: ScoreVoicePageRangeDTO[];
+export interface CropPdfByVoicesBatchRequest {
+  file: File
+  items: ScoreVoiceRangesDTO[];
 }
 
 export class NotesViewerService {
@@ -30,11 +23,16 @@ export class NotesViewerService {
     map((x) => x?.backedApiUrl + '/PdfViewer'),
   );
 
-  cropPdfByScoreVoices$(req: CropPdfSeparateRangesRequest): Observable<unknown> {
+  cropPdfByVoicesBatch$(req: CropPdfByVoicesBatchRequest): Observable<unknown> {
     const form = new FormData();
     form.append('File', req.file, req.file.name);
-    form.append('ScoreRangesJson', JSON.stringify(req.scoreRanges));
-    form.append('VoiceRangesJson', JSON.stringify(req.voiceRanges));
+
+    req.items.forEach((item, itemIndex) => {
+      form.append(`Ranges[${itemIndex}].ScoreId`, item.scoreId.toString());
+      form.append(`Ranges[${itemIndex}].VoiceId`, item.voiceId.toString());
+      form.append(`Ranges[${itemIndex}].FromPage`, item.fromPage.toString());
+      form.append(`Ranges[${itemIndex}].ToPage`, item.toPage.toString());
+    });
 
     return this.#httpClient.post('musicSheet/cropByVoices', form);
   }

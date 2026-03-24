@@ -9,14 +9,10 @@ import {
   ToolbarService,
   ToolbarSettingsModel,
 } from '@syncfusion/ej2-angular-pdfviewer';
-import {
-  NotesViewerService,
-  ScorePageRangeDTO,
-  ScoreVoicePageRangeDTO,
-} from './noteViewer.service';
+import { NotesViewerService, ScoreVoiceRangesDTO } from './noteViewer.service';
 import { AsyncPipe, Location } from '@angular/common';
 import { NoteViewerSelectionService } from './note-viewer-selection.service';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, map, of } from 'rxjs';
 import {
   VmcInputField,
   VmcToolbar,
@@ -64,13 +60,8 @@ export class VmpNoteViewer {
   readonly #activeVoiceId = signal<number | undefined>(undefined);
 
   readonly #currentPage = signal<number>(1);
-  readonly #pageCount = signal<number>(1);
 
-  // Score-Ranges getrennt
-  readonly #scoreRanges = signal<Record<number, PageRange>>({});
-
-  // Voice-Ranges getrennt, aber pro Score gruppiert
-  readonly #voiceRangesByScore = signal<Record<number, Record<number, PageRange>>>({});
+  readonly #voiceRangesByScore = signal<Record<number, Record<number, PageRange[]>>>({});
 
   readonly #scores = toSignal(this.#scoreService.load$(), { initialValue: [] });
   readonly #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true }), {
@@ -140,27 +131,30 @@ export class VmpNoteViewer {
       return first ? URL.createObjectURL(first) : '';
     }),
   );
+  documentPath = of('vm-web://${musicsheetId}') // documentpath darauf verändern
 
   onPageChange(args: { currentPageNumber?: number; currentPage?: number }): void {
     const page =
       Number(
         args?.currentPageNumber ?? args?.currentPage ?? this.viewer()?.currentPageNumber ?? 1,
       ) || 1;
+
     this.#currentPage.set(page);
+    this.#syncFieldsToCurrentPage(page);
   }
 
   onDocumentLoad(): void {
     const viewer = this.viewer();
-    if (!viewer) return;
+    if (!viewer) {
+      return;
+    }
 
     this.#currentPage.set(viewer.currentPageNumber ?? 1);
-    this.#pageCount.set(viewer.pageCount ?? 1);
 
     this.#selectedScoreId.set(undefined);
     this.#selectedVoiceId.set(undefined);
     this.#activeScoreId.set(undefined);
     this.#activeVoiceId.set(undefined);
-    this.#scoreRanges.set({});
     this.#voiceRangesByScore.set({});
   }
 
@@ -172,31 +166,28 @@ export class VmpNoteViewer {
 
     const page = this.#currentPage();
     const previousScoreId = this.#activeScoreId();
-    const ranges = { ...this.#scoreRanges() };
+    const activeVoiceId = this.#activeVoiceId();
 
-    if (previousScoreId !== undefined && previousScoreId !== nextScoreId) {
-      const prev = ranges[previousScoreId];
-      if (prev) {
-        prev.to = Math.max(prev.from, page - 1);
-      }
+    if (
+      previousScoreId !== undefined &&
+      previousScoreId !== nextScoreId &&
+      activeVoiceId !== undefined
+    ) {
+      this.#closeOpenVoiceRange(previousScoreId, activeVoiceId, page - 1);
     }
 
-    if (!ranges[nextScoreId]) {
-      ranges[nextScoreId] = { from: page };
-    }
-
-    this.#scoreRanges.set(ranges);
     this.#activeScoreId.set(nextScoreId);
     this.#selectedScoreId.set(nextScoreId);
 
-    // Stimme beim Stückwechsel neu starten
-    this.#activeVoiceId.set(undefined);
-    this.#selectedVoiceId.set(undefined);
+    if (activeVoiceId !== undefined) {
+      this.#activeVoiceId.set(activeVoiceId);
+      this.#selectedVoiceId.set(activeVoiceId);
+    }
   }
 
   voiceChanged(value: VmValidFormTypes): void {
     const activeScoreId = this.#activeScoreId();
-    if (!activeScoreId) {
+    if (activeScoreId === undefined) {
       this.#snackbar.raiseError('Bitte zuerst ein Stück auswählen.');
       return;
     }
@@ -209,22 +200,14 @@ export class VmpNoteViewer {
     const page = this.#currentPage();
     const previousVoiceId = this.#activeVoiceId();
 
-    const all = { ...this.#voiceRangesByScore() };
-    const voicesInActiveScore = { ...(all[activeScoreId] ?? {}) };
-
     if (previousVoiceId !== undefined && previousVoiceId !== nextVoiceId) {
-      const prev = voicesInActiveScore[previousVoiceId];
-      if (prev) {
-        prev.to = Math.max(prev.from, page - 1);
-      }
+      this.#closeOpenVoiceRange(activeScoreId, previousVoiceId, page - 1);
     }
 
-    if (!voicesInActiveScore[nextVoiceId]) {
-      voicesInActiveScore[nextVoiceId] = { from: page };
+    if (previousVoiceId !== nextVoiceId) {
+      this.#ensureVoiceRangeStarted(activeScoreId, nextVoiceId, page);
     }
 
-    all[activeScoreId] = voicesInActiveScore;
-    this.#voiceRangesByScore.set(all);
     this.#activeVoiceId.set(nextVoiceId);
     this.#selectedVoiceId.set(nextVoiceId);
   }
@@ -238,80 +221,170 @@ export class VmpNoteViewer {
       return;
     }
 
-    const pageCount = this.#pageCount();
-
-    // Offene Score-Range schließen
-    const scoreRangesMap = { ...this.#scoreRanges() };
+    const currentPage = this.#currentPage();
     const activeScoreId = this.#activeScoreId();
-    if (
-      activeScoreId !== undefined &&
-      scoreRangesMap[activeScoreId] &&
-      scoreRangesMap[activeScoreId].to === undefined
-    ) {
-      scoreRangesMap[activeScoreId].to = pageCount;
-    }
-
-    // Offene Voice-Range schließen
-    const voiceRangesMap = { ...this.#voiceRangesByScore() };
     const activeVoiceId = this.#activeVoiceId();
+
     if (activeScoreId !== undefined && activeVoiceId !== undefined) {
-      const voices = { ...(voiceRangesMap[activeScoreId] ?? {}) };
-      if (voices[activeVoiceId] && voices[activeVoiceId].to === undefined) {
-        voices[activeVoiceId].to = pageCount;
-      }
-      voiceRangesMap[activeScoreId] = voices;
+      this.#closeOpenVoiceRange(activeScoreId, activeVoiceId, currentPage);
     }
 
-    this.#scoreRanges.set(scoreRangesMap);
-    this.#voiceRangesByScore.set(voiceRangesMap);
+    const voiceRangesMap = this.#voiceRangesByScore();
 
-    const scoreRanges: ScorePageRangeDTO[] = Object.entries(scoreRangesMap)
-      .map(([scoreId, range]) => ({
-        scoreId: Number(scoreId),
-        fromPage: range.from,
-        toPage: range.to,
-      }))
-      .filter((x) => x.toPage !== undefined && x.fromPage <= (x.toPage as number))
-      .map((x) => ({
-        scoreId: x.scoreId,
-        fromPage: x.fromPage,
-        toPage: x.toPage as number,
-      }));
+    const items: ScoreVoiceRangesDTO[] = Object.entries(voiceRangesMap).flatMap(
+      ([scoreId, voices]) =>
+        Object.entries(voices).flatMap(([voiceId, vRanges]) =>
+          vRanges
+            .filter((range) => range.to !== undefined && range.from <= (range.to as number))
+            .map((range) => ({
+              scoreId: Number(scoreId),
+              voiceId: Number(voiceId),
+              fromPage: range.from,
+              toPage: range.to as number,
+            })),
+        ),
+    );
 
-    const voiceRanges: ScoreVoicePageRangeDTO[] = Object.entries(voiceRangesMap)
-      .flatMap(([scoreId, voices]) =>
-        Object.entries(voices).map(([voiceId, range]) => ({
-          scoreId: Number(scoreId),
-          voiceId: Number(voiceId),
-          fromPage: range.from,
-          toPage: range.to,
-        })),
-      )
-      .filter((x) => x.toPage !== undefined && x.fromPage <= (x.toPage as number))
-      .map((x) => ({
-        scoreId: x.scoreId,
-        voiceId: x.voiceId,
-        fromPage: x.fromPage,
-        toPage: x.toPage as number,
-      }));
-
-    if (scoreRanges.length === 0 && voiceRanges.length === 0) {
-      this.#snackbar.raiseError('Keine gültigen Bereiche definiert.');
+    if (items.length === 0) {
+      this.#snackbar.raiseError('Keine gültigen Stimmen-Bereiche definiert.');
       return;
     }
 
     await firstValueFrom(
-      this.#noteViewerService.cropPdfByScoreVoices$({
+      this.#noteViewerService.cropPdfByVoicesBatch$({
         file: firstFile,
-        scoreRanges,
-        voiceRanges,
+        items,
       }),
     );
 
-    this.#snackbar.raiseSuccess('Score- und Stimmenbereiche wurden übertragen.');
+    this.#snackbar.raiseSuccess(`${items.length} Stimmen-Bereich(e) wurden übertragen.`);
   }
 
   cancel(): void {
     this.#location.back();
+  }
+
+  #syncFieldsToCurrentPage(page: number): void {
+    const assignment = this.#findAssignmentForPage(page);
+    if (!assignment) {
+      return;
+    }
+
+    this.#activeScoreId.set(assignment.scoreId);
+    this.#selectedScoreId.set(assignment.scoreId);
+    this.#activeVoiceId.set(assignment.voiceId);
+    this.#selectedVoiceId.set(assignment.voiceId);
+  }
+
+  #findAssignmentForPage(page: number): { scoreId: number; voiceId: number } | undefined {
+    const all = this.#voiceRangesByScore();
+
+    let best:
+      | {
+      scoreId: number;
+      voiceId: number;
+      from: number;
+      to?: number;
+    }
+      | undefined;
+
+    for (const [scoreIdRaw, voices] of Object.entries(all)) {
+      const scoreId = Number(scoreIdRaw);
+
+      for (const [voiceIdRaw, ranges] of Object.entries(voices)) {
+        const voiceId = Number(voiceIdRaw);
+
+        for (const range of ranges) {
+          if (page < range.from) {
+            continue;
+          }
+
+          if (range.to !== undefined && page > range.to) {
+            continue;
+          }
+
+          if (!best || range.from >= best.from) {
+            best = {
+              scoreId,
+              voiceId,
+              from: range.from,
+              to: range.to,
+            };
+          }
+        }
+      }
+    }
+
+    if (!best) {
+      return undefined;
+    }
+
+    return { scoreId: best.scoreId, voiceId: best.voiceId };
+  }
+
+  #closeOpenVoiceRange(scoreId: number, voiceId: number, toPage: number): void {
+    const all = { ...this.#voiceRangesByScore() };
+    const scoreVoices = { ...(all[scoreId] ?? {}) };
+    const ranges = [...(scoreVoices[voiceId] ?? [])];
+
+    for (let i = ranges.length - 1; i >= 0; i--) {
+      const current = ranges[i];
+      if (!current) {
+        continue;
+      }
+
+      if (current.to === undefined) {
+        ranges[i] = {
+          from: current.from,
+          to: Math.max(current.from, toPage),
+        };
+        break;
+      }
+    }
+
+    scoreVoices[voiceId] = ranges;
+    all[scoreId] = scoreVoices;
+    this.#voiceRangesByScore.set(all);
+  }
+
+  #startVoiceRange(scoreId: number, voiceId: number, fromPage: number): void {
+    const all = { ...this.#voiceRangesByScore() };
+    const scoreVoices = { ...(all[scoreId] ?? {}) };
+    const ranges = [...(scoreVoices[voiceId] ?? [])];
+
+    ranges.push({ from: fromPage });
+
+    scoreVoices[voiceId] = ranges;
+    all[scoreId] = scoreVoices;
+    this.#voiceRangesByScore.set(all);
+  }
+
+  #ensureVoiceRangeStarted(scoreId: number, voiceId: number, fromPage: number): void {
+    const all = this.#voiceRangesByScore();
+    const scoreVoices = all[scoreId];
+    const ranges = scoreVoices?.[voiceId] ?? [];
+
+    const hasOpenRange = ranges.some((r) => r.to === undefined);
+    if (hasOpenRange) {
+      return;
+    }
+
+    const pageAlreadyCovered = ranges.some((r) => {
+      if (fromPage < r.from) {
+        return false;
+      }
+
+      if (r.to === undefined) {
+        return true;
+      }
+
+      return fromPage <= r.to;
+    });
+
+    if (pageAlreadyCovered) {
+      return;
+    }
+
+    this.#startVoiceRange(scoreId, voiceId, fromPage);
   }
 }

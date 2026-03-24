@@ -21,14 +21,14 @@
         <vmc-select
           label="Standard Gruppe"
           [options]="(groups$ | async) ?? []"
-          [value]="config.oAuthDefaultGroup ? config.oAuthDefaultGroup?.toString() : ''"
+          [value]="config.oAuthDefaultGroup ? config.oAuthDefaultGroup.toString() : ''"
           (inputChanged)="updateValue('oAuthDefaultGroup', $event)"
         />
 
         <vmc-select
           label="Standard Rolle"
           [options]="(roles$ | async) ?? []"
-          [value]="config.oAuthDefaultRole ? config.oAuthDefaultRole?.toString() : ''"
+          [value]="config.oAuthDefaultRole ? config.oAuthDefaultRole.toString() : ''"
           (inputChanged)="updateValue('oAuthDefaultRole', $event)"
         />
       </div>
