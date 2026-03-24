@@ -41,9 +41,6 @@ export class VoiceDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'create', text: 'Hinzufügen', type: 'filled' },
       ],
-      dialogConfig: {
-        minWidth: '500px',
-      },
     });
   }
 
@@ -80,9 +77,6 @@ export class VoiceDialogService {
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'save', text: 'Speichern', type: 'filled' },
       ],
-      dialogConfig: {
-        minWidth: '500px',
-      },
     });
   }
 
