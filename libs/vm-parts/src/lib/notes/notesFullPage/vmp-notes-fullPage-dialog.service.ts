@@ -87,4 +87,7 @@ export class VmpNotesFullpageDialogService {
       ],
     });
   }
+  async openVerifyDialog(): Promise<boolean | undefined> {
+    return this.#router.navigate(['/verifyViewer'])
+  }
 }
