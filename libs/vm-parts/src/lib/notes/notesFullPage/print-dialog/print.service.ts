@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable, switchMap} from 'rxjs';
+import {ConfigService} from '@vm-utils/services';
 
 export interface Printer {
   name: string;
@@ -20,6 +21,7 @@ export interface PrintResponse {
 export class PrintService {
   private readonly API_URL = 'http://127.0.0.1:1913/api';
   readonly #http = inject(HttpClient);
+  readonly #config = inject(ConfigService);
 
   getPrinters$(): Observable<Printer[]> {
     return this.#http.get<Printer[]>(`${this.API_URL}/printers`);
@@ -31,7 +33,7 @@ export class PrintService {
       .pipe(map((token) => token.replace(/^"|"$/g, '')));
   }
 
-  printFiles(
+  printFiles$(
     printerName: string,
     files: { url: string; filename: string }[],
   ): Observable<PrintResponse> {
@@ -39,13 +41,13 @@ export class PrintService {
       printer: printerName,
       files,
     };
+
     return this.#http.post<PrintResponse>(`${this.API_URL}/print`, payload);
   }
 
-  downloadByToken$(token: string): Observable<string> {
-    const params = new HttpParams().set('token', token);
-    return this.#http.get<string>(`${this.API_URL}/print/download`, {
-      params,
-    });
+  downloadByToken$(downloadUrl: string): Observable<string> {
+    return this.#config.config$.pipe(switchMap(config => {
+      return this.#http.get<string>(config?.backedApiUrl + downloadUrl)
+    }));
   }
 }

@@ -11,11 +11,10 @@ export class VmpNotesFullpageDialogService {
   readonly #dialogService = inject(VmDialogService);
 
   async openPrintDialog(
-    selectedIds?: number[],
-    files?: { url: string; filename: string }[],
+    selectedIds?: number[]
   ): Promise<boolean | undefined> {
     return this.#dialogService.open(VmpPrintDialog, {
-      data: { selectedIds, files },
+      data: { selectedIds },
       title: 'Drucken',
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },

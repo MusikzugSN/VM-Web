@@ -9,7 +9,6 @@ import { PrintService } from './print.service';
 
 interface PrintDialogData {
   selectedIds?: number[];
-  files?: { url: string; filename: string }[];
 }
 
 @Component({
@@ -23,6 +22,8 @@ export class VmpPrintDialog extends DialogBase<boolean> {
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #printService = inject(PrintService);
   readonly #config = inject(ConfigService);
+
+  filesCount = this.#data?.selectedIds?.length ?? 0;
 
   #changedValues: Dictionary<boolean> = {};
   selectedPrinterName = '';
@@ -69,18 +70,7 @@ export class VmpPrintDialog extends DialogBase<boolean> {
 
     this.#buttonClickEvents$.pipe(takeUntilDestroyed()).subscribe(async (x) => {
       if (x === 'print') {
-        const files = this.filestoPrint();
-
-        if (files.length > 0) {
-          if (!this.selectedPrinterName) {
-            super.closeDialog(false);
-            return;
-          }
-
-          await firstValueFrom(this.#printService.printFiles(this.selectedPrinterName, files));
-          super.closeDialog(true);
-          return;
-        }
+        const files = this.#data?.selectedIds ?? [];
 
         const selectedIds = this.#data?.selectedIds ?? [];
         if (selectedIds.length === 0) {
@@ -89,10 +79,29 @@ export class VmpPrintDialog extends DialogBase<boolean> {
         }
 
         const marschbuch = this.#changedValues['marschbuch'] ?? false;
-        const token = await firstValueFrom(
+
+        const downloadUrl = await firstValueFrom(
           this.#printService.createPrintUrl$(selectedIds, marschbuch),
         );
-        const file = await firstValueFrom(this.#printService.downloadByToken$(token));
+
+        if (files.length > 0) {
+          if (!this.selectedPrinterName) {
+            super.closeDialog(false);
+            return;
+          }
+
+          const config = await firstValueFrom(this.#config.config$);
+          const filePath = await firstValueFrom(this.#printService.createPrintUrl$(files))
+
+          await firstValueFrom(this.#printService.printFiles$(this.selectedPrinterName, [{
+            url: config?.backedApiUrl + filePath,
+            filename: `druckauftrag_${Date.now()}.pdf`
+          }]));
+          super.closeDialog(true);
+          return;
+        }
+
+        const file = await firstValueFrom(this.#printService.downloadByToken$(downloadUrl));
 
         await this.#printPdf(file);
         super.closeDialog(true);
@@ -103,10 +112,6 @@ export class VmpPrintDialog extends DialogBase<boolean> {
         super.closeDialog(false);
       }
     });
-  }
-
-  filestoPrint(): { url: string; filename: string }[] {
-    return this.#data?.files ?? [];
   }
 
   storeBooleanChangedValue(newValue: VmValidFormTypes | VmCheckboxValues, key: string): void {
