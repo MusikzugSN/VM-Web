@@ -99,7 +99,11 @@ export class VmpNotesFullPageComponent {
     }
 
     if (action.key === 'tag') {
-      await this.#printService.openTagDialog(action.rowData.notesId);
+      await this.#printService.openTagDialog(
+        action.rowData.notesId,
+        action.rowData.name,
+        action.rowData.voice,
+      );
       return;
     }
 
@@ -199,4 +203,6 @@ export class VmpNotesFullPageComponent {
   selectionChanged(event: number[]): void {
     this.#selectedIds$.next(event);
   }
+
+
 }

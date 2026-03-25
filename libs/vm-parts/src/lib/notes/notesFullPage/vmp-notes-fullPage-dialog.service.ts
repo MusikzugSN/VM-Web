@@ -3,6 +3,7 @@ import { VmDialogService } from '@vm-utils/dialogs';
 import { VmpPrintDialog } from './print-dialog/vmp-print-dialog.component';
 import { VmpScoreUploadDialogComponent } from './score-upload-dialog/vmp-score-upload-dialog.component';
 import { VmpMultiScoreUploadDialog } from './multi-score-upload-dialog/vmp-multi-score-upload-dialog.component';
+import { VmpNotesTagDialogComponent } from './tag-dialog/vmp-notes-tag-dialog.component';
 import { PrintService } from './print-dialog/print.service';
 import { ConfigService } from '@vm-utils';
 import { firstValueFrom } from 'rxjs';
@@ -87,6 +88,23 @@ export class VmpNotesFullpageDialogService {
       ],
     });
   }
+
+  async openTagDialog(notesId: number, name: string, voice: string): Promise<boolean | undefined> {
+    const title = `${name} - ${voice}`;
+
+    return this.#dialogService.open(VmpNotesTagDialogComponent, {
+      data: { notesId },
+      title,
+      buttons: [
+        { key: 'close', text: 'Abbrechen', type: 'elevated' },
+        { key: 'save', text: 'Speichern', type: 'filled' },
+      ],
+      dialogConfig: {
+        minWidth: '700px',
+      },
+    });
+  }
+
   async openVerifyDialog(): Promise<boolean | undefined> {
     return this.#router.navigate(['/verifyViewer'])
   }
