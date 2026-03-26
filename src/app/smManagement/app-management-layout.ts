@@ -15,14 +15,19 @@ export class AppManagementLayout {
   readonly #folderService = inject(FoldersService);
   readonly #permissionService = inject(PermissionService);
 
-  isUnverifiedAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenValidateNotes));
+  isUnverifiedAllowed = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.OpenValidateNotes),
+  );
   isRepositoryAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenScores));
 
-  isFolderAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenMusicFolder));
+  isFolderAllowed = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.OpenMusicFolder),
+  );
   isVoicesAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenVoice));
   isEventsAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenEvent));
   //isTagsAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenEvent));
   isTagsAllowed: Signal<boolean> = signal(true);
+  isPrintConfAllowed: Signal<boolean> = signal(false);
 
   folders = toSignal(this.#folderService.load$());
 
@@ -45,12 +50,12 @@ export class AppManagementLayout {
         gerneralItems.push({
           name: 'Stücke',
           route: '/scores/repository',
-        },);
+        });
       }
 
       sidebarItems.push({
         groupName: 'Allgemein',
-        items: gerneralItems
+        items: gerneralItems,
       });
     }
 
@@ -58,12 +63,12 @@ export class AppManagementLayout {
       const folders = this.folders() ?? [];
 
       sidebarItems.push({
-          groupName: 'Mappen',
-          items: folders.map((folder) => ({
-            name: folder.name,
-            route: `/scores/folders/${folder.musicFolderId}`,
-          })),
-        });
+        groupName: 'Mappen',
+        items: folders.map((folder) => ({
+          name: folder.name,
+          route: `/scores/folders/${folder.musicFolderId}`,
+        })),
+      });
     }
 
     const folderAllowed = this.isFolderAllowed();
@@ -96,23 +101,27 @@ export class AppManagementLayout {
       }
 
       if (tagsAllowed) {
-        configItems.push({
-          name: 'Tags',
-          route: '/scores/tags',
-        },
-        {
-          name: 'Druckereinstellungen',
-          route: '/scores/print-conf',
-        });
+        configItems.push(
+          {
+            name: 'Tags',
+            route: '/scores/tags',
+          });
+
+        //Druckeinstellungen sind momentan unsichtbar
+          if (this.isPrintConfAllowed()) {
+            configItems.push({
+              name: 'Druckereinstellungen',
+              route: '/scores/print-conf',
+            });
+          }
       }
 
       sidebarItems.push({
         groupName: 'Konfiguration',
-        items: configItems
+        items: configItems,
       });
     }
 
     return sidebarItems;
   });
-
 }
