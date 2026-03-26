@@ -20,7 +20,7 @@ import {toObservable} from '@angular/core/rxjs-interop';
 })
 export class VmcSelect {
   label: InputSignal<string> = input.required()
-  enableSearch: InputSignal<boolean> = input<boolean>(false);
+  enableSearch: InputSignal<boolean> = input<boolean>(true);
   multiple: InputSignal<boolean> = input<boolean>(false);
   options: InputSignal<VmSelectOption[]> = input.required();
   value: InputSignal<string | string[] | undefined> = input<string | string[] | undefined>(undefined);

@@ -98,10 +98,7 @@ export class VmpNotesFullpageDialogService {
       buttons: [
         { key: 'close', text: 'Abbrechen', type: 'elevated' },
         { key: 'save', text: 'Speichern', type: 'filled' },
-      ],
-      dialogConfig: {
-        minWidth: '700px',
-      },
+      ]
     });
   }
 

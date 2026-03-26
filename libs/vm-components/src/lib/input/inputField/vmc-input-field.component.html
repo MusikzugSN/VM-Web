@@ -16,6 +16,7 @@
     [options]="field.options"
     [value]="field.value"
     [multiple]="field.multiple ?? false"
+    [enableSearch]="field.enableSearch ?? true"
     (inputChanged)="selectCallChangeEvent($event)" />
 }  @else {
   <mat-form-field class="vm-input">

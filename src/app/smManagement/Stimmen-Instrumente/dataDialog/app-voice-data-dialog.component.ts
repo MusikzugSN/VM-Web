@@ -94,6 +94,7 @@ export class AppVoiceDataDialog extends DialogBase<boolean> {
   instrumentField: VmFormField = {
     label: 'Instrument',
     type: 'select',
+    enableSearch: true,
     key: nameOf<Voice>('instrumentId'),
     value: this.#data?.voice?.instrumentId?.toString() ?? '',
     options: this.#data?.instrumentOptions ?? [],
