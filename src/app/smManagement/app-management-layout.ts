@@ -25,9 +25,8 @@ export class AppManagementLayout {
   );
   isVoicesAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenVoice));
   isEventsAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenEvent));
-  //isTagsAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenEvent));
-  isTagsAllowed: Signal<boolean> = signal(true);
-  isPrintConfAllowed: Signal<boolean> = signal(false);
+  isTagsAllowed: Signal<boolean | undefined> = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenTags));
+  isPrintConfAllowed: Signal<boolean> = signal(false); //Druckeinstellungen sind momentan unsichtbar
 
   folders = toSignal(this.#folderService.load$());
 
@@ -107,13 +106,14 @@ export class AppManagementLayout {
             route: '/scores/tags',
           });
 
-        //Druckeinstellungen sind momentan unsichtbar
-          if (this.isPrintConfAllowed()) {
-            configItems.push({
-              name: 'Druckereinstellungen',
-              route: '/scores/print-conf',
-            });
-          }
+
+      }
+
+      if (this.isPrintConfAllowed()) {
+        configItems.push({
+          name: 'Druckereinstellungen',
+          route: '/scores/print-conf',
+        });
       }
 
       sidebarItems.push({
