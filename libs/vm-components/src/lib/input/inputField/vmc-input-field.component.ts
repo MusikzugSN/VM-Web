@@ -25,8 +25,6 @@ export class VmcInputField {
   inputChanged = output<VmValidFormTypes | VmCheckboxValues>();
 
   constructor() {
-    // Das ist nicht gut...
-    // Ich mache das damit die values in vmc-form immer aktuell sind.
     effect(() => {
       const field = this.formField();
       if (field.type !== 'select') {
@@ -41,7 +39,7 @@ export class VmcInputField {
     this.inputChanged.emit(checked ? 'checked' : 'unchecked');
   }
 
-  selectCallChangeEvent(event: string): void {
+  selectCallChangeEvent(event: string | string[]): void {
     this.inputChanged.emit(event);
   }
 

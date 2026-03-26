@@ -21,13 +21,14 @@ import {toObservable} from '@angular/core/rxjs-interop';
 export class VmcSelect {
   label: InputSignal<string> = input.required()
   enableSearch: InputSignal<boolean> = input<boolean>(false);
+  multiple: InputSignal<boolean> = input<boolean>(false);
   options: InputSignal<VmSelectOption[]> = input.required();
-  value: InputSignal<string | undefined> = input<string | undefined>(undefined);
+  value: InputSignal<string | string[] | undefined> = input<string | string[] | undefined>(undefined);
   hideIfNotSelected: InputSignal<string[]> = input<string[]>([]);
 
-  inputChanged = output<string>();
+  inputChanged = output<string | string[]>();
 
-  #currentValue: BehaviorSubject<string | undefined> = new BehaviorSubject<string | undefined>(undefined)
+  #currentValue: BehaviorSubject<string | string[] | undefined> = new BehaviorSubject<string | string[] | undefined>(undefined)
 
   #filterString$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   #filteredOptions$: BehaviorSubject<VmSelectOption[]> = new BehaviorSubject<VmSelectOption[]>([]);
@@ -35,7 +36,12 @@ export class VmcSelect {
   filteredOptions$: Observable<VmSelectOption[]> = combineLatest([this.#filterString$, this.#filteredOptions$, toObservable(this.hideIfNotSelected), this.#currentValue])
     .pipe(
       map(([filterString, options, hideIfNotSelected, currentValue]) => {
-      const valuesToHide = hideIfNotSelected.filter(x => x !== currentValue);
+      const valuesToHide = hideIfNotSelected.filter((x) => {
+        if (Array.isArray(currentValue)) {
+          return !currentValue.includes(x);
+        }
+        return x !== currentValue;
+      });
       let optionsToShow = options;
 
       if (valuesToHide.length > 0) {
@@ -75,7 +81,7 @@ export class VmcSelect {
 
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
-  onOpened(opened: boolean) {
+  onOpened(opened: boolean): void {
     if (opened) {
       setTimeout(() => {
         this.searchInput?.nativeElement?.focus();
@@ -83,7 +89,7 @@ export class VmcSelect {
     }
   }
 
-  onSearchKeydown(event: KeyboardEvent) {
+  onSearchKeydown(event: KeyboardEvent): void {
     // Nur SPACE blockieren
     if (event.code === 'Space' || event.key === ' ') {
       event.stopPropagation(); // verhindert Select-Interaktion

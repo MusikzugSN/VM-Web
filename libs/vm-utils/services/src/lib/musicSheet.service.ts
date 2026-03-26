@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
-import {BaseCrudService, convertMetaDataFromDto, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
-import {map, Observable} from 'rxjs';
-import {HttpParams} from '@angular/common/http';
+import {
+  BaseCrudService,
+  convertMetaDataFromDto,
+  convertMetaDataFromDtos,
+  IMetaData,
+} from '@vm-utils';
+import { map, Observable } from 'rxjs';
+import { HttpParams } from '@angular/common/http';
 
 export interface MusicSheet extends IMetaData {
   musicSheetId: number;
@@ -18,7 +23,7 @@ export interface MusicSheetTagTeaser {
 }
 
 export interface MusicSheetQuerys {
-  voiceIds: number[];
+  voiceIds?: number[];
 }
 
 @Injectable({
@@ -37,35 +42,42 @@ export class MusicSheetService extends BaseCrudService<MusicSheet, MusicSheet, M
     return this.change$({ musicSheetId, tags }, musicSheetId);
   }
 
-  loadForUnverifieed$(queryParams?: MusicSheetQuerys | undefined): Observable<MusicSheet[]> {
+  private buildHttpParams(queryParams?: MusicSheetQuerys | undefined): HttpParams {
     let params = new HttpParams();
 
-    if (queryParams) {
-      for (const [key, value] of Object.entries(queryParams)) {
-        if (value !== null && value !== undefined) {
-          params = params.set(key, String(value));
+    if (!queryParams) return params;
+
+
+    for (const [key, value] of Object.entries(queryParams)) {
+      if (value === null || value === undefined) continue;
+
+      if (Array.isArray(value)) {
+
+        for (const v of value) {
+          params = params.append(key, String(v));
         }
+      } else {
+        params = params.set(key, String(value));
       }
     }
 
-    return this.httpClient
-      .get<MusicSheet[]>(this.url + '/status/0', { params })
-      .pipe(map(groups => convertMetaDataFromDtos(groups)));
+    return params;
   }
 
-  loadForFolder$(folderId: string, queryParams?: MusicSheetQuerys | undefined): Observable<MusicSheet[]> {
-    let params = new HttpParams();
+  loadForUnverifieed$(queryParams?: MusicSheetQuerys | undefined): Observable<MusicSheet[]> {
+    const params = this.buildHttpParams(queryParams);
+    return this.httpClient
+      .get<MusicSheet[]>(this.url + '/status/0', { params })
+      .pipe(map((groups) => convertMetaDataFromDtos(groups)));
+  }
 
-    if (queryParams) {
-      for (const [key, value] of Object.entries(queryParams)) {
-        if (value !== null && value !== undefined) {
-          params = params.set(key, String(value));
-        }
-      }
-    }
-
+  loadForFolder$(
+    folderId: string,
+    queryParams?: MusicSheetQuerys | undefined,
+  ): Observable<MusicSheet[]> {
+    const params = this.buildHttpParams(queryParams);
     return this.httpClient
       .get<MusicSheet[]>(this.url + '/folder/' + folderId, { params })
-      .pipe(map(groups => convertMetaDataFromDtos(groups)));
+      .pipe(map((groups) => convertMetaDataFromDtos(groups)));
   }
 }

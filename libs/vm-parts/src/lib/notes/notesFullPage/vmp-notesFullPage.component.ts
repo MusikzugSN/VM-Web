@@ -41,14 +41,16 @@ export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
   buttonClicked = output<VmRowClickedEvent<AllNotesData>>();
   itemAdded = output<boolean>();
-  voiceFilterChanged = output<number>();
+  voiceFilterChanged = output<number[]>();
 
   readonly #printService = inject(VmpNotesFullpageDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
   readonly #voiceService = inject(VoiceService);
   readonly #router = inject(Router);
 
-  #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true}), { initialValue: [] });
+  #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true }), {
+    initialValue: [],
+  });
 
   #selectedIds$ = new BehaviorSubject<number[]>([]);
 
@@ -58,32 +60,35 @@ export class VmpNotesFullPageComponent {
       return [];
     }
 
-    const disableEdit = currentUrl.startsWith('/scores/unverified') || currentUrl.startsWith('/scores/folders');
+    const disableEdit =
+      currentUrl.startsWith('/scores/unverified') || currentUrl.startsWith('/scores/folders');
 
     return [
       { key: 'download', icon: 'file_download' },
       { key: 'print', icon: 'print' },
       ...(disableEdit ? [] : [{ key: 'edit', icon: 'edit' }]),
       { key: 'delete', icon: 'delete' },
-      { key: 'tag', icon: 'tag'},
+      { key: 'tag', icon: 'tag' },
     ];
   });
 
   filter = computed<VmFormField>(() => {
-    const voiceOptions = this.#voices()
-      .map(v => ({ label: v.instrumentName + ' ' + v.name, value: v.voiceId.toString() } as VmSelectOption));
+    const voiceOptions = this.#voices().map(
+      (v) =>
+        ({ label: v.instrumentName + ' ' + v.name, value: v.voiceId.toString() }) as VmSelectOption,
+    );
 
     return {
       key: 'voiceSelect',
       type: 'select',
       label: 'Filter',
       options: voiceOptions,
+      multiple: true,
+      value: [],
     };
   });
 
-  async execAction(
-    action: VmRowClickedEvent<AllNotesData>,
-  ): Promise<void> {
+  async execAction(action: VmRowClickedEvent<AllNotesData>): Promise<void> {
     if (action.rowData === null) {
       return;
     }
@@ -110,51 +115,55 @@ export class VmpNotesFullPageComponent {
     this.buttonClicked.emit(action);
   }
 
-  toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(map((x) => {
-    const toolbarItems: VmToolbarItem[] = [
-      {
-        key: 'addNotes',
-        icon: 'add',
-        label: 'Notenblatt hinzufügen',
-        action: async (): Promise<void> => {
-          const result = await this.#printService.openAddNoteSheetDialog();
-          if (result) this.itemAdded.emit(true);
-        },
-      },
-    ];
-    if (this.#router.url.startsWith('/scores')) {
-      toolbarItems.push({
-        key: 'addMoreNotes',
-        icon: 'add',
-        label: 'Hochladen und aufteilen von Notenblättern',
-        action: async (): Promise<void> => {
-          const result = await this.#printService.openAddMoreNoteSheetDialog();
-          if (result) this.itemAdded.emit(true);
-        },
-      });
-    }
-    if (x.length > 0) {
-      toolbarItems.push({
-          key: 'download',
-          icon: 'file_download',
-          label: 'Herunterladen',
+  toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(
+    map((x) => {
+      const toolbarItems: VmToolbarItem[] = [
+        {
+          key: 'addNotes',
+          icon: 'add',
+          label: 'Notenblatt hinzufügen',
           action: async (): Promise<void> => {
-            this.downloadFile();
+            const result = await this.#printService.openAddNoteSheetDialog();
+            if (result) this.itemAdded.emit(true);
           },
         },
-        {
-          key: 'drucken',
-          icon: 'print',
-          label: 'Drucken',
+      ];
+      if (this.#router.url.startsWith('/scores')) {
+        toolbarItems.push({
+          key: 'addMoreNotes',
+          icon: 'add',
+          label: 'Hochladen und aufteilen von Notenblättern',
           action: async (): Promise<void> => {
-            const selectedIds = this.#selectedIds$.getValue();
-            await this.#printService.openPrintDialog(selectedIds);
+            const result = await this.#printService.openAddMoreNoteSheetDialog();
+            if (result) this.itemAdded.emit(true);
           },
         });
-    }
+      }
+      if (x.length > 0) {
+        toolbarItems.push(
+          {
+            key: 'download',
+            icon: 'file_download',
+            label: 'Herunterladen',
+            action: async (): Promise<void> => {
+              this.downloadFile();
+            },
+          },
+          {
+            key: 'drucken',
+            icon: 'print',
+            label: 'Drucken',
+            action: async (): Promise<void> => {
+              const selectedIds = this.#selectedIds$.getValue();
+              await this.#printService.openPrintDialog(selectedIds);
+            },
+          },
+        );
+      }
 
-    return toolbarItems;
-  }))
+      return toolbarItems;
+    }),
+  );
 
   suchleiste: VmInputField = {
     key: 'searchbar',
@@ -163,7 +172,14 @@ export class VmpNotesFullPageComponent {
   };
 
   filterSelectionChange(event: VmValidFormTypes): void {
-    this.voiceFilterChanged.emit(Number(event));
+    if (Array.isArray(event)) {
+      const ids = (event as Array<string | number>).map(v => Number(v));
+      this.voiceFilterChanged.emit(ids);
+    } else if (event === null || event === undefined || event === '') {
+      this.voiceFilterChanged.emit([]);
+    } else {
+      this.voiceFilterChanged.emit([Number(event)]);
+    }
   }
 
   columns: VmColumn<AllNotesData>[] = [
@@ -203,6 +219,4 @@ export class VmpNotesFullPageComponent {
   selectionChanged(event: number[]): void {
     this.#selectedIds$.next(event);
   }
-
-
 }
