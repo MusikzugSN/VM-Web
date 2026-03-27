@@ -9,10 +9,10 @@ import {
   ToolbarService,
   ToolbarSettingsModel,
 } from '@syncfusion/ej2-angular-pdfviewer';
-import { NotesViewerService, ScoreVoiceRangesDTO } from './noteViewer.service';
+import {NotesViewerService, ScoreVoiceRangesDTO} from '@vm-utils/services';
 import { AsyncPipe, Location } from '@angular/common';
-import { NoteViewerSelectionService } from './note-viewer-selection.service';
-import { firstValueFrom, map, of } from 'rxjs';
+import { CropPdfService } from '@vm-utils/services';
+import { firstValueFrom, map } from 'rxjs';
 import {
   VmcInputField,
   VmcToolbar,
@@ -36,14 +36,13 @@ type PageRange = { from: number; to?: number };
     ThumbnailViewService,
     MagnificationService,
     PrintService,
-    NotesViewerService,
   ],
-  templateUrl: './vmp-note-viewer.component.html',
-  styleUrl: './vmp-note-viewer.component.scss',
+  templateUrl: './app-crop-pdf.component.html',
+  styleUrl: './app-crop-pdf.component.scss',
 })
-export class VmpNoteViewer {
+export class AppCropPdf {
   readonly #noteViewerService = inject(NotesViewerService);
-  readonly #selection = inject(NoteViewerSelectionService);
+  readonly #cropPdfService = inject(CropPdfService);
   readonly #scoreService = inject(ScoreService);
   readonly #voiceService = inject(VoiceService);
   readonly #location = inject(Location);
@@ -67,7 +66,7 @@ export class VmpNoteViewer {
   readonly #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true }), {
     initialValue: [],
   });
-  readonly #selectedFiles = toSignal(this.#selection.files$, { initialValue: [] });
+  readonly #selectedFiles = toSignal(this.#cropPdfService.files$, { initialValue: [] });
 
   scoreField = computed<VmFormField>(() => {
     const options: VmSelectOption[] = this.#scores().map((s) => ({
@@ -117,21 +116,17 @@ export class VmpNoteViewer {
   customToolbar: ToolbarSettingsModel = {
     showTooltip: true,
     toolbarItems: [
-      'DownloadOption',
-      'PrintOption',
       'MagnificationTool',
-      'PageNavigationTool',
-      'OpenOption',
+      'PageNavigationTool'
     ],
   };
 
-  documentPath$ = this.#selection.files$.pipe(
+  documentPath$ = this.#cropPdfService.files$.pipe(
     map((files) => {
       const first = files[0]?.file;
       return first ? URL.createObjectURL(first) : '';
     }),
   );
-  documentPath = of('vm-web://${musicsheetId}') // documentpath darauf verändern
 
   onPageChange(args: { currentPageNumber?: number; currentPage?: number }): void {
     const page =
@@ -251,7 +246,7 @@ export class VmpNoteViewer {
     }
 
     await firstValueFrom(
-      this.#noteViewerService.cropPdfByVoicesBatch$({
+      this.#cropPdfService.cropPdfByVoicesBatch$({
         file: firstFile,
         items,
       }),

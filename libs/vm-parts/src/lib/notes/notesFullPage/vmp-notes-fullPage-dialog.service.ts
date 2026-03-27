@@ -7,7 +7,6 @@ import { VmpNotesTagDialogComponent } from './tag-dialog/vmp-notes-tag-dialog.co
 import { PrintService } from './print-dialog/print.service';
 import { ConfigService } from '@vm-utils';
 import { firstValueFrom } from 'rxjs';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +15,6 @@ export class VmpNotesFullpageDialogService {
   readonly #dialogService = inject(VmDialogService);
   readonly #printService = inject(PrintService);
   readonly #config = inject(ConfigService);
-  readonly #router = inject(Router);
 
   async openPrintDialog(
     selectedIds?: number[],
@@ -100,9 +98,5 @@ export class VmpNotesFullpageDialogService {
         { key: 'save', text: 'Speichern', type: 'filled' },
       ]
     });
-  }
-
-  async openVerifyDialog(): Promise<boolean | undefined> {
-    return this.#router.navigate(['/verifyViewer'])
   }
 }

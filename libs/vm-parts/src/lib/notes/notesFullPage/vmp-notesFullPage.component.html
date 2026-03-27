@@ -1,7 +1,8 @@
 <vmc-toolbar [items]="(toolbarItems$ | async) ?? []" [useNgContentForRightside]="true">
   <div class="gap">
     <vmc-input-field
-      [formField]="suchleiste">
+      [formField]="suchleiste"
+    (inputChanged)="filterTermChanged($event)">
     </vmc-input-field>
 
     <vmc-input-field
@@ -13,6 +14,7 @@
 <vmc-data-grid
   [paginator]="[5, 10, 20]"
   [dataSource]="data()"
+  [filterTerm]="filterTerm()"
   [columns]="columns"
   [selectionMode]="'multi'"
   [selectionKey]="'notesId'"

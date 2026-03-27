@@ -1,4 +1,4 @@
-import {Component, computed, inject, input, InputSignal, output} from '@angular/core';
+import {Component, computed, inject, input, InputSignal, output, signal} from '@angular/core';
 import {BehaviorSubject, map, Observable} from 'rxjs';
 import {
   VmcDataGrid,
@@ -15,7 +15,7 @@ import {
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
 import { VmpNotesFullpageDialogService } from './vmp-notes-fullPage-dialog.service';
-import {VoiceService} from '@vm-utils/services';
+import {VerifySheetService, VoiceService} from '@vm-utils/services';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
 import { Router } from '@angular/router';
@@ -48,6 +48,8 @@ export class VmpNotesFullPageComponent {
   readonly #downloadFileService = inject(DownloadFileService);
   readonly #voiceService = inject(VoiceService);
   readonly #router = inject(Router);
+  readonly #verifyScoreService = inject(VerifySheetService);
+
 
   #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true }), {
     initialValue: [],
@@ -75,6 +77,8 @@ export class VmpNotesFullPageComponent {
     ];
   });
 
+  filterTerm = signal('');
+
   filter = computed<VmFormField>(() => {
     const voiceOptions = this.#voices().map(
       (v) =>
@@ -90,6 +94,10 @@ export class VmpNotesFullPageComponent {
       value: this.selectedVoiceIds().map((id) => id.toString()),
     };
   });
+
+  filterTermChanged(term: VmValidFormTypes) {
+    this.filterTerm.set(term.toString());
+  }
 
   async execAction(action: VmRowClickedEvent<AllNotesData>): Promise<void> {
     if (action.rowData === null) {
@@ -108,7 +116,8 @@ export class VmpNotesFullPageComponent {
     }
 
     if (action.key === 'check') {
-      await this.#printService.openVerifyDialog();
+      this.#verifyScoreService.setSheetIds([action.rowData.notesId]);
+      await this.#router.navigate(['/scores/verifySheet'])
       return;
     }
 
@@ -155,7 +164,8 @@ export class VmpNotesFullPageComponent {
         icon: 'fact_check',
         label: 'Prüfen',
         action: async (): Promise<void> => {
-          await this.#printService.openVerifyDialog();
+          this.#verifyScoreService.setSheetIds(x);
+          await this.#router.navigate(['/scores/verifySheet'])
         },
       });
     }

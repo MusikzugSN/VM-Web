@@ -10,6 +10,8 @@ import { AppFoldersConfComponent } from './folders-conf/app-folders-conf.compone
 import { TagsConfComponent } from './tags-conf/tags-conf.component';
 import { PrintConfComponent } from './print-conf/print-conf.component';
 import {authGuard} from '../auth/auth.guard';
+import {AppCropPdf} from './crop-pdf/app-crop-pdf.component';
+import {AppVerifySheet} from './verify-sheet/app-verify-sheet.component';
 
 export const MANAGEMENT_ROUTES: Routes = [
   {
@@ -19,6 +21,14 @@ export const MANAGEMENT_ROUTES: Routes = [
     canActivateChild: [authGuard],
     children: [
       { path: '', redirectTo: 'unverified', pathMatch: 'full' },
+      {
+        path: 'cropPdf',
+        component: AppCropPdf
+      },
+      {
+        path: 'verifySheet',
+        component: AppVerifySheet
+      },
       { path: 'unverified', component: AppUnverifiedComponent },
       { path: 'repository', component: AppRepositoryComponent },
       { path: 'folders', children: [{ path: ':folderId', component: AppFolderScoreComponent }] },

@@ -6,7 +6,7 @@ import {
   VmToolbarItem,
   VmValidFormTypes,
 } from '@vm-components';
-import { PrintconfService, Printconf, Duplex, Mode } from '@vm-utils/services';
+import { PrintConfigurationService, Printconf, Duplex, Mode } from '@vm-utils/services';
 import { convertToPatch, Dictionary, nameOf } from '@vm-utils';
 import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -19,7 +19,7 @@ import { AsyncPipe } from '@angular/common';
 })
 export class PrintConfComponent {
   #reload = new BehaviorSubject(false);
-  readonly printconfService = inject(PrintconfService);
+  readonly printconfService = inject(PrintConfigurationService);
   printconfs$: Observable<Printconf[]> = this.#reload.pipe(
     switchMap(() => this.printconfService.load$()),
   );

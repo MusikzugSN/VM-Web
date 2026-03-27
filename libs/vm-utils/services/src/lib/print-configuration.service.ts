@@ -23,6 +23,6 @@ export enum Duplex {
   providedIn: 'root',
 })
 
-export class PrintconfService extends BaseCrudService<Printconf> {
+export class PrintConfigurationService extends BaseCrudService<Printconf> {
   override url: string = 'printconf';
 }
