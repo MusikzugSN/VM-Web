@@ -1,0 +1,23 @@
+<vmc-toolbar [items]="toolbarItems" [useNgContentForRightside]="true">
+  <div style="display: flex; gap: 12px; width: 100%;">
+    <vmc-input-field
+      [formField]="scoreField()"
+      [shouldInitChange]="false"
+      (inputChanged)="scoreChanged($event)"
+    />
+    <vmc-input-field
+      [formField]="voiceField()"
+      [shouldInitChange]="false"
+      (inputChanged)="voiceChanged($event)"
+    />
+  </div>
+</vmc-toolbar>
+
+<ejs-pdfviewer
+  #viewer
+  style="height: 100%; display: block"
+  [toolbarSettings]="customToolbar"
+  [serviceUrl]="(serviceUrl$ | async) ?? ''"
+  [documentPath]="(documentPath$ | async) ?? ''"
+  (documentLoad)="onDocumentLoad()">
+</ejs-pdfviewer>

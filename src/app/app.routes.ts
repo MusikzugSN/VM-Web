@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
 import { VmpNoteViewer } from '@vm-parts';
+import {
+  VmpVerifyScoreDialog
+} from '../../libs/vm-parts/src/lib/notes/notesFullPage/verify-score-dialog/vmp-verify-score-dialog.component';
 
 export const routes: Routes = [
   {
@@ -11,6 +14,11 @@ export const routes: Routes = [
   {
     path: 'viewer',
     component: VmpNoteViewer,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'verifyViewer',
+    component: VmpVerifyScoreDialog,
     canActivate: [authGuard],
   },
   {

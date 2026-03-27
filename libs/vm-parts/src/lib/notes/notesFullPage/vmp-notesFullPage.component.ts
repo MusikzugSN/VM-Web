@@ -59,10 +59,12 @@ export class VmpNotesFullPageComponent {
     }
 
     const disableEdit = currentUrl.startsWith('/scores/unverified') || currentUrl.startsWith('/scores/folders');
+    const isUnverified = currentUrl.startsWith('/scores/unverified');
 
     return [
       { key: 'download', icon: 'file_download' },
-      { key: 'print', icon: 'print' },
+      ...(isUnverified ? [{ key: 'check', icon: 'fact_check'}] : []),
+      ...(disableEdit ? [] : [{ key: 'print', icon: 'print' }]),
       ...(disableEdit ? [] : [{ key: 'edit', icon: 'edit' }]),
       { key: 'delete', icon: 'delete' },
     ];
@@ -93,16 +95,22 @@ export class VmpNotesFullPageComponent {
     }
 
     if (action.key === 'print') {
-      await this.#printService.openPrintDialog([action.rowData.notesId]);
+      const ids = [action.rowData.notesId];
+      await this.#printService.printSingleWithSystemDialog(ids);
       return;
     }
 
+    if (action.key === 'check') {
+      await this.#printService.openVerifyDialog();
+      return;
+    }
     this.buttonClicked.emit(action);
   }
 
   toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(map((x) => {
-    const toolbarItems: VmToolbarItem[] = [
-      {
+    const toolbarItems: VmToolbarItem[] = [];
+    if (this.#router.url.startsWith('/scores/folders')) {
+      toolbarItems.push({
         key: 'addNotes',
         icon: 'add',
         label: 'Notenblatt hinzufügen',
@@ -110,9 +118,9 @@ export class VmpNotesFullPageComponent {
           const result = await this.#printService.openAddNoteSheetDialog();
           if (result) this.itemAdded.emit(true);
         },
-      },
-    ];
-    if (this.#router.url.startsWith('/scores')) {
+      });
+    }
+    if (this.#router.url.startsWith('/scores/folders')) {
       toolbarItems.push({
         key: 'addMoreNotes',
         icon: 'add',
@@ -123,8 +131,19 @@ export class VmpNotesFullPageComponent {
         },
       });
     }
-    if (x.length > 0) {
+    if (this.#router.url.startsWith('/scores/unverified')) {
       toolbarItems.push({
+        key: 'check',
+        icon: 'fact_check',
+        label: 'Prüfen',
+        action: async (): Promise<void> => {
+          await this.#printService.openVerifyDialog();
+        },
+      });
+    }
+    if (this.#router.url.startsWith('/scores/folders') && x.length > 0) {
+      toolbarItems.push(
+        {
           key: 'download',
           icon: 'file_download',
           label: 'Herunterladen',
@@ -136,11 +155,19 @@ export class VmpNotesFullPageComponent {
           key: 'drucken',
           icon: 'print',
           label: 'Drucken',
+
           action: async (): Promise<void> => {
             const selectedIds = this.#selectedIds$.getValue();
+
+            if (selectedIds.length === 1) {
+              await this.#printService.printSingleWithSystemDialog(selectedIds);
+              return;
+            }
+
             await this.#printService.openPrintDialog(selectedIds);
           },
-        });
+        },
+      );
     }
 
     return toolbarItems;
