@@ -3,9 +3,9 @@ import {AuthService, PermissionTeaserWithGroupId} from './auth.service';
 import {combineLatest, map, Observable} from 'rxjs';
 
 export enum PermissionType {
-  Administrator = 0,
+  //Administrator = 0,
 
-  OpenUser,
+  OpenUser = 1,
   ListUser,
   CreateUser,
   UpdateUser,
@@ -34,6 +34,11 @@ export enum PermissionType {
   CreateVoice,
   UpdateVoice,
   DeleteVoice,
+
+  OpenTags,
+  CreateTags,
+  UpdateTags,
+  DeleteTags,
 
   OpenScores,
   ListScore,

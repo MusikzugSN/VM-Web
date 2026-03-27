@@ -1,0 +1,44 @@
+<div class="flex-column" style="gap: 16px">
+  <div style="display: flex; gap: 16px">
+
+
+      <vmc-data-grid
+        [columns]="tagColumns"
+        [rowActions]="tagRowActions"
+        [footerActions]="footerActions"
+        [dataSource]="(noteTagsData$ | async) ?? []"
+        [templates]="[
+          {
+            keys: ['tag'],
+            templateRef: tagTemplate,
+          },
+          {
+            keys: ['tagFooter'],
+            templateRef: tagFooterTemplate,
+          },
+        ]"
+        (clickedAction)="execActionFromRow($event)"
+      />
+    </div>
+  </div>
+
+
+<ng-template #tagTemplate let-rowDataRaw="rowData">
+  @let tags = tagsById();
+  @let rowData = rowDataRaw | as: TagType;
+  {{ tags[rowData.tagId]?.name ?? 'N/A' }}
+</ng-template>
+
+<ng-template #tagFooterTemplate>
+  <vmc-input-field
+    [formField]="{
+      label: 'Tags',
+      key: 'tagId',
+      type: 'select',
+      options: tagOptions(),
+      enableSearch: true,
+    }"
+    (inputChanged)="storeNewTagChange($event)"
+  />
+</ng-template>
+

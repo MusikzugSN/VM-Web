@@ -2,7 +2,7 @@ import { VmButtonType } from '@vm-components';
 
 export type VmCheckboxValues = 'checked' | 'unchecked' | 'indeterminate';
 
-export type VmValidFormTypes = number | string;
+export type VmValidFormTypes = number | string | number[] | string[];
 
 export interface VmForm {
   header?: string;
@@ -49,8 +49,9 @@ export interface VmCheckboxField extends VmBaseField {
 export interface VmSelect extends VmBaseField {
   type: 'select';
   enableSearch?: boolean;
+  multiple?: boolean;
   options: VmSelectOption[];
-  value?: string;
+  value?: string | string[];
 }
 export interface VmSelectOption {
   label: string;

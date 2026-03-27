@@ -41,14 +41,16 @@ export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
   buttonClicked = output<VmRowClickedEvent<AllNotesData>>();
   itemAdded = output<boolean>();
-  voiceFilterChanged = output<number>();
+  voiceFilterChanged = output<number[]>();
 
   readonly #printService = inject(VmpNotesFullpageDialogService);
   readonly #downloadFileService = inject(DownloadFileService);
   readonly #voiceService = inject(VoiceService);
   readonly #router = inject(Router);
 
-  #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true}), { initialValue: [] });
+  #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true }), {
+    initialValue: [],
+  });
 
   #selectedIds$ = new BehaviorSubject<number[]>([]);
 
@@ -58,7 +60,8 @@ export class VmpNotesFullPageComponent {
       return [];
     }
 
-    const disableEdit = currentUrl.startsWith('/scores/unverified') || currentUrl.startsWith('/scores/folders');
+    const disableEdit =
+      currentUrl.startsWith('/scores/unverified') || currentUrl.startsWith('/scores/folders');
     const isUnverified = currentUrl.startsWith('/scores/unverified');
 
     return [
@@ -67,24 +70,27 @@ export class VmpNotesFullPageComponent {
       ...(disableEdit ? [] : [{ key: 'print', icon: 'print' }]),
       ...(disableEdit ? [] : [{ key: 'edit', icon: 'edit' }]),
       { key: 'delete', icon: 'delete' },
+      { key: 'tag', icon: 'tag' },
     ];
   });
 
   filter = computed<VmFormField>(() => {
-    const voiceOptions = this.#voices()
-      .map(v => ({ label: v.instrumentName + ' ' + v.name, value: v.voiceId.toString() } as VmSelectOption));
+    const voiceOptions = this.#voices().map(
+      (v) =>
+        ({ label: v.instrumentName + ' ' + v.name, value: v.voiceId.toString() }) as VmSelectOption,
+    );
 
     return {
       key: 'voiceSelect',
       type: 'select',
       label: 'Filter',
       options: voiceOptions,
+      multiple: true,
+      value: [],
     };
   });
 
-  async execAction(
-    action: VmRowClickedEvent<AllNotesData>,
-  ): Promise<void> {
+  async execAction(action: VmRowClickedEvent<AllNotesData>): Promise<void> {
     if (action.rowData === null) {
       return;
     }
@@ -104,34 +110,45 @@ export class VmpNotesFullPageComponent {
       await this.#printService.openVerifyDialog();
       return;
     }
+
+    if (action.key === 'tag') {
+      await this.#printService.openTagDialog(
+        action.rowData.notesId,
+        action.rowData.name,
+        action.rowData.voice,
+      );
+      return;
+    }
+
     this.buttonClicked.emit(action);
   }
 
-  toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(map((x) => {
-    const toolbarItems: VmToolbarItem[] = [];
+  toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(
+    map((x) => {
+      const toolbarItems: VmToolbarItem[] = [];
     if (this.#router.url.startsWith('/scores/folders')) {
       toolbarItems.push({
-        key: 'addNotes',
-        icon: 'add',
-        label: 'Notenblatt hinzufügen',
-        action: async (): Promise<void> => {
-          const result = await this.#printService.openAddNoteSheetDialog();
-          if (result) this.itemAdded.emit(true);
-        },
-      });
-    }
-    if (this.#router.url.startsWith('/scores/folders')) {
-      toolbarItems.push({
-        key: 'addMoreNotes',
-        icon: 'add',
-        label: 'Hochladen und aufteilen von Notenblättern',
-        action: async (): Promise<void> => {
-          const result = await this.#printService.openAddMoreNoteSheetDialog();
-          if (result) this.itemAdded.emit(true);
-        },
-      });
-    }
-    if (this.#router.url.startsWith('/scores/unverified')) {
+          key: 'addNotes',
+          icon: 'add',
+          label: 'Notenblatt hinzufügen',
+          action: async (): Promise<void> => {
+            const result = await this.#printService.openAddNoteSheetDialog();
+            if (result) this.itemAdded.emit(true);
+          },
+        });
+      }
+      if (this.#router.url.startsWith('/scores/folders')) {
+        toolbarItems.push({
+          key: 'addMoreNotes',
+          icon: 'add',
+          label: 'Hochladen und aufteilen von Notenblättern',
+          action: async (): Promise<void> => {
+            const result = await this.#printService.openAddMoreNoteSheetDialog();
+            if (result) this.itemAdded.emit(true);
+          },
+        });
+      }
+      if (this.#router.url.startsWith('/scores/unverified')) {
       toolbarItems.push({
         key: 'check',
         icon: 'fact_check',
@@ -143,8 +160,8 @@ export class VmpNotesFullPageComponent {
     }
     if (this.#router.url.startsWith('/scores/folders') && x.length > 0) {
       toolbarItems.push(
-        {
-          key: 'download',
+
+          {key: 'download',
           icon: 'file_download',
           label: 'Herunterladen',
           action: async (): Promise<void> => {
@@ -164,14 +181,14 @@ export class VmpNotesFullPageComponent {
               return;
             }
 
-            await this.#printService.openPrintDialog(selectedIds);
+            await this.#printService.openPrintDialog(selectedIds);},
           },
-        },
-      );
-    }
+        );
+      }
 
-    return toolbarItems;
-  }))
+      return toolbarItems;
+    }),
+  );
 
   suchleiste: VmInputField = {
     key: 'searchbar',
@@ -180,7 +197,14 @@ export class VmpNotesFullPageComponent {
   };
 
   filterSelectionChange(event: VmValidFormTypes): void {
-    this.voiceFilterChanged.emit(Number(event));
+    if (Array.isArray(event)) {
+      const ids = (event as Array<string | number>).map(v => Number(v));
+      this.voiceFilterChanged.emit(ids);
+    } else if (event === null || event === undefined || event === '') {
+      this.voiceFilterChanged.emit([]);
+    } else {
+      this.voiceFilterChanged.emit([Number(event)]);
+    }
   }
 
   columns: VmColumn<AllNotesData>[] = [

@@ -28,21 +28,23 @@ export class AppUnverifiedComponent {
   readonly #voiceService = inject(VoiceService);
 
   #reload = new BehaviorSubject(false);
-  #voiceFilter = new BehaviorSubject<number | undefined>(undefined);
+  #voiceFilter = new BehaviorSubject<number[] | undefined>(undefined);
 
   sheet$: Observable<MusicSheet[]> = combineLatest([this.#reload, this.#voiceFilter]).pipe(
     switchMap(([_x, filter]) => {
       let queryParam: MusicSheetQuerys | undefined = undefined;
 
-      if (filter) {
-        queryParam = { voiceIds: [filter]}
+      if (filter && filter.length > 0) {
+        queryParam = { voiceIds: filter };
       }
 
-      return this.#musicSheetService.loadForUnverifieed$(queryParam).pipe(catchError(() => of([])))
+      return this.#musicSheetService.loadForUnverifieed$(queryParam).pipe(catchError(() => of([])));
     }),
   );
   score$: Observable<Score[]> = this.#reload.pipe(
-    switchMap((_x) => this.#scoreService.load$({ includeMusicFolders: true }).pipe(catchError(() => of([])))),
+    switchMap((_x) =>
+      this.#scoreService.load$({ includeMusicFolders: true }).pipe(catchError(() => of([]))),
+    ),
   );
 
   folders$: Observable<Folder[]> = this.#reload.pipe(
@@ -50,8 +52,10 @@ export class AppUnverifiedComponent {
   );
 
   voices$ = this.#reload.pipe(
-    switchMap(_x => this.#voiceService.load$({ includeInstrumentName: true }).pipe(catchError(() => of([])))),
-  )
+    switchMap((_x) =>
+      this.#voiceService.load$({ includeInstrumentName: true }).pipe(catchError(() => of([]))),
+    ),
+  );
 
   async execAction(action: VmRowClickedEvent<AllNotesData>): Promise<void> {
     if (action.rowData === null) {
@@ -68,7 +72,12 @@ export class AppUnverifiedComponent {
     }
   }
 
-  data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$, this.folders$, this.voices$]).pipe(
+  data$: Observable<AllNotesData[]> = combineLatest([
+    this.sheet$,
+    this.score$,
+    this.folders$,
+    this.voices$,
+  ]).pipe(
     map(([sheet, score, folders, voices]) => {
       return sheet
         .map((x) => {
@@ -82,7 +91,7 @@ export class AppUnverifiedComponent {
             composer: currentScore.composer,
             folders: currentScore.musicFolders
               .map((z) => {
-                const folder = folders.find(x => x.musicFolderId === z.musicFolderId);
+                const folder = folders.find((x) => x.musicFolderId === z.musicFolderId);
                 //console.log('for ' + x.musicSheetId, currentScore.composer, currentScore.musicFolders)
                 if (folder === undefined) {
                   return;
@@ -90,20 +99,26 @@ export class AppUnverifiedComponent {
 
                 return folder.name + (z.number.trim().length > 0 ? ' (' + z.number + ')' : '');
               })
-              .filter(x => !!x)
+              .filter((x) => !!x)
               .join(', '),
             link: currentScore.link,
             pageCount: x.pageCount,
             voice: voices
-              .filter(voice => voice.voiceId === x.voiceId)
-              .map(voice => voice.instrumentName + ' ' + voice.name).join(', '),
+              .filter((voice) => voice.voiceId === x.voiceId)
+              .map((voice) => voice.instrumentName + ' ' + voice.name)
+              .join(', '),
           } as AllNotesData;
         })
         .filter((x) => x !== undefined);
     }),
   );
 
-  voiceFilterChanged(event: number): void {
-    this.#voiceFilter.next(event);
+    voiceFilterChanged(event: number[] | undefined): void {
+
+     if (!event || event.length === 0) {
+      this.#voiceFilter.next(undefined);
+    } else {
+      this.#voiceFilter.next(event);
+    }
   }
 }

@@ -125,12 +125,17 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     }
 
     const rows = this.dataSource()?.length ?? 0;
-    const matching = options.filter((x) => x <= rows);
-    if (matching.length > 0) {
-      return matching[matching.length - 1] ?? 0;
+
+    // nächsthöhere Option suchen
+    const nextHigher = options.find(x => x >= rows);
+
+    // wenn gefunden → nehmen
+    if (nextHigher !== undefined) {
+      return nextHigher;
     }
 
-    return options[0] ?? 0;
+    // sonst höchste Option zurückgeben
+    return options[options.length - 1] ?? 0;
   });
 
   clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
