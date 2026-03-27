@@ -8,7 +8,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { SnackbarService } from '@vm-utils/snackbar';
 import { Router } from '@angular/router';
-import { NoteViewerSelectionService } from '../../noteViewer/note-viewer-selection.service';
+import { CropPdfService } from '../../../../../../vm-utils/services/src/lib/crop-pdf.service';
 
 @Component({
   selector: 'vmp-multi-score-upload-dialog.component',
@@ -20,7 +20,7 @@ export class VmpMultiScoreUploadDialog extends DialogBase<boolean> {
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #snackbarService = inject(SnackbarService);
   readonly #router = inject(Router);
-  readonly #viewerSelection = inject(NoteViewerSelectionService);
+  readonly #viewerSelection = inject(CropPdfService);
 
 
 
@@ -37,7 +37,7 @@ export class VmpMultiScoreUploadDialog extends DialogBase<boolean> {
         }
 
         this.#viewerSelection.setFiles(files);
-        await this.#router.navigate(['/viewer']);
+        await this.#router.navigate(['/score/cropPdf']);
         super.closeDialog(true);
 
       }

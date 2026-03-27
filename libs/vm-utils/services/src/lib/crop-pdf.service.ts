@@ -1,7 +1,7 @@
-import { map, Observable } from 'rxjs';
-import { inject } from '@angular/core';
-import { ConfigService } from '@vm-utils';
-import { HttpClient } from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs';
+import { FileData } from '@vm-components';
+import {HttpClient} from '@angular/common/http';
 
 export interface ScoreVoiceRangesDTO {
   scoreId: number;
@@ -15,13 +15,18 @@ export interface CropPdfByVoicesBatchRequest {
   items: ScoreVoiceRangesDTO[];
 }
 
-export class NotesViewerService {
-  readonly #config = inject(ConfigService);
+@Injectable({
+  providedIn: 'root',
+})
+export class CropPdfService {
   readonly #httpClient = inject(HttpClient);
 
-  hostedUrl$: Observable<string> = this.#config.config$.pipe(
-    map((x) => x?.backedApiUrl + '/PdfViewer'),
-  );
+  #files$ = new BehaviorSubject<FileData[]>([]);
+  files$ = this.#files$.asObservable();
+
+  setFiles(files: FileData[]): void {
+    this.#files$.next(files);
+  }
 
   cropPdfByVoicesBatch$(req: CropPdfByVoicesBatchRequest): Observable<unknown> {
     const form = new FormData();

@@ -26,6 +26,12 @@ export interface MusicSheetQuerys {
   voiceIds?: number[];
 }
 
+export enum MusicSheetStatus {
+  Unverified = 0,
+  Accepted = 1,
+  Rejected = 2,
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -40,6 +46,14 @@ export class MusicSheetService extends BaseCrudService<MusicSheet, MusicSheet, M
 
   changeTags$(musicSheetId: number, tags: MusicSheetTagTeaser[]): Observable<MusicSheet> {
     return this.change$({ musicSheetId, tags }, musicSheetId);
+  }
+
+  setStatusToMusicSheet$(musicSheetIds: number, status: MusicSheetStatus, scoreId?: number, voiceId?: number): Observable<MusicSheet> {
+    return this.httpClient.patch<MusicSheet>(`${this.url}/${musicSheetIds}/status`, {
+      status,
+      scoreId,
+      voiceId
+    }).pipe(map((musicSheet) => convertMetaDataFromDto(musicSheet)));
   }
 
   private buildHttpParams(queryParams?: MusicSheetQuerys | undefined): HttpParams {

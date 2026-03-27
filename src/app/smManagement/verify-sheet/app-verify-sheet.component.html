@@ -17,7 +17,6 @@
   #viewer
   style="height: 100%; display: block"
   [toolbarSettings]="customToolbar"
-  [serviceUrl]="''"
-  [documentPath]="''"
-  (documentLoad)="onDocumentLoad()">
+  [serviceUrl]="(serviceUrl$ | async) ?? ''"
+  [documentPath]="(documentPath$ | async) ?? ''">
 </ejs-pdfviewer>
