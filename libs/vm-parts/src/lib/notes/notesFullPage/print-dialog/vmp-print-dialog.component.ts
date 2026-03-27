@@ -95,7 +95,7 @@ export class VmpPrintDialog extends DialogBase<boolean> {
           return;
         }
 
-        let serviceOk = false;
+        let serviceOk: boolean;
         try {
           const health = await firstValueFrom(this.#printService.health$());
           serviceOk = health.status === 'ok';
@@ -141,8 +141,15 @@ export class VmpPrintDialog extends DialogBase<boolean> {
     this.#changedValues[key] = this.#checkboxToBool(newValue);
   }
 
-  storePrinterChange(event: string | number): void {
-    this.selectedPrinterName = event.toString();
+  storePrinterChange(event: VmValidFormTypes): void {
+    const normalized = Array.isArray(event) ? event[0] : event;
+
+    if (normalized === null || normalized === undefined) {
+      this.selectedPrinterName = '';
+      return;
+    }
+
+    this.selectedPrinterName = normalized.toString();
   }
 
   #checkboxToBool(value: VmValidFormTypes | VmCheckboxValues): boolean {
@@ -158,7 +165,7 @@ export class VmpPrintDialog extends DialogBase<boolean> {
     iframe.name = 'pdfIframe'
     document.body.appendChild(iframe);
     iframe.style.display = 'none';
-    iframe.onload = function () {
+    iframe.onload = function (): void {
       setTimeout(function () {
         iframe.contentWindow?.focus();
         iframe.contentWindow?.print();

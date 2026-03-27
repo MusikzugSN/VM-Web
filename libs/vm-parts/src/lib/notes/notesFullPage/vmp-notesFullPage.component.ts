@@ -39,6 +39,7 @@ export interface AllNotesData {
 })
 export class VmpNotesFullPageComponent {
   data: InputSignal<AllNotesData[]> = input.required();
+  selectedVoiceIds = input<number[]>([]);
   buttonClicked = output<VmRowClickedEvent<AllNotesData>>();
   itemAdded = output<boolean>();
   voiceFilterChanged = output<number[]>();
@@ -86,7 +87,7 @@ export class VmpNotesFullPageComponent {
       label: 'Filter',
       options: voiceOptions,
       multiple: true,
-      value: [],
+      value: this.selectedVoiceIds().map((id) => id.toString()),
     };
   });
 

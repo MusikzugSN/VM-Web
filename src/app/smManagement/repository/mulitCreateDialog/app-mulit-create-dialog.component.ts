@@ -93,9 +93,10 @@ export class AppScoreMulitCreateDialog extends DialogBase<boolean> {
     this.#file$.next(event[0]);
   }
 
-  updateMapping(field: string, header: string | null) {
+  updateMapping(field: string, header: string | string[] | null | undefined): void {
+    const normalizedHeader = Array.isArray(header) ? (header[0] ?? null) : (header ?? null);
     const map = { ...this.mapping$.value };
-    map[field] = header;
+    map[field] = normalizedHeader;
     this.mapping$.next(map);
   }
 
@@ -124,7 +125,7 @@ export class AppScoreMulitCreateDialog extends DialogBase<boolean> {
         return [];
       }
 
-      const get = (dtoField: string) => {
+      const get = (dtoField: string): string | null => {
         const header = mapping[dtoField];
         if (!header) return null;
         const index = headers?.indexOf(header);
@@ -134,7 +135,7 @@ export class AppScoreMulitCreateDialog extends DialogBase<boolean> {
         }
 
         if (index === -1) return null;
-        return cols[index];
+        return cols[index] ?? null;
       };
 
       dtos.push({

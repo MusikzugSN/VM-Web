@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
 import {
   PdfViewerComponent,
   PdfViewerModule,
@@ -15,8 +14,7 @@ import {
 } from '@vm-components';
 import { DialogBase } from '@vm-utils/dialogs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MusicSheetService, ScoreService, VoiceService } from '@vm-utils/services';
-import { of } from 'rxjs';
+import { ScoreService, VoiceService } from '@vm-utils/services';
 
 type StoredSelection = {
   scoreId?: number;
@@ -25,7 +23,7 @@ type StoredSelection = {
 
 @Component({
   selector: 'vmp-verify-score-dialog.component',
-  imports: [AsyncPipe, PdfViewerModule, VmcInputField, VmcToolbar],
+  imports: [PdfViewerModule, VmcInputField, VmcToolbar],
   templateUrl: './vmp-verify-score-dialog.component.html',
   styleUrl: './vmp-verify-score-dialog.component.scss',
 })
@@ -33,7 +31,6 @@ export class VmpVerifyScoreDialog extends DialogBase<boolean> {
   public readonly verifyViewer = viewChild<PdfViewerComponent>('viewer');
   readonly #scoreService = inject(ScoreService);
   readonly #voiceService = inject(VoiceService);
-  readonly #musicSheetService = inject(MusicSheetService);
 
   readonly #scores = toSignal(this.#scoreService.load$(), { initialValue: [] });
   readonly #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true }), {
@@ -44,8 +41,6 @@ export class VmpVerifyScoreDialog extends DialogBase<boolean> {
   readonly #selectedVoiceId = signal<number | undefined>(undefined);
 
   readonly #storageKey = 'verifyViewer.selection';
-
-  documentPath$ = of(`vm-web://${musicSheetId}`);
 
   customToolbar: ToolbarSettingsModel = {
     showTooltip: true,
@@ -93,17 +88,18 @@ export class VmpVerifyScoreDialog extends DialogBase<boolean> {
       key: 'save',
       icon: 'save',
       label: 'Speichern',
-      action: () => {},
+      action: (): void => {},
     },
     {
       key: 'cancel',
       icon: 'close',
       label: 'Abbrechen',
-      action: () => {},
+      action: (): void => {},
     },
   ];
   scoreChanged(value: VmValidFormTypes): void {
-    const nextScoreId = Number(value);
+    const normalized = this.#normalizeSingleValue(value);
+    const nextScoreId = Number(normalized);
     if (Number.isNaN(nextScoreId)) {
       return;
     }
@@ -113,7 +109,8 @@ export class VmpVerifyScoreDialog extends DialogBase<boolean> {
   }
 
   voiceChanged(value: VmValidFormTypes): void {
-    const nextVoiceId = Number(value);
+    const normalized = this.#normalizeSingleValue(value);
+    const nextVoiceId = Number(normalized);
     if (Number.isNaN(nextVoiceId)) {
       return;
     }
@@ -153,5 +150,17 @@ export class VmpVerifyScoreDialog extends DialogBase<boolean> {
 
     this.#selectedScoreId.set(scoreExists ? parsed.scoreId : undefined);
     this.#selectedVoiceId.set(voiceExists ? parsed.voiceId : undefined);
+  }
+
+  #normalizeSingleValue(value: VmValidFormTypes): string | number | null {
+    if (Array.isArray(value)) {
+      return (value[0] ?? null) as string | number | null;
+    }
+
+    if (value === undefined) {
+      return null;
+    }
+
+    return value;
   }
 }

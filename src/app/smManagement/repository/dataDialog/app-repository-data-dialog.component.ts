@@ -248,8 +248,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     this.storeChangedValue(convertToDurationValue(this.durationDisplay), 'duration');
   }
 
-  storeChangedValue(value: string | number, key: string): void {
-    this.#changedValues[key] = value.toString();
+  storeChangedValue(value: VmValidFormTypes, key: string): void {
+    const normalized = this.#normalizeSingleValue(value);
+    this.#changedValues[key] = normalized === null ? '' : normalized.toString();
   }
 
   #computeNextNumber(entries: ScoreFolderEntry[]): string {
@@ -357,15 +358,29 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   }
 
   storeNewNumberChange(value: VmValidFormTypes): void {
-    this.#folderEntry.number = String(value).trim();
+    const normalized = this.#normalizeSingleValue(value);
+    this.#folderEntry.number = normalized === null ? '' : String(normalized).trim();
   }
 
   storeNewFolderChange(value: VmValidFormTypes): void {
-    this.#folderEntry.musicFolderId = Number(value);
+    const normalized = this.#normalizeSingleValue(value);
+    this.#folderEntry.musicFolderId = Number(normalized);
 
     if (this.#folderEntry.musicFolderId > 0) {
       this.#folderEntry.number = this.#computeNextNumberForFolder(this.#folderEntry.musicFolderId);
     }
+  }
+
+  #normalizeSingleValue(value: VmValidFormTypes): string | number | null {
+    if (Array.isArray(value)) {
+      return (value[0] ?? null) as string | number | null;
+    }
+
+    if (value === undefined) {
+      return null;
+    }
+
+    return value;
   }
 
   execActionFromRow(score: VmRowClickedEvent<ScoreFolderEntry>): void {
