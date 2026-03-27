@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, DestroyRef, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { VmRowClickedEvent } from '@vm-components';
 import { AllNotesData, VmpNotesFullPageComponent } from '@vm-parts';
 import {
@@ -10,6 +10,8 @@ import {
   MusicSheet,
   MusicSheetQuerys,
   MusicSheetService,
+  PermissionService,
+  PermissionType,
   Score,
   ScoreService,
   VoiceService,
@@ -40,6 +42,7 @@ export class AppUnverifiedComponent {
   readonly #foldersService = inject(FoldersService);
   readonly #voiceService = inject(VoiceService);
   readonly #authService = inject(AuthService);
+  readonly #permissionService = inject(PermissionService);
   readonly #destroyRef = inject(DestroyRef);
 
   readonly #voiceFilterCookiePrefix = 'unverified-voice-filter';
@@ -49,6 +52,10 @@ export class AppUnverifiedComponent {
   #currentUserId: string | undefined;
 
   voiceFilter$: Observable<number[]> = this.#voiceFilter.pipe(map((ids) => ids ?? []));
+
+  canDeleteScore = toSignal(this.#permissionService.hasPermission$(PermissionType.DeleteScore), {
+    initialValue: false,
+  });
 
   readonly #userId$ = this.#authService.myInformation$.pipe(
     map((info) => {

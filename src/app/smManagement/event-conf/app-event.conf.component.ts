@@ -1,17 +1,19 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   VmcDataGrid,
   VmcInputField,
   VmColumn,
+  VmRowAction,
   VmcToolbar,
   VmInputField,
   VmRowClickedEvent,
   VmToolbarItem,
 } from '@vm-components';
-import { Event, EventService } from '@vm-utils/services';
+import { Event, EventService, PermissionService, PermissionType } from '@vm-utils/services';
 import {BehaviorSubject, firstValueFrom, switchMap} from 'rxjs';
 import { EventDialogService } from './event-conf-dialog.service';
 import {AsyncPipe} from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 
 @Component({
@@ -23,24 +25,54 @@ import {AsyncPipe} from '@angular/common';
 export class AppEventConfComponent {
   eventService = inject(EventService);
   #eventDataDialogService = inject(EventDialogService);
+  readonly #permissionService = inject(PermissionService);
 
   #reload = new BehaviorSubject(false);
   eventListe$ = this.#reload.pipe(switchMap(_ => this.eventService.load$()));
 
   searchterm = signal<string | undefined>(undefined);
 
+  canCreateEvent = toSignal(this.#permissionService.hasPermission$(PermissionType.CreateEvent), {
+    initialValue: false,
+  });
+  canUpdateEvent = toSignal(this.#permissionService.hasPermission$(PermissionType.UpdateEvent), {
+    initialValue: false,
+  });
+  canDeleteEvent = toSignal(this.#permissionService.hasPermission$(PermissionType.DeleteEvent), {
+    initialValue: false,
+  });
 
-  items: VmToolbarItem[] = [
-    {
-      key: 'addEvent',
-      icon: 'add',
-      label: 'Event hinzugefügen',
-      action: async (): Promise<void> => {
-        await this.#eventDataDialogService.openNewEventDialog();
-        this.#reload.next(true);
+  rowActions = computed<VmRowAction[]>(() => {
+    const actions: VmRowAction[] = [];
+
+    if (this.canUpdateEvent()) {
+      actions.push({ key: 'edit', icon: 'edit' });
+    }
+
+    if (this.canDeleteEvent()) {
+      actions.push({ key: 'delete', icon: 'delete' });
+    }
+
+    return actions;
+  });
+
+  items = computed<VmToolbarItem[]>(() => {
+    if (!this.canCreateEvent()) {
+      return [];
+    }
+
+    return [
+      {
+        key: 'addEvent',
+        icon: 'add',
+        label: 'Event hinzugefügen',
+        action: async (): Promise<void> => {
+          await this.#eventDataDialogService.openNewEventDialog();
+          this.#reload.next(true);
+        },
       },
-    },
-  ];
+    ];
+  });
   async execAction(action: VmRowClickedEvent<Event>): Promise<void> {
     if (action.key === 'edit') {
       if (!action.rowData) {

@@ -1,21 +1,27 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import {
   VmcDataGrid,
   VmcInputField,
   VmColumn,
+  VmRowAction,
   VmcToolbar,
   VmFormField,
   VmRowClickedEvent,
   VmToolbarItem,
 } from '@vm-components';
-import { Folder, FoldersService } from '@vm-utils/services';
-import {BehaviorSubject, firstValueFrom, map, Observable, switchMap} from 'rxjs';
-import {FolderDialogService} from './folder-conf-dialog.service';
-import {AsyncPipe} from '@angular/common';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {AsPipe, NumDictionary} from '@vm-utils';
-import {Group, GroupService} from '@vm-utils/services';
-
+import {
+  Folder,
+  FoldersService,
+  Group,
+  GroupService,
+  PermissionService,
+  PermissionType,
+} from '@vm-utils/services';
+import { BehaviorSubject, firstValueFrom, map, Observable, switchMap } from 'rxjs';
+import { FolderDialogService } from './folder-conf-dialog.service';
+import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AsPipe, NumDictionary } from '@vm-utils';
 
 @Component({
   selector: 'app-folders-conf',
@@ -27,8 +33,24 @@ export class AppFoldersConfComponent {
   readonly #folderService = inject(FoldersService);
   readonly #folderDataDialogService = inject(FolderDialogService);
   readonly #groupService = inject(GroupService);
+  readonly #permissionService = inject(PermissionService);
 
   #reload = new BehaviorSubject(false);
+
+  canCreateMusicFolder = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.CreateMusicFolder),
+    { initialValue: false },
+  );
+
+  canUpdateMusicFolder = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.UpdateMusicFolder),
+    { initialValue: false },
+  );
+
+  canDeleteMusicFolder = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.DeleteMusicFolder),
+    { initialValue: false },
+  );
 
   // für jede Mappe membercount aus scores nehmen
   folderListe$ = this.#reload.pipe(
@@ -62,17 +84,37 @@ export class AppFoldersConfComponent {
   // @ts-ignore
   FolderType: Folder;
 
-  items: VmToolbarItem[] = [
-    {
-      key: 'addFolder',
-      icon: 'add',
-      label: 'Mappe hinzufügen',
-      action: async (): Promise<void> => {
-        await this.#folderDataDialogService.openNewFolderDialog();
-        this.#reload.next(true);
+  rowActions = computed<VmRowAction[]>(() => {
+    const actions: VmRowAction[] = [];
+
+    if (this.canUpdateMusicFolder()) {
+      actions.push({ key: 'edit', icon: 'edit' });
+    }
+
+    if (this.canDeleteMusicFolder()) {
+      actions.push({ key: 'delete', icon: 'delete' });
+    }
+
+    return actions;
+  });
+
+  items = computed<VmToolbarItem[]>(() => {
+    if (!this.canCreateMusicFolder()) {
+      return [];
+    }
+    return [
+      {
+        key: 'addFolder',
+        icon: 'add',
+        label: 'Mappe hinzufügen',
+        action: async (): Promise<void> => {
+          await this.#folderDataDialogService.openNewFolderDialog();
+          this.#reload.next(true);
+        },
       },
-    },
-  ];
+    ];
+  });
+
   async execAction(action: VmRowClickedEvent<Folder>): Promise<void> {
     if (action.key === 'edit') {
       if (!action.rowData) {

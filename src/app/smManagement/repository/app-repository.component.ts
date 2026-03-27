@@ -1,20 +1,12 @@
-import {Component, inject, signal} from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 
-import {BehaviorSubject, map, Observable, switchMap} from 'rxjs';
-import {Folder, FoldersService, Score, ScoreService} from '@vm-utils/services';
-import {
-  VmcDataGrid,
-  VmcIconButton,
-  VmcInputField,
-  VmColumn,
-  VmcToolbar,
-  VmInputField,
-  VmToolbarItem
-} from '@vm-components';
-import {RepositoryDialogService} from './repository-dialog.service';
-import {AsyncPipe} from '@angular/common';
-import {AsPipe, convertToDisplayMinutes, NumDictionary} from '@vm-utils';
-import {toSignal} from '@angular/core/rxjs-interop';
+import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
+import { Folder, FoldersService, PermissionService, PermissionType, Score, ScoreService, } from '@vm-utils/services';
+import { VmcDataGrid, VmcIconButton, VmcInputField, VmColumn, VmcToolbar, VmInputField, VmToolbarItem, } from '@vm-components';
+import { RepositoryDialogService } from './repository-dialog.service';
+import { AsyncPipe } from '@angular/common';
+import { AsPipe, convertToDisplayMinutes, NumDictionary } from '@vm-utils';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-repository.component',
@@ -26,11 +18,24 @@ export class AppRepositoryComponent {
   readonly #scoresService = inject(ScoreService);
   readonly #dataDialogService = inject(RepositoryDialogService);
   readonly #foldersService = inject(FoldersService);
+  readonly #permissionService = inject(PermissionService);
 
   #reload = new BehaviorSubject(false);
 
-  data$ = this.#reload.pipe(switchMap((_) => this.#scoresService.load$({ includeMusicFolders: true })));
+  data$ = this.#reload.pipe(
+    switchMap((_) => this.#scoresService.load$({ includeMusicFolders: true })),
+  );
   #folders$: Observable<Folder[]> = this.#foldersService.load$();
+
+  canCreateScore = toSignal(this.#permissionService.hasPermission$(PermissionType.CreateScore), {
+    initialValue: false,
+  });
+  canUpdateScore = toSignal(this.#permissionService.hasPermission$(PermissionType.UpdateScore), {
+    initialValue: false,
+  });
+  canDeleteScore = toSignal(this.#permissionService.hasPermission$(PermissionType.DeleteScore), {
+    initialValue: false,
+  });
 
   searchterm = signal<string | undefined>(undefined);
 
@@ -43,33 +48,36 @@ export class AppRepositoryComponent {
     ),
   );
 
-  folderById = toSignal<NumDictionary<Folder>, NumDictionary<Folder>>(
-    this.#folderById$,
-    {
-      initialValue: {},
-    },
-  );
+  folderById = toSignal<NumDictionary<Folder>, NumDictionary<Folder>>(this.#folderById$, {
+    initialValue: {},
+  });
 
-  toolbarItems: VmToolbarItem[] = [
-    {
-      key: 'addNotes',
-      icon: 'add',
-      label: 'Stück hinzufügen',
-      action: async (): Promise<void> => {
-        await this.#dataDialogService.openNewScoreDialog();
-        this.#reload.next(true);
+  toolbarItems = computed<VmToolbarItem[]>(() => {
+    if (!this.canCreateScore()) {
+      return [];
+    }
+
+    return [
+      {
+        key: 'addNotes',
+        icon: 'add',
+        label: 'Stück hinzufügen',
+        action: async (): Promise<void> => {
+          await this.#dataDialogService.openNewScoreDialog();
+          this.#reload.next(true);
+        },
       },
-    },
-    {
-      key: 'addMultiNotes',
-      icon: 'add',
-      label: 'Mehrere Stücke hinzufügen',
-      action: async (): Promise<void> => {
-        await this.#dataDialogService.openNewScoreMulitDialog();
-        this.#reload.next(true);
+      {
+        key: 'addMultiNotes',
+        icon: 'add',
+        label: 'Mehrere Stücke hinzufügen',
+        action: async (): Promise<void> => {
+          await this.#dataDialogService.openNewScoreMulitDialog();
+          this.#reload.next(true);
+        },
       },
-    },
-  ];
+    ];
+  });
 
   suchleiste: VmInputField = {
     key: 'searchbar',
@@ -80,8 +88,9 @@ export class AppRepositoryComponent {
   columns: VmColumn<Score>[] = [
     { key: 'title', header: 'Title', field: 'title', filterable: true },
     { key: 'composer', header: 'Komponist', field: 'composer', filterable: true },
-    { key: 'duration', header: 'Länge', field: 'duration', type: "converter", converter: (score: Score) => convertToDisplayMinutes(score.duration ?? 0) + ' min' },
-    { key: 'folders', header: 'Mappen', field: 'musicFolders', type: "template" },
+    { key: 'duration', header: 'Länge', field: 'duration', type: 'converter',
+      converter: (score: Score) => convertToDisplayMinutes(score.duration ?? 0) + ' min', },
+    { key: 'folders', header: 'Mappen', field: 'musicFolders', type: 'template' },
     { key: 'changedAt', header: 'Bearbeitet am', field: 'updatedAt', type: 'date-time' },
     { key: 'changedBy', header: 'Bearbeitet von', field: 'updatedBy' },
     { key: 'customActions', header: '', type: 'template' },
@@ -104,11 +113,11 @@ export class AppRepositoryComponent {
       if (reload) {
         this.#reload.next(true);
       }
+      return;
     }
 
     if (key === 'link') {
       window.open(rowData.link, '_blank');
     }
   }
-
 }

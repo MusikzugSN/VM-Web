@@ -1,10 +1,10 @@
-import {Component, computed, inject, input, InputSignal, output, Signal} from '@angular/core';
-import {VmcIconButton, VmcNavbar, VmNavbarItem} from '@vm-components';
-import {filter, map} from 'rxjs';
-import {AsyncPipe} from '@angular/common';
-import {ConfigService, CurrentRouteService} from '@vm-utils';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {LoginConfigService, PermissionService, PermissionType} from '@vm-utils/services';
+import { Component, computed, inject, input, InputSignal, output, Signal } from '@angular/core';
+import { VmcIconButton, VmcNavbar, VmNavbarItem } from '@vm-components';
+import { filter, map } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { ConfigService, CurrentRouteService } from '@vm-utils';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { LoginConfigService, PermissionService, PermissionType } from '@vm-utils/services';
 
 @Component({
   selector: 'vmp-navbar',
@@ -27,7 +27,7 @@ export class VmpNavbar {
     }
 
     return settings.navigationBarText;
-  })
+  });
 
   isLoggedIn: InputSignal<boolean> = input(false);
   logoutClicked = output<boolean>();
@@ -38,11 +38,29 @@ export class VmpNavbar {
     map((x) => '/static' + x),
   );
 
-  isMeAllowed = toSignal(this.#permissionService.hasPermissionFromMany$([PermissionType.OpenMyNotes]));
-  isScoreManagementAllowed = toSignal(this.#permissionService.hasPermissionFromMany$([PermissionType.OpenScores, PermissionType.OpenEvent, PermissionType.OpenMusicFolder, PermissionType.OpenValidateNotes, PermissionType.OpenVoice]));
-  isSysAdminAllowed = toSignal(this.#permissionService.hasPermissionFromMany$([PermissionType.OpenGroup, PermissionType.OpenRole, PermissionType.OpenUser, PermissionType.OpenLoginSettings]));
+  isMeAllowed = toSignal(
+    this.#permissionService.hasPermissionFromMany$([PermissionType.OpenMyNotes]),
+  );
+  isScoreManagementAllowed = toSignal(
+    this.#permissionService.hasPermissionFromMany$([
+      PermissionType.OpenScores,
+      PermissionType.OpenEvent,
+      PermissionType.OpenMusicFolder,
+      PermissionType.OpenValidateNotes,
+      PermissionType.OpenVoice,
+      PermissionType.OpenTags,
+    ]),
+  );
+  isSysAdminAllowed = toSignal(
+    this.#permissionService.hasPermissionFromMany$([
+      PermissionType.OpenGroup,
+      PermissionType.OpenRole,
+      PermissionType.OpenUser,
+      PermissionType.OpenLoginSettings,
+    ]),
+  );
 
-  currentRoute = toSignal(this.#currentRouteService.route$)
+  currentRoute = toSignal(this.#currentRouteService.route$);
   toolbarItems: Signal<VmNavbarItem[]> = computed(() => {
     const route = this.currentRoute();
 
@@ -57,7 +75,7 @@ export class VmpNavbar {
     }
 
     if (this.isScoreManagementAllowed()) {
-      navbarItems.push(this.#createToolbarItem('Notenverwaltung', '/scores', route))
+      navbarItems.push(this.#createToolbarItem('Notenverwaltung', '/scores', route));
     }
 
     if (this.isSysAdminAllowed()) {

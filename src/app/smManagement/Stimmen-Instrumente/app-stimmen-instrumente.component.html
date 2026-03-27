@@ -1,4 +1,4 @@
-<vmc-toolbar [items]="items" [useNgContentForRightside]="true">
+<vmc-toolbar [items]="items()" [useNgContentForRightside]="true">
   <vmc-input-field [formField]="suchleiste" (inputChanged)="searchChanged($event)"/>
 </vmc-toolbar>
 
@@ -8,19 +8,13 @@
     [columns]="columnsVoice"
     [filterTerm]="searchTerm()"
     [paginator]="[5, 10, 20]"
-    [rowActions]="[
-      { key: 'edit', icon: 'edit' },
-      { key: 'delete', icon: 'delete' },
-    ]"
+    [rowActions]="rowActions()"
     (clickedAction)="execActionVoice($event)"/>
   <vmc-data-grid
     [dataSource]="(instrumentListe$ | async) ?? []"
     [paginator]="[5, 10, 20]"
     [columns]="columnsInstrument"
     [filterTerm]="searchTerm()"
-    [rowActions]="[
-      { key: 'edit', icon: 'edit' },
-      { key: 'delete', icon: 'delete' },
-    ]"
+    [rowActions]="rowActions()"
     (clickedAction)="execActionInstrument($event)"/>
 </div>

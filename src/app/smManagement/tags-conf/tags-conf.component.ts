@@ -1,20 +1,21 @@
-import { Component, inject, input, InputSignal, signal } from '@angular/core';
+import { Component, computed, inject, input, InputSignal, signal } from '@angular/core';
 import {
   VmcDataGrid,
   VmcInputField,
   VmColumn,
+  VmRowAction,
   VmcToolbar,
   VmFormField,
   VmInputField,
   VmRowClickedEvent,
   VmToolbarItem,
-  VmValidFormTypes,
 } from '@vm-components';
 import { BehaviorSubject, switchMap } from 'rxjs';
 import { TagDialogService } from './tags-conf-dialog.service';
 import { AllNotesData } from '@vm-parts';
-import { Tag, TagsService } from '@vm-utils/services';
+import { PermissionService, PermissionType, Tag, TagsService } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tags-conf.component',
@@ -25,22 +26,53 @@ import { AsyncPipe } from '@angular/common';
 export class TagsConfComponent {
   data: InputSignal<AllNotesData[]> = input.required();
   readonly #tagDataDialogService = inject(TagDialogService);
+  readonly #permissionService = inject(PermissionService);
 
   #reload = new BehaviorSubject(false);
   tagService = inject(TagsService);
   tagListe$ = this.#reload.pipe(switchMap((_) => this.tagService.load$()));
 
-  items: VmToolbarItem[] = [
-    {
-      key: 'addNotes',
-      icon: 'add',
-      label: 'Tag hinzufügen',
-      action: async (): Promise<void> => {
-        await this.#tagDataDialogService.openNewTagDialog();
-        this.#reload.next(true);
+  canCreateTags = toSignal(this.#permissionService.hasPermission$(PermissionType.CreateTags), {
+    initialValue: false,
+  });
+  canUpdateTags = toSignal(this.#permissionService.hasPermission$(PermissionType.UpdateTags), {
+    initialValue: false,
+  });
+  canDeleteTags = toSignal(this.#permissionService.hasPermission$(PermissionType.DeleteTags), {
+    initialValue: false,
+  });
+
+  rowActions = computed<VmRowAction[]>(() => {
+    const actions: VmRowAction[] = [];
+
+    if (this.canUpdateTags()) {
+      actions.push({ key: 'edit', icon: 'edit' });
+    }
+
+    if (this.canDeleteTags()) {
+      actions.push({ key: 'delete', icon: 'delete' });
+    }
+
+    return actions;
+  });
+
+  items = computed<VmToolbarItem[]>(() => {
+    if (!this.canCreateTags()) {
+      return [];
+    }
+
+    return [
+      {
+        key: 'addNotes',
+        icon: 'add',
+        label: 'Tag hinzufügen',
+        action: async (): Promise<void> => {
+          await this.#tagDataDialogService.openNewTagDialog();
+          this.#reload.next(true);
+        },
       },
-    },
-  ];
+    ];
+  });
 
   async execAction(action: VmRowClickedEvent<Tag>): Promise<void> {
     if (action.key === 'edit') {
@@ -95,9 +127,4 @@ export class TagsConfComponent {
       filterable: true,
     },
   ];
-
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  filterSelectionChange(event: VmValidFormTypes) {
-    return console.log(event);
-  }
 }

@@ -15,7 +15,7 @@ import {
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
 import { VmpNotesFullpageDialogService } from './vmp-notes-fullPage-dialog.service';
-import {VoiceService} from '@vm-utils/services';
+import { PermissionService, PermissionType, VoiceService } from '@vm-utils/services';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {AsyncPipe} from '@angular/common';
 import { Router } from '@angular/router';
@@ -48,6 +48,15 @@ export class VmpNotesFullPageComponent {
   readonly #downloadFileService = inject(DownloadFileService);
   readonly #voiceService = inject(VoiceService);
   readonly #router = inject(Router);
+  readonly #permissionService = inject(PermissionService);
+
+  canUpdateValidateNotes = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.UpdateValidateNotes),
+    { initialValue: false },
+  );
+  canDeleteScore = toSignal(this.#permissionService.hasPermission$(PermissionType.DeleteScore), {
+    initialValue: false,
+  });
 
   #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true }), {
     initialValue: [],
@@ -64,13 +73,19 @@ export class VmpNotesFullPageComponent {
     const disableEdit =
       currentUrl.startsWith('/scores/unverified') || currentUrl.startsWith('/scores/folders');
     const isUnverified = currentUrl.startsWith('/scores/unverified');
+    const canCheckInUnverified = this.canUpdateValidateNotes();
+    const canDeleteInUnverified = this.canDeleteScore();
 
     return [
       { key: 'download', icon: 'file_download' },
-      ...(isUnverified ? [{ key: 'check', icon: 'fact_check'}] : []),
+      ...(isUnverified && canCheckInUnverified ? [{ key: 'check', icon: 'fact_check'}] : []),
       ...(disableEdit ? [] : [{ key: 'print', icon: 'print' }]),
       ...(disableEdit ? [] : [{ key: 'edit', icon: 'edit' }]),
-      { key: 'delete', icon: 'delete' },
+      ...(isUnverified
+        ? canDeleteInUnverified
+          ? [{ key: 'delete', icon: 'delete' }]
+          : []
+        : [{ key: 'delete', icon: 'delete' }]),
       { key: 'tag', icon: 'tag' },
     ];
   });
@@ -149,7 +164,7 @@ export class VmpNotesFullPageComponent {
           },
         });
       }
-      if (this.#router.url.startsWith('/scores/unverified')) {
+      if (this.#router.url.startsWith('/scores/unverified') && this.canUpdateValidateNotes()) {
       toolbarItems.push({
         key: 'check',
         icon: 'fact_check',

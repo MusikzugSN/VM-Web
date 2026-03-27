@@ -1,7 +1,7 @@
-<vmc-toolbar [items]="toolbarItems" [useNgContentForRightside]="true">
+<vmc-toolbar [items]="toolbarItems()" [useNgContentForRightside]="true">
   <div class="gap">
     <vmc-input-field
-      [formField]="suchleiste" (inputChanged)="searchterm.set($event.toString())"> <!-- todo wer auch immer bitte mach mal inputchange rein -->
+      [formField]="suchleiste" (inputChanged)="searchterm.set($event.toString())">
     </vmc-input-field>
   </div>
 </vmc-toolbar>
@@ -36,6 +36,10 @@
     [disabled]="!rowData.link"
     (buttonClicked)="execAction(rowData, 'link')"
   />
-  <vmc-icon-button [iconName]="'edit'" (buttonClicked)="execAction(rowData, 'edit')" />
-  <vmc-icon-button [iconName]="'delete'" (buttonClicked)="execAction(rowData, 'delete')" />
+  @if (canUpdateScore()) {
+    <vmc-icon-button [iconName]="'edit'" (buttonClicked)="execAction(rowData, 'edit')" />
+  }
+  @if (canDeleteScore()) {
+    <vmc-icon-button [iconName]="'delete'" (buttonClicked)="execAction(rowData, 'delete')" />
+  }
 </ng-template>

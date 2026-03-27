@@ -1,4 +1,4 @@
-<vmc-toolbar [items]="items" [useNgContentForRightside]="true">
+<vmc-toolbar [items]="items()" [useNgContentForRightside]="true">
   <vmc-input-field
     [formField]="suchleiste"
     (inputChanged)="searchterm.set($event.toString())"
@@ -11,15 +11,6 @@
   [dataSource]="(tagListe$ | async) ?? []"
   [columns]="column"
   [filterTerm]="searchterm()"
-  [rowActions]="[
-    {
-      key: 'edit',
-      icon: 'edit',
-    },
-    {
-      key: 'delete',
-      icon: 'delete',
-    },
-  ]"
+  [rowActions]="rowActions()"
   (clickedAction)="execAction($event)"
 />
