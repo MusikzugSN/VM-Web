@@ -1,5 +1,6 @@
-import { Component, inject} from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import {
+  AuthService,
   Folder,
   FoldersService,
   MusicSheet,
@@ -14,9 +15,11 @@ import {
   catchError,
   combineLatest,
   distinctUntilChanged,
+  filter,
   map,
   Observable, of,
-  switchMap
+  switchMap,
+  take,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
@@ -36,6 +39,10 @@ export class AppFolderScoreComponent {
   readonly #unverifiedDataDialogService = inject(UnverifiedDialogService);
   readonly #foldersService = inject(FoldersService);
   readonly #voiceService = inject(VoiceService);
+  readonly #authService = inject(AuthService);
+  readonly #destroyRef = inject(DestroyRef);
+
+  readonly #voiceFilterCookiePrefix = 'folders-voice-filter';
 
   readonly #route = inject(ActivatedRoute);
 
@@ -47,18 +54,51 @@ export class AppFolderScoreComponent {
     );
 
   #reload = new BehaviorSubject(false);
-  #voiceFilter = new BehaviorSubject<number | undefined>(undefined);
+  #voiceFilter = new BehaviorSubject<number[] | undefined>(undefined);
+  #currentUserId: string | undefined;
 
-  sheet$: Observable<MusicSheet[]> = combineLatest([this.#folderId, this.#reload, this.#voiceFilter]).pipe(
-    switchMap(([folderId, _x, filter]) => {
+  voiceFilter$: Observable<number[]> = this.#voiceFilter.pipe(map((ids) => ids ?? []));
+
+  readonly #userId$ = this.#authService.myInformation$.pipe(
+    map((info) => {
+      if (!info) {
+        return undefined;
+      }
+
+      const rawUserId =
+        (info as { id?: string | number; userId?: string | number; user_id?: string | number }).id ??
+        (info as { userId?: string | number }).userId ??
+        (info as { user_id?: string | number }).user_id;
+
+      if (rawUserId === undefined || rawUserId === null) {
+        return undefined;
+      }
+
+      return String(rawUserId);
+    }),
+    filter((id): id is string => !!id),
+  );
+
+  constructor() {
+    this.#userId$.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe((userId) => {
+      this.#currentUserId = userId;
+    });
+
+    this.#userId$
+      .pipe(take(1), takeUntilDestroyed(this.#destroyRef))
+      .subscribe((userId) => this.#restoreVoiceFilter(userId));
+  }
+
+  sheet$: Observable<MusicSheet[]> = combineLatest([this.#folderId, this.#reload, this.voiceFilter$]).pipe(
+    switchMap(([folderId, _x, filterIds]) => {
       if (folderId === null) {
         return [];
       }
 
       let queryParam: MusicSheetQuerys | undefined = undefined;
 
-      if (filter) {
-        queryParam = { voiceIds: [filter]}
+      if (filterIds.length > 0) {
+        queryParam = { voiceIds: filterIds };
       }
 
       return this.#musicSheetService.loadForFolder$(folderId, queryParam).pipe(catchError(() => of([])))
@@ -127,7 +167,100 @@ export class AppFolderScoreComponent {
     }),
   );
 
-  voiceFilterChanged(event: number): void {
-    this.#voiceFilter.next(event);
+  voiceFilterChanged(event: number[] | undefined): void {
+    const normalized = this.#normalizeVoiceFilter(event);
+    this.#voiceFilter.next(normalized);
+    this.#persistVoiceFilterForCurrentUser(normalized);
+  }
+
+  #restoreVoiceFilter(userId: string): void {
+    const cookieKey = this.#getVoiceFilterCookieKey(userId);
+    const cookieValue = this.#readCookie(cookieKey);
+
+    if (cookieValue === undefined) {
+      return;
+    }
+
+    const restoredFilter = this.#parseVoiceFilterCookie(cookieValue);
+    this.#voiceFilter.next(restoredFilter);
+
+    if (restoredFilter === undefined) {
+      this.#deleteCookie(cookieKey);
+    }
+  }
+
+  #persistVoiceFilterForCurrentUser(filterIds: number[] | undefined): void {
+    if (this.#currentUserId) {
+      this.#persistVoiceFilterByUserId(this.#currentUserId, filterIds);
+      return;
+    }
+
+    this.#userId$.pipe(take(1)).subscribe((userId) => {
+      this.#currentUserId = userId;
+      this.#persistVoiceFilterByUserId(userId, filterIds);
+    });
+  }
+
+  #persistVoiceFilterByUserId(userId: string, filterIds: number[] | undefined): void {
+    const cookieKey = this.#getVoiceFilterCookieKey(userId);
+
+    if (!filterIds || filterIds.length === 0) {
+      this.#deleteCookie(cookieKey);
+      return;
+    }
+
+    this.#writeCookie(cookieKey, JSON.stringify(filterIds), 60);
+  }
+
+  #parseVoiceFilterCookie(cookieValue: string): number[] | undefined {
+    try {
+      const parsed = JSON.parse(cookieValue) as unknown;
+      return this.#normalizeVoiceFilter(parsed);
+    } catch {
+      return undefined;
+    }
+  }
+
+  #normalizeVoiceFilter(input: unknown): number[] | undefined {
+    if (!Array.isArray(input)) {
+      return undefined;
+    }
+
+    const normalized = Array.from(
+      new Set(
+        input
+          .map((value) => Number(value))
+          .filter((value) => Number.isInteger(value) && value > 0),
+      ),
+    );
+
+    return normalized.length > 0 ? normalized : undefined;
+  }
+
+  #getVoiceFilterCookieKey(userId: string): string {
+    return `${this.#voiceFilterCookiePrefix}-${userId}`;
+  }
+
+  #readCookie(name: string): string | undefined {
+    const cookieParts = document.cookie
+      .split(';')
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+
+    const cookie = cookieParts.find((part) => part.startsWith(name + '='));
+    if (!cookie) {
+      return undefined;
+    }
+
+    return decodeURIComponent(cookie.substring(name.length + 1));
+  }
+
+  #writeCookie(name: string, value: string, expiresInDays: number): void {
+    const expires = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+  }
+
+  #deleteCookie(name: string): void {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
   }
 }

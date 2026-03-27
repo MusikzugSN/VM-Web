@@ -112,7 +112,8 @@ export class AppFoldersConfComponent {
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
 
-  filterInputChanged(term: string | number): void {
-    this.#filterTerm$.next(term.toString());
+  filterInputChanged(term: string | number | string[] | number[] | null | undefined): void {
+    const normalized = Array.isArray(term) ? (term[0] ?? '') : (term ?? '');
+    this.#filterTerm$.next(normalized.toString());
   }
 }
