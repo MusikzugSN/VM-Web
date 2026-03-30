@@ -172,17 +172,21 @@ export class VmpNotesFullPageComponent {
           },
         });
       }
-      if (this.#router.url.startsWith('/scores/unverified') && this.canUpdateValidateNotes()) {
-      toolbarItems.push({
-        key: 'check',
-        icon: 'fact_check',
-        label: 'Prüfen',
-        action: async (): Promise<void> => {
-          this.#verifyScoreService.setSheetIds(x);
-          await this.#router.navigate(['/scores/verifySheet'])
-        },
-      });
-    }
+      if (
+        this.#router.url.startsWith('/scores/unverified') &&
+        this.canUpdateValidateNotes() &&
+        x.length > 0
+      ) {
+        toolbarItems.push({
+          key: 'check',
+          icon: 'fact_check',
+          label: 'Prüfen',
+          action: async (): Promise<void> => {
+            this.#verifyScoreService.setSheetIds(x);
+            await this.#router.navigate(['/scores/verifySheet'])
+          },
+        });
+      }
     if (this.#router.url.startsWith('/scores/folders') && x.length > 0) {
       toolbarItems.push(
 

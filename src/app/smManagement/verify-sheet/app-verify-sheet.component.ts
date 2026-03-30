@@ -44,6 +44,7 @@ export class AppVerifySheet {
   serviceUrl$ = this.#noteViewerService.hostedUrl$;
 
   documentPath$ = this.#sheetId$.pipe(map(x => `vm-web://${x}`));
+  //Component anlegen, query nutzen
 
   readonly #scores = toSignal(this.#scoreService.load$(), { initialValue: [] });
   readonly #voices = toSignal(this.#voiceService.load$({ includeInstrumentName: true }), {

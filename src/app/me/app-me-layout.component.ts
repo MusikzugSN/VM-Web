@@ -1,15 +1,13 @@
-import {Component, inject} from '@angular/core';
-import {VmSidebarGroup} from '@vm-components';
-import {RouterOutlet} from '@angular/router';
-import {VmpSidebar} from '@vm-parts';
-import {EventService, FoldersService, TagsService} from '@vm-utils/services';
-import {combineLatest, map, Observable} from 'rxjs';
-import {AsyncPipe} from '@angular/common';
-
+import { Component, computed, inject } from '@angular/core';
+import { VmSidebarGroup, VmSidebarItem } from '@vm-components';
+import { RouterOutlet } from '@angular/router';
+import { VmpSidebar } from '@vm-parts';
+import { EventService, FoldersService, PermissionService, PermissionType, TagsService } from '@vm-utils/services';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-me-layout',
-  imports: [RouterOutlet, VmpSidebar, AsyncPipe],
+  imports: [RouterOutlet, VmpSidebar],
   templateUrl: './app-me-layout.component.html',
   styleUrl: './app-me-layout.component.scss',
 })
@@ -17,43 +15,62 @@ export class AppMeLayout {
   readonly #foldersService = inject(FoldersService);
   readonly #eventsService = inject(EventService);
   readonly #tagsService = inject(TagsService);
-  //readonly #permissionService = inject(PermissionService);
+  readonly #permissionService = inject(PermissionService);
 
-  eventGroup$: Observable<VmSidebarGroup> = this.#eventsService.loadForMyArea$()
-    .pipe(map(event => {
-      return {
+  readonly canOpenFolders = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.OpenMusicFolder),
+    { initialValue: false },
+  );
+  readonly canOpenEvents = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenEvent), {
+    initialValue: false,
+  });
+  readonly canOpenTags = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenTags), {
+    initialValue: false,
+  });
+
+  readonly folders = toSignal(this.#foldersService.loadForMyArea$(), { initialValue: [] });
+  readonly events = toSignal(this.#eventsService.loadForMyArea$(), { initialValue: [] });
+  readonly tags = toSignal(this.#tagsService.loadForMyArea$(), { initialValue: [] });
+
+  readonly sidebarItems = computed<VmSidebarGroup[]>(() => {
+    const sidebarItems: VmSidebarGroup[] = [];
+
+    if (this.canOpenFolders()) {
+      const folderItems: VmSidebarItem[] = this.folders().map((folder) => ({
+        name: folder.name,
+        route: `/me/folders/${folder.musicFolderId}`,
+      }));
+
+      sidebarItems.push({
+        groupName: 'Mappen',
+        items: folderItems,
+      });
+    }
+
+    if (this.canOpenEvents()) {
+      const eventItems: VmSidebarItem[] = this.events().map((event) => ({
+        name: event.name,
+        route: `/me/event/${event.eventId}`,
+      }));
+
+      sidebarItems.push({
         groupName: 'Events',
-        items: event.map((folder) => ({
-          name: folder.name,
-          route: `/me/event/${folder.eventId}`,
-        })),
-      };
-    }));
+        items: eventItems,
+      });
+    }
 
-  tagGroup$: Observable<VmSidebarGroup> = this.#tagsService.loadForMyArea$()
-    .pipe(map(tags => {
-      return {
+    if (this.canOpenTags()) {
+      const tagItems: VmSidebarItem[] = this.tags().map((tag) => ({
+        name: tag.name,
+        route: `/me/tags/${tag.tagId}`,
+      }));
+
+      sidebarItems.push({
         groupName: 'Tags',
-        items: tags.map((tag) => ({
-          name: tag.name,
-          route: `/me/tags/${tag.tagId}`,
-        }))
-      }
-    }))
+        items: tagItems,
+      });
+    }
 
-  folderGroup$: Observable<VmSidebarGroup> = this.#foldersService.loadForMyArea$()
-    .pipe(map(folders => {
-      return {
-          groupName: 'Mappen',
-          items: folders.map((folder) => ({
-            name: folder.name,
-            route: `/me/folders/${folder.musicFolderId}`,
-          })),
-        };
-    }));
-
-  sidebarItems$: Observable<VmSidebarGroup[]> = combineLatest([this.folderGroup$,this.tagGroup$, this.eventGroup$])
-    .pipe(map(([folderGroup, eventGroup, tagGroup]) => [folderGroup, eventGroup, tagGroup]));
-
-
+    return sidebarItems;
+  });
 }
