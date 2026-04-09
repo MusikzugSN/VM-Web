@@ -200,22 +200,6 @@ export class AppVoiceDataDialog extends DialogBase<boolean> {
   }
 
   #storeChangedAlternativeValues(): void {
-    if (!this.#hasAlternativeVoiceChanges()) {
-      delete this.#changedValues[nameOf<VoicePatch>('alternateVoices')];
-      return;
-    }
-
     this.#changedValues[nameOf<VoicePatch>('alternateVoices')] = this.#buildAlternateVoicePatch();
-  }
-
-  #hasAlternativeVoiceChanges(): boolean {
-    const currentAlternativeIds = this.#alternativeVoicesData$.getValue().map((x) => x.alternative);
-    if (currentAlternativeIds.length !== this.#initialAlternativeVoiceIds.length) {
-      return true;
-    }
-
-    return currentAlternativeIds.some(
-      (alternativeVoiceId, index) => alternativeVoiceId !== this.#initialAlternativeVoiceIds[index],
-    );
   }
 }

@@ -37,11 +37,11 @@ export class PrintConfComponent {
     }),
   );
 
-  createConfigClicked() {
+  createConfigClicked(): void {
     this.selectedConfigId$.next(-1);
   }
 
-  selectConfig(conf: Printconf) {
+  selectConfig(conf: Printconf): void {
     this.selectedConfigId$.next(conf.printConfigId);
   }
 

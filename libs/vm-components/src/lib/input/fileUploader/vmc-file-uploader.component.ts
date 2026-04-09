@@ -62,12 +62,12 @@ export class VmcFileUploader {
     });
   }
 
-  onDragOver(event: DragEvent) {
+  onDragOver(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
   }
 
-  async onDrop(event: DragEvent) {
+  async onDrop(event: DragEvent): Promise<void> {
     event.preventDefault();
     event.stopPropagation();
 
@@ -83,7 +83,7 @@ export class VmcFileUploader {
     }
   }
 
-  onFilesSelected(event: Event) {
+  onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files) return;
 
@@ -98,22 +98,22 @@ export class VmcFileUploader {
     this.#mergeFiles(newFiles);
   }
 
-  onDirectorySelected(event: Event) {
+  onDirectorySelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files) return;
 
     const newFiles = Array.from(input.files).map(
-      (f) =>
+      (f: File) =>
         ({
           file: f,
-          path: (f as any).webkitRelativePath,
+          path: f.webkitRelativePath,
         }) as FileData,
     );
 
     this.#mergeFiles(newFiles);
   }
 
-  #mergeFiles(newFiles: FileData[]) {
+  #mergeFiles(newFiles: FileData[]): void {
     const filtered = newFiles.filter((f) => this.#isExtensionAllowed(f.file));
 
     const current = this.#fileData.getValue();
@@ -141,7 +141,7 @@ export class VmcFileUploader {
         const reader = dirEntry.createReader();
         const entries: FileSystemEntry[] = [];
 
-        const readBatch = () => {
+        const readBatch = (): void => {
           reader.readEntries(async (batch: FileSystemEntry[]) => {
             if (batch.length === 0) {
               const results: FileData[] = [];
@@ -164,11 +164,11 @@ export class VmcFileUploader {
     });
   }
 
-  fileUploadOpen(input: HTMLInputElement) {
+  fileUploadOpen(input: HTMLInputElement): void {
     input.click();
   }
 
-  directoryUploadOpen(input: HTMLInputElement) {
+  directoryUploadOpen(input: HTMLInputElement): void {
     input.click();
   }
 

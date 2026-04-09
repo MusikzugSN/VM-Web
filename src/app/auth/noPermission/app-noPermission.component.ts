@@ -6,4 +6,5 @@ import { Component } from '@angular/core';
   templateUrl: './app-noPermission.component.html',
   styleUrl: './app-noPermission.component.scss',
 })
+// ts-ignore: @typescript-eslint/no-extraneous-class
 export class AppNoPermission {}

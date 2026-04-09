@@ -114,7 +114,7 @@ export class VmpNotesFullPageComponent {
     };
   });
 
-  filterTermChanged(term: VmValidFormTypes) {
+  filterTermChanged(term: VmValidFormTypes): void {
     this.filterTerm.set(term.toString());
   }
 

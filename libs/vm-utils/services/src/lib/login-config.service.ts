@@ -25,11 +25,11 @@ export class LoginConfigService {
     shareReplay({ bufferSize: 1, refCount: false }),
   );
 
-  save$(dto: Partial<LoginConfigDto>): Observable<void> {
-    return this.#http.post<void>(this.baseUrl, dto);
+  save$(dto: Partial<LoginConfigDto>): Observable<Object> {
+    return this.#http.post(this.baseUrl, dto);
   }
 
-  reloadSettings() {
+  reloadSettings(): void {
     this.#reloadSettings.next(true);
   }
 }

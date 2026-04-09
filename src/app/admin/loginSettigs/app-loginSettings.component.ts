@@ -56,7 +56,7 @@ export class AppConfigLogin {
       key: 'save',
       icon: 'save',
       label: 'Speichern',
-      action: async () => {
+      action: async (): Promise<void> => {
         await firstValueFrom(this.#service.save$(this.#changedValues));
         this.#service.reloadSettings();
         this.#snackbarService.raiseSuccess('Änderungen gespeichert!');

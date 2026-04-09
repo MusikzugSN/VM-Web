@@ -96,7 +96,7 @@ export class PermissionService {
     isAdmin: boolean,
     permissionType: PermissionType[],
     groupId?: number,
-  ) {
+  ): boolean {
     if (isAdmin) {
       return true;
     }

@@ -157,7 +157,7 @@ export class AppVerifySheet {
     );
   }
 
-  async nextSheet() {
+  async nextSheet(): Promise<void> {
     const currentSheetId = await firstValueFrom(this.#sheetId$);
     if (!currentSheetId) return;
 

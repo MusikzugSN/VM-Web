@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import {MusicSheet} from '@vm-utils/services';
 
 export interface UploadScoreFileRequest {
   fileName: string;
@@ -19,7 +20,7 @@ export interface UploadScoreFilesRequest {
 export class FileService {
   readonly #httpClient = inject(HttpClient);
 
-  uploadScoreFiles$(req: UploadScoreFilesRequest): Observable<any> {
+  uploadScoreFiles$(req: UploadScoreFilesRequest): Observable<MusicSheet[]> {
     const form = new FormData();
 
     form.append('ScoreId', req.scoreId.toString());
@@ -37,6 +38,6 @@ export class FileService {
       });
     });
 
-    return this.#httpClient.post<any>('musicSheet/upload', form);
+    return this.#httpClient.post<MusicSheet[]>('musicSheet/upload', form);
   }
 }
