@@ -1,0 +1,66 @@
+<div class="page">
+  <vmc-toolbar [items]="items" [useNgContentForRightside]="true" />
+
+  <div class="content">
+    <div class="config-list">
+      <label class="headline">Druckeinstellungen</label>
+      @for (printconf of (printconfs$ | async) ?? []; track printconf.pageCount) {
+        <button class="config-list__btn" (click)="selectConfig(printconf)">
+          {{
+            'Seite: ' +
+              (modeSymbol[printconf.mode] ? modeSymbol[printconf.mode] + ' ' : '') +
+              printconf.pageCount
+          }}
+          <br />
+          {{ 'A' + printconf.fileFormat + ' - Duplex: ' + Duplex[printconf.duplex] }}
+        </button>
+      }
+    </div>
+
+    <div class="config-panel">
+      <div class="headline">
+        @if ((selectedConfigId$ | async) === -1) {
+          <label class="text-normal">Neue Konfiguration</label>
+        } @else {
+          <label class="text-normal">Konfig Einstellungen</label>
+        }
+      </div>
+
+      <div class="row" style="width: 50%; align-self: center">
+        <vmc-input-field
+          class="field"
+          [formField]="(pageCountField | async) ?? pageCountFieldPlaceholder"
+          [shouldInitChange]="false"
+          (inputChanged)="storeChangedValue($event, 'pageCount')"
+        />
+
+        <vmc-button-toggle
+          class="field"
+          [selectOptions]="selectoptions"
+          [value]="(selectedConfig$ | async)?.mode?.toString()"
+          (buttonClicked)="storeChangedValue($event, 'mode')"
+        />
+      </div>
+
+      <div class="column">
+        <vmc-input-field
+          style="width: 50%"
+          class="field"
+          [formField]="(duplexField | async) ?? duplexFieldPlaceholder"
+          [shouldInitChange]="false"
+          (inputChanged)="storeChangedValue($event, 'duplex')"
+        />
+
+        <vmc-input-field
+          style="width: 50%"
+          class="field"
+          [formField]="(fileFormatField | async) ?? fileFormatFieldPlaceholder"
+          [shouldInitChange]="false"
+          (inputChanged)="storeChangedValue($event, 'fileFormat')"
+        />
+      </div>
+
+      <button class="save-button" (click)="saveConfig()">Änderungen speichern</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<div class="flex-column" style="gap: 16px">
+  <div class="data-container">
+    <label class="text-normal">Informationen</label>
+    <vmc-input-field
+      [formField]="titleField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'title')"
+    />
+
+    <vmc-input-field
+      [formField]="composerField"
+      [shouldInitChange]="false"
+      (inputChanged)="storeChangedValue($event, 'composer')"
+    />
+
+    <div class="flex-row gap-large">
+      <vmc-input-field
+        [formField]="linkField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'link')"
+      />
+
+      <div class="duration-input">
+        <mat-form-field class="vm-input">
+          <mat-label>Länge (MM:SS)</mat-label>
+          <input
+            matInput
+            type="text"
+            [ngModel]="durationDisplay"
+            (input)="onDurationInput($event)"
+            placeholder="MM:SS"
+            maxlength="5"
+          />
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+  <div class="data-container">
+    <label class="text-normal">Stücke zuweisen</label>
+    <vmc-data-grid
+      [columns]="scoreColumns"
+      [rowActions]="ScoresActions"
+      [footerActions]="footerActions"
+      [dataSource]="(scoreData$ | async) ?? []"
+      [templates]="[
+        {
+          keys: ['folder'],
+          templateRef: folderTemplate,
+        },
+        {
+          keys: ['numberFooter'],
+          templateRef: numberFooterTemplate,
+        },
+        {
+          keys: ['folderFooter'],
+          templateRef: folderFooterTemplate,
+        },
+      ]"
+      (clickedAction)="execActionFromRow($event)"
+    />
+  </div>
+
+  <ng-template #folderTemplate let-rowDataRaw="rowData">
+    @let folder = folderById();
+    @let rowData = rowDataRaw | as: ScoreType;
+    {{ folder[rowData.musicFolderId]?.name ?? 'N/A' }}
+  </ng-template>
+
+  <ng-template #folderFooterTemplate>
+    <vmc-input-field
+      [formField]="{
+        label: 'Mappen',
+        key: 'musicFolderId',
+        type: 'select',
+        options: folderOptions(),
+        enableSearch: true,
+      }"
+      (inputChanged)="storeNewFolderChange($event)"
+    />
+  </ng-template>
+
+  <ng-template #numberFooterTemplate>
+    <vmc-input-field
+      [formField]="(numberOfScoreField$ | async) ?? numberOfScoreFieldPlaceholder"
+      (inputChanged)="storeNewNumberChange($event)"
+    />
+  </ng-template>
+</div>

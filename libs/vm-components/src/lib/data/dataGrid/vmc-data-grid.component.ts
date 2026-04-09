@@ -28,17 +28,18 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import { AsyncPipe, DatePipe, NgTemplateOutlet } from '@angular/common';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Dictionary } from '@vm-utils';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
-export type VmColumnType = 'text' | 'date' | 'template' | 'converter'; //| 'boolean' | 'number' ;
+export type VmColumnType = 'text' | 'date' | 'date-time' | 'template' | 'converter'; //| 'boolean' | 'number' ;
 export type VmSelectType = 'multi' | 'single' | 'none';
 
 export interface VmColumn<TElement> {
@@ -48,7 +49,7 @@ export interface VmColumn<TElement> {
   sortable?: boolean;
   field?: keyof TElement & string;
   type?: VmColumnType;
-  converter?: (rowData: TElement) => Observable<string>;
+  converter?: (rowData: TElement) => string;
   footerAsTemplate?: boolean; // das Template muss über -- key + 'Footer' -- bereitgestellt werden
 }
 
@@ -92,7 +93,7 @@ export interface VmRowClickedEvent<TRow> {
     MatCheckbox,
     MatSortHeader,
     MatSort,
-    AsyncPipe,
+    MatPaginator,
   ],
   templateUrl: './vmc-data-grid.component.html',
   styleUrl: './vmc-data-grid.component.scss',
@@ -100,6 +101,7 @@ export interface VmRowClickedEvent<TRow> {
 export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   readonly #liveAnnouncer = inject(LiveAnnouncer);
   readonly sortElement = viewChild(MatSort);
+  readonly paginatorElement = viewChild(MatPaginator);
 
   dataSource: InputSignal<TRow[]> = input.required();
   columns: InputSignal<VmColumn<TRow>[]> = input.required();
@@ -109,6 +111,34 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
   selectionMode: InputSignal<VmSelectType> = input<VmSelectType>('none');
   selectionKey: InputSignal<keyof TRow | undefined> = input<keyof TRow | undefined>(undefined);
   filterTerm: InputSignal<string | undefined> = input<string | undefined>(undefined);
+  paginator: InputSignal<number[]> = input<number[]>([]);
+
+  pageSizeOptions = computed(() => {
+    const options = this.paginator() ?? [];
+    return [
+      ...new Set(options.filter((x) => Number.isFinite(x) && x > 0).map((x) => Math.floor(x))),
+    ].sort((a, b) => a - b);
+  });
+
+  defaultPageSize = computed<number>(() => {
+    const options = this.pageSizeOptions();
+    if (options.length === 0) {
+      return 0;
+    }
+
+    const rows = this.dataSource()?.length ?? 0;
+
+    // nächsthöhere Option suchen
+    const nextHigher = options.find((x) => x >= rows);
+
+    // wenn gefunden → nehmen
+    if (nextHigher !== undefined) {
+      return nextHigher;
+    }
+
+    // sonst höchste Option zurückgeben
+    return options[options.length - 1] ?? 0;
+  });
 
   clickedAction: OutputEmitterRef<VmRowClickedEvent<TRow>> = output();
   selectionChanged: OutputEmitterRef<TSelectionKey[]> = output();
@@ -119,6 +149,8 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     this.#convertSelectionToDictionary(),
   );
   isAllSelected = computed(() => this.#convertAllSelected());
+
+  calculatedColumns = computed(() => this.#calcColumnValues());
 
   tableData = new MatTableDataSource<TRow>();
 
@@ -140,8 +172,13 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
         .filter((x) => x.filterable ?? false)
         .some((col) => {
           if (!col.field) return false;
-          const value = data[col.field];
-          return value?.toString().toLowerCase().includes(filterTerm);
+          let value = data[col.field]?.toString();
+
+          if (col.type === 'converter') {
+            value = this.calculatedColumns()[`${col.key}-${value}`] ?? value;
+          }
+
+          return value?.toLowerCase().includes(filterTerm);
         });
     };
 
@@ -165,6 +202,39 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       if (sort) {
         this.tableData.sort = sort;
       }
+    });
+
+    effect(() => {
+      const paginator = this.paginatorElement();
+      if (paginator) {
+        this.tableData.paginator = paginator;
+      }
+    });
+
+    effect(() => {
+      const paginator = this.paginatorElement();
+      const defaultPageSize = this.defaultPageSize();
+
+      if (!paginator || defaultPageSize <= 0) {
+        return;
+      }
+
+      if (paginator.pageSize === defaultPageSize) {
+        return;
+      }
+
+      const previousPageIndex = paginator.pageIndex;
+      paginator.pageSize = defaultPageSize;
+      paginator.pageIndex = 0;
+
+      const event: PageEvent = {
+        pageIndex: paginator.pageIndex,
+        previousPageIndex,
+        pageSize: paginator.pageSize,
+        length: this.tableData.data.length,
+      };
+
+      paginator.page.emit(event);
     });
   }
 
@@ -213,6 +283,24 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
 
     selection.forEach((key) => {
       dict[key.toString()] = true;
+    });
+
+    return dict;
+  }
+
+  #calcColumnValues(): Dictionary<string> {
+    const columns = this.columns();
+    const data = this.dataSource();
+    const dict: Dictionary<string> = {};
+
+    columns.forEach((col) => {
+      if (col.type == 'converter') {
+        data.forEach((row) => {
+          if (col.converter) {
+            dict[`${col.key}-${row[col.field as keyof TRow]}`] = col.converter(row);
+          }
+        });
+      }
     });
 
     return dict;
@@ -272,5 +360,18 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     } else {
       await this.#liveAnnouncer.announce('Sortierung gelöscht');
     }
+  }
+
+  isDateValue(value: unknown): boolean {
+    if (value === null || value === undefined || value === '') {
+      return false;
+    }
+
+    if (value instanceof Date) {
+      return !Number.isNaN(value.getTime());
+    }
+
+    const date = new Date(value as string | number);
+    return !Number.isNaN(date.getTime());
   }
 }

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { User, UserService } from './user.service';
+import { User, UserService } from '@vm-utils/services';
 import { UserDialogService } from './user-dialog.service';
 import { VmColumn, VmToolbarItem, VmcDataGrid, VmcIconButton, VmcToolbar } from '@vm-components';
 import { AsyncPipe } from '@angular/common';
@@ -30,7 +30,7 @@ export class AppUsers {
       key: 'addUser',
       icon: 'add',
       label: 'Neuer Benutzer',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#userDialogService.openCreateUserDialog();
         this.#reload.next(true);
       },
@@ -68,7 +68,7 @@ export class AppUsers {
     { key: 'name', header: 'Name', field: 'username' },
     { key: 'oAuthProvider', header: 'OAuth-Provider', type: 'template' },
     { key: 'updatedBy', header: 'Geändert von', field: 'updatedBy' },
-    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },
+    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date-time' },
     { key: 'customActions', header: '', type: 'template' },
   ];
 

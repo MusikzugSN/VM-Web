@@ -6,7 +6,7 @@ import {
   VmcToolbar,
   VmToolbarItem,
 } from '@vm-components';
-import { GroupService, Group } from './group.service';
+import { GroupService, Group } from '@vm-utils/services';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { GroupDialogService } from './group-dialog.service';
@@ -28,7 +28,7 @@ export class AppGroups {
       key: 'addGroup',
       icon: 'add',
       label: 'Neue Gruppe',
-      acton: async (): Promise<void> => {
+      action: async (): Promise<void> => {
         await this.#groupDataDialogService.openNewGroupDialog();
         this.#reload.next(true);
       },
@@ -61,9 +61,9 @@ export class AppGroups {
   columns: VmColumn<Group>[] = [
     { key: 'groupId', header: '', field: 'groupId' },
     { key: 'name', header: 'Name', field: 'name' },
-    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date' },
-    { key: 'createdAt', header: 'Erstellt am', field: 'createdAt', type: 'date' },
+    { key: 'updatedAt', header: 'Geändert am', field: 'updatedAt', type: 'date-time' },
     { key: 'updatedBy', header: 'Geändert von', field: 'updatedBy' },
+    { key: 'createdAt', header: 'Erstellt am', field: 'createdAt', type: 'date-time' },
     { key: 'createdBy', header: 'Erstellt von', field: 'createdBy' },
   ];
 }

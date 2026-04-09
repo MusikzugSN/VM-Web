@@ -17,3 +17,6 @@ export * from './lib/input/form/vmc-form.component';
 export * from './lib/input/iconButton/vmc-icon-button.component';
 export * from './lib/input/button/vmc-button.component';
 export * from './lib/input/inputField/vmc-input-field.component';
+export * from './lib/input/fileUploader/vmc-file-uploader.component';
+export * from './lib/input/buttonToggle/vmc-button-toggle.component';
+export * from './lib/input/select/vmc-select.component';

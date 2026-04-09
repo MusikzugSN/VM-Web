@@ -1,39 +1,35 @@
-import { inject, Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  GuardResult,
-  RedirectCommand,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
-import { AuthService } from '@vm-utils';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router, RedirectCommand } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '@vm-utils/services';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard implements CanActivate {
-  readonly #authService = inject(AuthService);
-  readonly #router = inject(Router);
+export const authGuard: CanActivateFn = async () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  async canActivate(
-    _route: ActivatedRouteSnapshot,
-    _state: RouterStateSnapshot,
-  ): Promise<GuardResult> {
-    const isLoggedIn = await firstValueFrom(this.#authService.isLoggedIn$());
-    if (!isLoggedIn) {
-      const loginPath = this.#router.parseUrl('/auth/login');
-      return new RedirectCommand(loginPath, { skipLocationChange: false });
-    }
-
-    const isLoginExpired = await firstValueFrom(this.#authService.isLoginExpired$());
-    if (isLoginExpired) {
-      this.#authService.logout();
-      const loginExpiredPath = this.#router.parseUrl('/auth/login');
-      return new RedirectCommand(loginExpiredPath, { skipLocationChange: false });
-    }
-
-    return true;
+  const isLoggedIn = await firstValueFrom(authService.isLoggedIn$());
+  if (!isLoggedIn) {
+    const loginPath = router.parseUrl('/auth/login');
+    return new RedirectCommand(loginPath, { skipLocationChange: false });
   }
-}
+
+  const isLoginExpired = await firstValueFrom(authService.isLoginExpired$());
+  if (isLoginExpired) {
+    authService.logout();
+    const loginExpiredPath = router.parseUrl('/auth/login');
+    return new RedirectCommand(loginExpiredPath, { skipLocationChange: false });
+  }
+
+  const myInformation = await firstValueFrom(authService.myInformation$);
+  if (
+    myInformation == null ||
+    (!myInformation.isAdmin && myInformation.permissions?.length === 0)
+  ) {
+    const noPermissionPath = router.parseUrl('/auth/noPermission');
+    return new RedirectCommand(noPermissionPath, { skipLocationChange: false });
+  }
+
+  return true;
+
+  return true;
+};

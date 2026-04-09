@@ -1,8 +1,8 @@
 <vmc-navbar
   [showToolbarItems]="isLoggedIn()"
-  [applicationName]="'Musikzug Schloss Neuhaus'"
+  [applicationName]="displayText() ?? ''"
   [iconLink]="(iconLink$ | async) ?? undefined"
-  [toolbarItems]="(toolbarItems$ | async) ?? []"
+  [toolbarItems]="toolbarItems()"
 >
   <vmc-icon-button
     [iconColor]="'white'"

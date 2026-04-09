@@ -1,5 +1,4 @@
 @let field = formField();
-
 @if (field.type === 'checkbox') {
   <mat-checkbox
     class="vm-input"
@@ -12,14 +11,14 @@
     {{ field.label }}
   </mat-checkbox>
 } @else if (field.type === 'select') {
-  <mat-form-field class="vm-input">
-    <mat-label>{{ field.label }}</mat-label>
-    <mat-select [value]="field.value" (selectionChange)="selectCallChangeEvent($event)">
-      @for (option of field.options; track option.value) {
-        <mat-option [value]="option.value">{{ option.label }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
+  <vmc-select
+    [label]="field.label"
+    [options]="field.options"
+    [value]="field.value"
+    [multiple]="field.multiple ?? false"
+    [enableSearch]="field.enableSearch ?? true"
+    (inputChanged)="selectCallChangeEvent($event)"
+  />
 } @else {
   <mat-form-field class="vm-input">
     <mat-label>{{ field.label }}</mat-label>
@@ -29,6 +28,7 @@
       [placeholder]="field.placeholder ?? ''"
       [readonly]="field.readonly ?? false"
       [required]="field.required ?? false"
+      [attr.maxlength]="field.maxLength ?? null"
       [ngModel]="field.value ?? ''"
       (input)="genericCallChangeEvent($event)"
     />

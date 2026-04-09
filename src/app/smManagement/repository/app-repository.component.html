@@ -1,0 +1,44 @@
+<vmc-toolbar [items]="toolbarItems()" [useNgContentForRightside]="true">
+  <div class="gap">
+    <vmc-input-field [formField]="suchleiste" (inputChanged)="searchterm.set($event.toString())">
+    </vmc-input-field>
+  </div>
+</vmc-toolbar>
+<vmc-data-grid
+  [paginator]="[5, 10, 20]"
+  [dataSource]="(data$ | async) ?? []"
+  [columns]="columns"
+  [filterTerm]="searchterm()"
+  [templates]="[
+    { keys: ['customActions'], templateRef: actionTemplate },
+    { keys: ['folders'], templateRef: foldersTemplate },
+  ]"
+/>
+
+<ng-template #foldersTemplate let-rowDataRaw="rowData">
+  @let folder = folderById();
+  @let rowData = rowDataRaw | as: ScoreType;
+  @for (scoreFoder of rowData.musicFolders; track $index) {
+    {{ folder[scoreFoder.musicFolderId]?.name ?? 'N/A' }}
+    @if (scoreFoder.number) {
+      {{ ' (' + scoreFoder.number + ')' }}
+    }
+    @if (!$last) {
+      ,
+    }
+  }
+</ng-template>
+
+<ng-template #actionTemplate let-rowData="rowData">
+  <vmc-icon-button
+    [iconName]="'open_in_new'"
+    [disabled]="!rowData.link"
+    (buttonClicked)="execAction(rowData, 'link')"
+  />
+  @if (canUpdateScore()) {
+    <vmc-icon-button [iconName]="'edit'" (buttonClicked)="execAction(rowData, 'edit')" />
+  }
+  @if (canDeleteScore()) {
+    <vmc-icon-button [iconName]="'delete'" (buttonClicked)="execAction(rowData, 'delete')" />
+  }
+</ng-template>

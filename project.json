@@ -21,6 +21,11 @@
             "glob": "**/*",
             "input": "public",
             "output": "static"
+          },
+          {
+            "glob": "**/*",
+            "input": "node_modules/@syncfusion/ej2-pdfviewer/dist/ej2-pdfviewer-lib",
+            "output": "viewer/assets/ej2-pdfviewer-lib"
           }
         ],
         "styles": ["src/styles.scss"],
@@ -31,8 +36,8 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kB",
-              "maximumError": "1MB"
+              "maximumWarning": "12MB",
+              "maximumError": "15MB"
             },
             {
               "type": "anyComponentStyle",

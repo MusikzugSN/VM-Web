@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { VmDialogService } from '@vm-utils';
+import { VmDialogService } from '@vm-utils/dialogs';
 import { AppUserDataDialog } from './dataDialog/app-user-data-dialog.component';
 import { AppUserDeleteDialog } from './deleteDialog/app-user-delete-dialog.component';
-import { User } from './user.service';
+import { User } from '@vm-utils/services';
 @Injectable({
   providedIn: 'root',
 })

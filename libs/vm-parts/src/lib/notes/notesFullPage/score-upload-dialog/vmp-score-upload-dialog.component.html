@@ -1,0 +1,40 @@
+<div class="flex-column" style="gap: 16px">
+  <div class="data-container-top">
+    <label class="text-normal">Stück auswählen</label>
+
+    <vmc-select
+      [label]="'Stück'"
+      [options]="(scoreOptions$ | async) ?? []"
+      [enableSearch]="true"
+      (inputChanged)="storeScoreId($event)"
+    />
+  </div>
+
+  <div class="data-container">
+    <label class="text-normal">Dateien oder Ordner hochladen</label>
+    <vmc-file-uploader [width]="'100%'" (filesChanged)="fileChangeEvent($event)" />
+  </div>
+
+  @let _files = files();
+  @if (_files.length > 0) {
+    <div class="data-container-small">
+      <label class="text-normal">Stimme zuweisen</label>
+      @for (file of _files; track file.path) {
+        <div class="file-row">
+          <div class="file-path">
+            {{ file.path }}
+          </div>
+
+          <vmc-select
+            style="width: 200px; height: 100%"
+            [label]="'Stimme'"
+            [options]="(voices$ | async) ?? []"
+            [hideIfNotSelected]="(selectedVoiceIds$ | async) ?? []"
+            [enableSearch]="true"
+            (inputChanged)="storeChangedValue($event, file.path)"
+          />
+        </div>
+      }
+    </div>
+  }
+</div>

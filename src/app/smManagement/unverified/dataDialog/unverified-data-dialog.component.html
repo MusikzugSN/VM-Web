@@ -1,0 +1,20 @@
+<div class="flex-column" style="gap: 16px">
+  <div style="display: flex; gap: 16px">
+    <div class="data-container flex-column">
+      <label class="text-normal">Notenblatt bearbeiten</label>
+      <vmc-input-field
+        [formField]="scoreField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, scoreField.key)"
+      /><vmc-input-field
+        [formField]="voiceField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, voiceField.key)"
+      />
+      <div class="data-container">
+        <label class="text-normal">Dateien oder Ordner hochladen</label>
+        <vmc-file-uploader [width]="'100%'" (filesChanged)="fileChangeEvent($event)" />
+      </div>
+    </div>
+  </div>
+</div>

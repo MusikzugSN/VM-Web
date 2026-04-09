@@ -1,6 +1,7 @@
 <vmc-toolbar [items]="items" />
 <vmc-data-grid
   [dataSource]="(data$ | async) ?? []"
+  [paginator]="[5, 10, 20]"
   [columns]="columns"
   [templates]="[
     {

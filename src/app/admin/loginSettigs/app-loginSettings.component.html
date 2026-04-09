@@ -1,1 +1,104 @@
-<vmc-toolbar />
+<vmc-toolbar [items]="items" />
+@let config = config$ | async;
+<div
+  class="flex-column gap-medium"
+  style="width: 500px; margin-right: auto; margin-left: auto; padding-top: 50px"
+>
+  @if (config !== null) {
+    <div class="data-container">
+      <label class="text-large">Neue OAuth-Benutzer</label>
+      <vmc-input-field
+        [formField]="{
+          key: 'oAuthAutoCreateUsers',
+          label: 'Neue OAuth Benutzer automatisch erstellen',
+          type: 'checkbox',
+          value: config.oAuthAutoCreateUsers ? 'checked' : 'unchecked',
+        }"
+        [shouldInitChange]="false"
+        (inputChanged)="updateBoolValue('oAuthAutoCreateUsers', $event)"
+      />
+
+      <div class="flex-row gap-medium">
+        <vmc-select
+          label="Standard Gruppe"
+          [options]="(groups$ | async) ?? []"
+          [value]="config.oAuthDefaultGroup ? config.oAuthDefaultGroup.toString() : ''"
+          (inputChanged)="updateValue('oAuthDefaultGroup', $event)"
+        />
+
+        <vmc-select
+          label="Standard Rolle"
+          [options]="(roles$ | async) ?? []"
+          [value]="config.oAuthDefaultRole ? config.oAuthDefaultRole.toString() : ''"
+          (inputChanged)="updateValue('oAuthDefaultRole', $event)"
+        />
+      </div>
+    </div>
+
+    <div class="data-container">
+      <label class="text-large">Lokaler Login</label>
+      <div class="flex-row">
+        <vmc-input-field
+          [formField]="{
+            key: 'oauthAllowPasswordLogin',
+            label: 'Passwort Login für OAuth Benutzer erlauben',
+            type: 'checkbox',
+            value: config.oAuthAllowPasswordLogin ? 'checked' : 'unchecked',
+          }"
+          [shouldInitChange]="false"
+          (inputChanged)="updateBoolValue('oAuthAllowPasswordLogin', $event)"
+        />
+
+        <vmc-input-field
+          [formField]="{
+            key: 'oauthDisablePasswordLogin',
+            label: 'Passwort Login deaktivieren',
+            type: 'checkbox',
+            value: config.disablePasswordLogin ? 'checked' : 'unchecked',
+          }"
+          [shouldInitChange]="false"
+          (inputChanged)="updateBoolValue('disablePasswordLogin', $event)"
+        />
+      </div>
+    </div>
+
+    <div class="data-container">
+      <label class="text-large">Anzeige</label>
+      <vmc-input-field
+        [formField]="{
+          key: 'navigationBarText',
+          label: 'Text der Navigationsleiste',
+          type: 'text',
+          value: config.navigationBarText ?? '',
+        }"
+        [shouldInitChange]="false"
+        (inputChanged)="updateValue('navigationBarText', $event)"
+      />
+    </div>
+
+    <div class="data-container">
+      <label class="text-large">Rechtliches</label>
+      <vmc-input-field
+        [formField]="{
+          key: 'useCustomImprint',
+          label: 'Eigenes Impressum nutzen',
+          type: 'checkbox',
+          value: config.useCustomImprint ? 'checked' : 'unchecked',
+        }"
+        [shouldInitChange]="false"
+        (inputChanged)="updateBoolValue('useCustomImprint', $event)"
+      />
+
+      <vmc-input-field
+        [formField]="{
+          key: 'customImprintLink',
+          label: 'Link zum Impressum',
+          type: 'text',
+          value: config.customImpressumLink ?? '',
+        }"
+        [shouldInitChange]="false"
+        (inputChanged)="updateValue('customImpressumLink', $event)"
+      />
+    </div>
+  }
+</div>

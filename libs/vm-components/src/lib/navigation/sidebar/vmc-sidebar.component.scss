@@ -3,6 +3,8 @@
   height: 100%;
 
   --btn-radius: 0.5rem;
+  --sb-thumb: var(--vm-secondary-color-tonal);
+  --sb-thumb-hover: var(--vm-primary-color);
 
   ::ng-deep {
     .mat-expansion-panel-header-title {
@@ -18,6 +20,7 @@
     }
   }
 }
+
 .sidebar__wrapper {
   display: flex;
   flex-direction: column;
@@ -28,11 +31,34 @@
   padding: 1rem 1rem 0 0.5rem;
 
   background-color: var(--vm-background-color-light);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb) transparent;
+}
+
+.sidebar__wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar__wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar__wrapper::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb);
+  border-radius: 10px;
+}
+
+.sidebar__wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--sb-thumb-hover);
 }
 
 .sidebar__group {
   display: block;
   width: 230px;
+  flex-shrink: 0;
 }
 
 .sidebar__btn {

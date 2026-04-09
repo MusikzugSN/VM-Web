@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
-import { SnackbarService } from '@vm-utils';
+import { SnackbarService } from '@vm-utils/snackbar';
 import { catchError, Observable, throwError } from 'rxjs';
 
 export function httpErrorInterceptor(
@@ -10,10 +10,21 @@ export function httpErrorInterceptor(
   const snackbarService = inject(SnackbarService);
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 0) {
+      console.log('HTTP-Fehler aufgetreten:', error);
+      if (error.status === 303) {
+        // 303 See Other = Backend hat erfolgreich erstellt, antwortet mit Redirect
+        // Kein Fehler anzeigen
+      } else if (error.status === 0) {
         snackbarService.raiseError(
           'Der Server ist nicht erreichbar, wende dich an deinen Administrator.',
         );
+      } else if (
+        error.status === 400 &&
+        error.error.title === 'One or more validation errors occurred.'
+      ) {
+        snackbarService.raiseError('Es sind nicht alle Pflichtinformationen angegeben.', 10000);
+      } else if (error.status === 422) {
+        snackbarService.raiseError('Eine oder mehrere Validierungen sind fehlgeschlagen.', 10000);
       } else if (error.status === 401 && error.error != 'login_failed') {
         snackbarService.raiseError('Du bist nicht mehr angemeldet, melde dich erneut an.', 10000);
       } else if (error.status === 401 && error.error === 'login_failed') {

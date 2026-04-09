@@ -12,7 +12,7 @@ export class AppCallback implements OnInit {
   readonly #authService = inject(AuthService);
   readonly #router = inject(Router);
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     await this.#authService.handleOAuthLoginCallback();
     await this.#router.navigate(['/']);
   }

@@ -1,0 +1,12 @@
+<div class="flex-column" style="gap: 16px">
+  <div style="display: flex; gap: 16px">
+    <div class="data-container flex-column">
+      <label class="text-normal">Taginformationen</label>
+      <vmc-input-field
+        [formField]="tagNameField"
+        [shouldInitChange]="false"
+        (inputChanged)="storeChangedValue($event, 'name')"
+      />
+    </div>
+  </div>
+</div>

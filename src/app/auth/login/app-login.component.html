@@ -6,31 +6,34 @@
       src="{{ (bannerLink$ | async) ?? '' }}"
       alt="Loginbanner des Vereins"
     />
-    <vmc-form
-      (formSubmitted)="loginClicked($event)"
-      [formData]="{
-        submitButtonType: 'filled',
-        header: 'Anmeldung',
-        description: 'Bitte melde dich mit deinem Anmeldedaten an.',
-        submitButton: 'Anmelden',
-        submitButtonPosition: 'full',
-        fields: [
-          {
-            label: 'Username',
-            type: 'text',
-            placeholder: 'z.B. max.mustermann',
-            required: true,
-            key: 'username',
-          },
-          {
-            label: 'Password',
-            type: 'password',
-            required: true,
-            key: 'password',
-          },
-        ],
-      }"
-    />
+    @let passwordDisabled = (passwordLoginDisabled$ | async) ?? false;
+    @if (!passwordDisabled) {
+      <vmc-form
+        (formSubmitted)="loginClicked($event)"
+        [formData]="{
+          submitButtonType: 'filled',
+          header: 'Anmelden',
+          description: 'Bitte melde dich mit deinem Anmeldedaten an.',
+          submitButton: 'Anmelden',
+          submitButtonPosition: 'full',
+          fields: [
+            {
+              label: 'Username',
+              type: 'text',
+              placeholder: 'z.B. max.mustermann',
+              required: true,
+              key: 'username',
+            },
+            {
+              label: 'Password',
+              type: 'password',
+              required: true,
+              key: 'password',
+            },
+          ],
+        }"
+      />
+    }
     @let _providers = oauthProviders$ | async;
     @if (_providers != null && _providers.length > 0) {
       <label class="text-large">Oder anmelden mit:</label>
