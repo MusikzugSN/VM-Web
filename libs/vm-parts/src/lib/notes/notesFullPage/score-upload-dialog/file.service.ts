@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import {MusicSheet} from '@vm-utils/services';
+import { MusicSheet } from '@vm-utils/services';
 
 export interface UploadScoreFileRequest {
   fileName: string;
