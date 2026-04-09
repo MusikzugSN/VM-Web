@@ -25,7 +25,7 @@ export class LoginConfigService {
     shareReplay({ bufferSize: 1, refCount: false }),
   );
 
-  save$(dto: Partial<LoginConfigDto>): Observable<Object> {
+  save$(dto: Partial<LoginConfigDto>): Observable<object> {
     return this.#http.post(this.baseUrl, dto);
   }
 
