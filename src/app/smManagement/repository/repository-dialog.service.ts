@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
-import {Score} from '@vm-utils/services';
-import {AppRepositoryDataDialog} from './dataDialog/app-repository-data-dialog.component';
-import {AppScoreDeleteDialog} from './deleteDialog/app-score-delete-dialog.component';
-import {AppScoreMulitCreateDialog} from './mulitCreateDialog/app-mulit-create-dialog.component';
+import { Score } from '@vm-utils/services';
+import { AppRepositoryDataDialog } from './dataDialog/app-repository-data-dialog.component';
+import { AppScoreDeleteDialog } from './deleteDialog/app-score-delete-dialog.component';
+import { AppScoreMulitCreateDialog } from './mulitCreateDialog/app-mulit-create-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,7 @@ export class RepositoryDialogService {
       ],
       dialogConfig: {
         minWidth: '700px',
-      }
+      },
     });
   }
 
@@ -35,7 +35,7 @@ export class RepositoryDialogService {
       ],
       dialogConfig: {
         minWidth: '600px',
-      }
+      },
     });
   }
 
@@ -49,7 +49,7 @@ export class RepositoryDialogService {
       ],
       dialogConfig: {
         minWidth: '700px',
-      }
+      },
     });
   }
 
@@ -67,4 +67,3 @@ export class RepositoryDialogService {
     });
   }
 }
-

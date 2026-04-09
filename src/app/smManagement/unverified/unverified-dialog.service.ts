@@ -10,7 +10,6 @@ export interface DeleteNoteDialogData {
   note: AllNotesData;
 }
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -38,5 +37,3 @@ export class UnverifiedDialogService {
     });
   }
 }
-
-

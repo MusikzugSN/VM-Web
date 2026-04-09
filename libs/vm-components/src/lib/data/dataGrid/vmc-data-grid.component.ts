@@ -28,13 +28,13 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import { DatePipe, NgTemplateOutlet} from '@angular/common';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Dictionary } from '@vm-utils';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatCheckbox } from '@angular/material/checkbox';
-import {BehaviorSubject} from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatSort, MatSortHeader, Sort } from '@angular/material/sort';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
@@ -115,7 +115,9 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
 
   pageSizeOptions = computed(() => {
     const options = this.paginator() ?? [];
-    return [...new Set(options.filter((x) => Number.isFinite(x) && x > 0).map((x) => Math.floor(x)))].sort((a, b) => a - b);
+    return [
+      ...new Set(options.filter((x) => Number.isFinite(x) && x > 0).map((x) => Math.floor(x))),
+    ].sort((a, b) => a - b);
   });
 
   defaultPageSize = computed<number>(() => {
@@ -127,7 +129,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     const rows = this.dataSource()?.length ?? 0;
 
     // nächsthöhere Option suchen
-    const nextHigher = options.find(x => x >= rows);
+    const nextHigher = options.find((x) => x >= rows);
 
     // wenn gefunden → nehmen
     if (nextHigher !== undefined) {
@@ -204,7 +206,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
 
     effect(() => {
       const paginator = this.paginatorElement();
-      if(paginator) {
+      if (paginator) {
         this.tableData.paginator = paginator;
       }
     });

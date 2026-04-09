@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {BehaviorSubject, Observable, shareReplay, switchMap} from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay, switchMap } from 'rxjs';
 
 export interface LoginConfigDto {
   oAuthAutoCreateUsers: boolean;
@@ -21,8 +21,8 @@ export class LoginConfigService {
   #reloadSettings = new BehaviorSubject<boolean>(false);
 
   settings$: Observable<LoginConfigDto> = this.#reloadSettings.pipe(
-    switchMap(_x => this.#http.get<LoginConfigDto>(this.baseUrl)),
-    shareReplay({ bufferSize: 1, refCount: false})
+    switchMap((_x) => this.#http.get<LoginConfigDto>(this.baseUrl)),
+    shareReplay({ bufferSize: 1, refCount: false }),
   );
 
   save$(dto: Partial<LoginConfigDto>): Observable<void> {

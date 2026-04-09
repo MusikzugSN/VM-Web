@@ -9,7 +9,7 @@ import {
   ToolbarService,
   ToolbarSettingsModel,
 } from '@syncfusion/ej2-angular-pdfviewer';
-import {NotesViewerService, ScoreVoiceRangesDTO} from '@vm-utils/services';
+import { NotesViewerService, ScoreVoiceRangesDTO } from '@vm-utils/services';
 import { AsyncPipe, Location } from '@angular/common';
 import { CropPdfService } from '@vm-utils/services';
 import { firstValueFrom, map } from 'rxjs';
@@ -115,10 +115,7 @@ export class AppCropPdf {
 
   customToolbar: ToolbarSettingsModel = {
     showTooltip: true,
-    toolbarItems: [
-      'MagnificationTool',
-      'PageNavigationTool'
-    ],
+    toolbarItems: ['MagnificationTool', 'PageNavigationTool'],
   };
 
   documentPath$ = this.#cropPdfService.files$.pipe(
@@ -276,11 +273,11 @@ export class AppCropPdf {
 
     let best:
       | {
-      scoreId: number;
-      voiceId: number;
-      from: number;
-      to?: number;
-    }
+          scoreId: number;
+          voiceId: number;
+          from: number;
+          to?: number;
+        }
       | undefined;
 
     for (const [scoreIdRaw, voices] of Object.entries(all)) {

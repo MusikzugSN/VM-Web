@@ -1,16 +1,8 @@
 import { Component, inject } from '@angular/core';
-import {
-  convertToPatch,
-  Dictionary,
-  nameOf,
-} from '@vm-utils';
-import {
-  DIALOG_BUTTON_CLICKS,
-  DIALOG_DATA,
-  DialogBase,
-} from '@vm-utils/dialogs';
+import { convertToPatch, Dictionary, nameOf } from '@vm-utils';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { VmcInputField, VmFormField, VmValidFormTypes } from '@vm-components';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom, Observable } from 'rxjs';
 import { Tag, TagsService } from '@vm-utils/services';
 
@@ -21,9 +13,9 @@ import { Tag, TagsService } from '@vm-utils/services';
   styleUrl: './tags-data-dialog.component.scss',
 })
 export class TagsDataDialog extends DialogBase<boolean> {
-  readonly #data = inject< Tag | undefined>(DIALOG_DATA);
+  readonly #data = inject<Tag | undefined>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
-  readonly #tagService = inject( TagsService );
+  readonly #tagService = inject(TagsService);
 
   tagNameField: VmFormField = {
     type: 'text',

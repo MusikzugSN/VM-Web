@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AppLogin } from './login/app-login.component';
 import { AppCallback } from './callback/app-callback.component';
-import {AppNoPermission} from './noPermission/app-noPermission.component';
+import { AppNoPermission } from './noPermission/app-noPermission.component';
 
 export const AUTH_ROUTES: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },

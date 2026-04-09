@@ -11,7 +11,7 @@ export interface Printconf extends IMetaData {
 export enum Mode {
   Exact = 0,
   Over = 1,
-  Under = 2
+  Under = 2,
 }
 export enum Duplex {
   No = 0,
@@ -22,7 +22,6 @@ export enum Duplex {
 @Injectable({
   providedIn: 'root',
 })
-
 export class PrintConfigurationService extends BaseCrudService<Printconf> {
   override url: string = 'printconf';
 }

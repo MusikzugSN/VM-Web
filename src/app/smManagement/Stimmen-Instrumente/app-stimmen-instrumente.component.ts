@@ -20,9 +20,9 @@ import {
 } from '@vm-utils/services';
 import { VoiceDialogService } from './voice-dialog.service';
 import { InstrumentDialogService } from './instrument-dialog.service';
-import {BehaviorSubject, map, switchMap} from 'rxjs';
+import { BehaviorSubject, map, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import {NumDictionary} from '@vm-utils';
+import { NumDictionary } from '@vm-utils';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -39,8 +39,18 @@ export class AppStimmenInstrumenteComponent {
   readonly #permissionService = inject(PermissionService);
 
   #reload = new BehaviorSubject(false);
-  voiceListe$ = this.#reload.pipe(switchMap(_ => this.voiceService.load$({ includeInstrumentName: true }).pipe(map(x => x.sort((a, b) => this.#computeVoiceName(a).localeCompare(this.#computeVoiceName(b)))))));
-  instrumentListe$ = this.#reload.pipe(switchMap(_ => this.instrumentService.load$()));
+  voiceListe$ = this.#reload.pipe(
+    switchMap((_) =>
+      this.voiceService
+        .load$({ includeInstrumentName: true })
+        .pipe(
+          map((x) =>
+            x.sort((a, b) => this.#computeVoiceName(a).localeCompare(this.#computeVoiceName(b))),
+          ),
+        ),
+    ),
+  );
+  instrumentListe$ = this.#reload.pipe(switchMap((_) => this.instrumentService.load$()));
 
   searchTerm = signal<string | undefined>(undefined);
 
@@ -151,7 +161,6 @@ export class AppStimmenInstrumenteComponent {
     { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time' },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy' },
   ];
-
 
   #computedVoiceNames: NumDictionary<string> = {};
   #computeVoiceName(voice: Voice): string {

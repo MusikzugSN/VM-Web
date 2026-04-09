@@ -2,4 +2,5 @@
   [data]="(data$ | async) ?? []"
   [selectedVoiceIds]="(voiceFilter$ | async) ?? []"
   (voiceFilterChanged)="voiceFilterChanged($event)"
-  (buttonClicked)="execAction($event)"/>
+  (buttonClicked)="execAction($event)"
+/>

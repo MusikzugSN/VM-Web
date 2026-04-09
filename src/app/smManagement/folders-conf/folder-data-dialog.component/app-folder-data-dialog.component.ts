@@ -1,11 +1,13 @@
 import { Component, inject } from '@angular/core';
+import { AsPipe, convertToPatch, Dictionary, nameOf, NumDictionary } from '@vm-utils';
 import {
-  AsPipe,
-  convertToPatch,
-  Dictionary,
-  nameOf, NumDictionary,
-} from '@vm-utils';
-import {BehaviorSubject, combineLatest, distinctUntilChanged, firstValueFrom, map, Observable} from 'rxjs';
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  firstValueFrom,
+  map,
+  Observable,
+} from 'rxjs';
 import {
   VmcDataGrid,
   VmCheckboxValues,
@@ -20,10 +22,10 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { EventMusicSheetTeaser, GroupService } from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
-import {Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder} from '@vm-utils/services';
-import {Score, ScoreService} from '@vm-utils/services';
-import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
-import { SnackbarService } from '@vm-utils/snackbar'
+import { Folder, FolderMusicSheetTeaser, FoldersService, UpdateFolder } from '@vm-utils/services';
+import { Score, ScoreService } from '@vm-utils/services';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
+import { SnackbarService } from '@vm-utils/snackbar';
 
 @Component({
   selector: 'app-folder-data-dialog',
@@ -192,7 +194,10 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
           await firstValueFrom(this.#folderService.change$(patch, patch.musicFolderId));
           super.closeDialog(true);
         } catch {
-          this.#snackbarService.raiseError('Speichern fehlgeschlagen. Bitte pruefe die Zuordnungen.', 5000);
+          this.#snackbarService.raiseError(
+            'Speichern fehlgeschlagen. Bitte pruefe die Zuordnungen.',
+            5000,
+          );
         }
         return;
       }
@@ -202,7 +207,10 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
           await firstValueFrom(this.#folderService.create$(patch));
           super.closeDialog(true);
         } catch {
-          this.#snackbarService.raiseError('Erstellen fehlgeschlagen. Bitte pruefe die Eingaben.', 5000);
+          this.#snackbarService.raiseError(
+            'Erstellen fehlgeschlagen. Bitte pruefe die Eingaben.',
+            5000,
+          );
         }
         return;
       }
@@ -240,7 +248,10 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
       }
     }
 
-    this.storeChangedValue(newData.filter((x) => !x.deleted).length, nameOf<UpdateFolder>('membercount'));
+    this.storeChangedValue(
+      newData.filter((x) => !x.deleted).length,
+      nameOf<UpdateFolder>('membercount'),
+    );
     this.folderMusicSheetsData$.next(newData);
   }
 
@@ -254,7 +265,11 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
 
     // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
     const currentValues = this.folderMusicSheetsData$.getValue();
-    if (currentValues.find((x) => x.number === normalizedValue.number || x.scoreId === normalizedValue.scoreId)) {
+    if (
+      currentValues.find(
+        (x) => x.number === normalizedValue.number || x.scoreId === normalizedValue.scoreId,
+      )
+    ) {
       this.#snackbarService.raiseError(
         'Die Nummer oder das Stück existiert bereits in der Mappe.',
         2500,
@@ -265,11 +280,17 @@ export class AppFolderDataDialog extends DialogBase<boolean> {
     // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
     if (
       this.#changedGroupValues.find(
-        (x) => x.number === normalizedValue.number || (x.scoreId === normalizedValue.scoreId && x.deleted),
+        (x) =>
+          x.number === normalizedValue.number ||
+          (x.scoreId === normalizedValue.scoreId && x.deleted),
       )
     ) {
       this.#changedGroupValues = this.#changedGroupValues.filter(
-        (x) => !((x.number === normalizedValue.number || x.scoreId === normalizedValue.scoreId) && x.deleted),
+        (x) =>
+          !(
+            (x.number === normalizedValue.number || x.scoreId === normalizedValue.scoreId) &&
+            x.deleted
+          ),
       );
     } else {
       this.#changedGroupValues.push({

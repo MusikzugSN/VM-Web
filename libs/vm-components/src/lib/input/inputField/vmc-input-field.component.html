@@ -17,8 +17,9 @@
     [value]="field.value"
     [multiple]="field.multiple ?? false"
     [enableSearch]="field.enableSearch ?? true"
-    (inputChanged)="selectCallChangeEvent($event)" />
-}  @else {
+    (inputChanged)="selectCallChangeEvent($event)"
+  />
+} @else {
   <mat-form-field class="vm-input">
     <mat-label>{{ field.label }}</mat-label>
     <input

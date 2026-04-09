@@ -10,7 +10,7 @@ import { Folder, FoldersService } from '@vm-utils/services';
   templateUrl: './app-delete-folder-dialog.html',
   styleUrl: './app-delete-folder-dialog.scss',
 })
-export class AppDeleteFolderDialog extends DialogBase<boolean>{
+export class AppDeleteFolderDialog extends DialogBase<boolean> {
   readonly #data = inject<Folder>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #folderService = inject(FoldersService);

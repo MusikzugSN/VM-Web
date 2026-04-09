@@ -4,7 +4,7 @@ import { AppRoles } from './roles/app-roles.component';
 import { AppUsers } from './users/app-users.component';
 import { AppAdminLayout } from './app-admin-layout.component';
 import { authGuard } from '../auth/auth.guard';
-import {AppConfigLogin} from './loginSettigs/app-loginSettings.component';
+import { AppConfigLogin } from './loginSettigs/app-loginSettings.component';
 
 export const ADMIN_ROUTES: Routes = [
   {

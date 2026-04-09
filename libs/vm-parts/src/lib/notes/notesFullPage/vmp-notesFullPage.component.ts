@@ -1,5 +1,5 @@
-import {Component, computed, inject, input, InputSignal, output, signal} from '@angular/core';
-import {BehaviorSubject, map, Observable} from 'rxjs';
+import { Component, computed, inject, input, InputSignal, output, signal } from '@angular/core';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import {
   VmcDataGrid,
   VmcInputField,
@@ -15,9 +15,14 @@ import {
 } from '@vm-components';
 import { DownloadFileService } from './download-file.service';
 import { VmpNotesFullpageDialogService } from './vmp-notes-fullPage-dialog.service';
-import {VerifySheetService, VoiceService, PermissionService, PermissionType} from '@vm-utils/services';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {AsyncPipe} from '@angular/common';
+import {
+  VerifySheetService,
+  VoiceService,
+  PermissionService,
+  PermissionType,
+} from '@vm-utils/services';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AsyncPipe } from '@angular/common';
 import { Router } from '@angular/router';
 
 export interface AllNotesData {
@@ -79,7 +84,7 @@ export class VmpNotesFullPageComponent {
 
     return [
       { key: 'download', icon: 'file_download' },
-      ...(isUnverified && canCheckInUnverified ? [{ key: 'check', icon: 'fact_check'}] : []),
+      ...(isUnverified && canCheckInUnverified ? [{ key: 'check', icon: 'fact_check' }] : []),
       ...(disableEdit ? [] : [{ key: 'print', icon: 'print' }]),
       ...(disableEdit ? [] : [{ key: 'edit', icon: 'edit' }]),
       ...(isUnverified
@@ -131,7 +136,7 @@ export class VmpNotesFullPageComponent {
 
     if (action.key === 'check') {
       this.#verifyScoreService.setSheetIds([action.rowData.notesId]);
-      await this.#router.navigate(['/scores/verifySheet'])
+      await this.#router.navigate(['/scores/verifySheet']);
       return;
     }
 
@@ -150,8 +155,8 @@ export class VmpNotesFullPageComponent {
   toolbarItems$: Observable<VmToolbarItem[]> = this.#selectedIds$.pipe(
     map((x) => {
       const toolbarItems: VmToolbarItem[] = [];
-    if (this.#router.url.startsWith('/scores/folders')) {
-      toolbarItems.push({
+      if (this.#router.url.startsWith('/scores/folders')) {
+        toolbarItems.push({
           key: 'addNotes',
           icon: 'add',
           label: 'Notenblatt hinzufügen',
@@ -183,34 +188,35 @@ export class VmpNotesFullPageComponent {
           label: 'Prüfen',
           action: async (): Promise<void> => {
             this.#verifyScoreService.setSheetIds(x);
-            await this.#router.navigate(['/scores/verifySheet'])
+            await this.#router.navigate(['/scores/verifySheet']);
           },
         });
       }
-    if (this.#router.url.startsWith('/scores/folders') && x.length > 0) {
-      toolbarItems.push(
-
-          {key: 'download',
-          icon: 'file_download',
-          label: 'Herunterladen',
-          action: async (): Promise<void> => {
-            this.downloadFile();
+      if (this.#router.url.startsWith('/scores/folders') && x.length > 0) {
+        toolbarItems.push(
+          {
+            key: 'download',
+            icon: 'file_download',
+            label: 'Herunterladen',
+            action: async (): Promise<void> => {
+              this.downloadFile();
+            },
           },
-        },
-        {
-          key: 'drucken',
-          icon: 'print',
-          label: 'Drucken',
+          {
+            key: 'drucken',
+            icon: 'print',
+            label: 'Drucken',
 
-          action: async (): Promise<void> => {
-            const selectedIds = this.#selectedIds$.getValue();
+            action: async (): Promise<void> => {
+              const selectedIds = this.#selectedIds$.getValue();
 
-            if (selectedIds.length === 1) {
-              await this.#printService.printSingleWithSystemDialog(selectedIds);
-              return;
-            }
+              if (selectedIds.length === 1) {
+                await this.#printService.printSingleWithSystemDialog(selectedIds);
+                return;
+              }
 
-            await this.#printService.openPrintDialog(selectedIds);},
+              await this.#printService.openPrintDialog(selectedIds);
+            },
           },
         );
       }
@@ -227,7 +233,7 @@ export class VmpNotesFullPageComponent {
 
   filterSelectionChange(event: VmValidFormTypes): void {
     if (Array.isArray(event)) {
-      const ids = (event as Array<string | number>).map(v => Number(v));
+      const ids = (event as Array<string | number>).map((v) => Number(v));
       this.voiceFilterChanged.emit(ids);
     } else if (event === null || event === undefined || event === '') {
       this.voiceFilterChanged.emit([]);

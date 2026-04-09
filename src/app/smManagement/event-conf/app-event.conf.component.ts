@@ -10,11 +10,10 @@ import {
   VmToolbarItem,
 } from '@vm-components';
 import { Event, EventService, PermissionService, PermissionType } from '@vm-utils/services';
-import {BehaviorSubject, firstValueFrom, switchMap} from 'rxjs';
+import { BehaviorSubject, firstValueFrom, switchMap } from 'rxjs';
 import { EventDialogService } from './event-conf-dialog.service';
-import {AsyncPipe} from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
-
 
 @Component({
   selector: 'app-event-conf',
@@ -28,7 +27,7 @@ export class AppEventConfComponent {
   readonly #permissionService = inject(PermissionService);
 
   #reload = new BehaviorSubject(false);
-  eventListe$ = this.#reload.pipe(switchMap(_ => this.eventService.load$()));
+  eventListe$ = this.#reload.pipe(switchMap((_) => this.eventService.load$()));
 
   searchterm = signal<string | undefined>(undefined);
 
@@ -108,6 +107,12 @@ export class AppEventConfComponent {
     { key: 'name', header: 'Name', field: 'name', filterable: true },
     { key: 'date', header: 'Aktiv bis', field: 'date', type: 'date', filterable: true },
     { key: 'updatedBy', header: 'Bearbeitet von', field: 'updatedBy', filterable: true },
-    { key: 'updatedAt', header: 'Bearbeiten am', field: 'updatedAt', type: 'date-time', filterable: true },
+    {
+      key: 'updatedAt',
+      header: 'Bearbeiten am',
+      field: 'updatedAt',
+      type: 'date-time',
+      filterable: true,
+    },
   ];
 }

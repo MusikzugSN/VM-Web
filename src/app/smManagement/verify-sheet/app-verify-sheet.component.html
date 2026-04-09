@@ -1,5 +1,5 @@
 <vmc-toolbar [items]="toolbarItems" [useNgContentForRightside]="true">
-  <div style="display: flex; gap: 12px; width: 100%;">
+  <div style="display: flex; gap: 12px; width: 100%">
     <vmc-input-field
       [formField]="scoreField()"
       [shouldInitChange]="false"
@@ -18,5 +18,6 @@
   style="height: 100%; display: block"
   [toolbarSettings]="customToolbar"
   [serviceUrl]="(serviceUrl$ | async) ?? ''"
-  [documentPath]="(documentPath$ | async) ?? ''">
+  [documentPath]="(documentPath$ | async) ?? ''"
+>
 </ejs-pdfviewer>

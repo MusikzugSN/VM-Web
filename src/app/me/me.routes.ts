@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { AppMeLayout } from './app-me-layout.component';
-import {AppTagsComponent} from './tags/app-tags.component';
+import { AppTagsComponent } from './tags/app-tags.component';
 import { AppEventComponent } from './event/app-event.component';
 import { AppFolderMeComponent } from './folders/app-folders.component';
-import {authGuard} from '../auth/auth.guard';
+import { authGuard } from '../auth/auth.guard';
 
 export const ME_ROUTES: Routes = [
   {
@@ -13,21 +13,15 @@ export const ME_ROUTES: Routes = [
     canActivateChild: [authGuard],
     children: [
       { path: '', redirectTo: 'folders', pathMatch: 'full' },
-      { path: 'event', children: [
-          { path: ':eventId', component: AppEventComponent },
-        ]
-      },
-      { path: 'tag', children: [
-          { path: ':tagId', component: AppTagsComponent },
-          ]
-        },
+      { path: 'event', children: [{ path: ':eventId', component: AppEventComponent }] },
+      { path: 'tag', children: [{ path: ':tagId', component: AppTagsComponent }] },
       {
         path: 'folders',
         children: [
           { path: '', component: AppFolderMeComponent },
-          { path: ':folderId', component: AppFolderMeComponent }
-        ]
-      }
-    ]
+          { path: ':folderId', component: AppFolderMeComponent },
+        ],
+      },
+    ],
   },
 ];

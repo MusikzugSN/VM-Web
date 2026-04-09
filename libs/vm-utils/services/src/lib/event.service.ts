@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
-import {BaseCrudService, convertMetaDataFromDto, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
-import {map, Observable} from 'rxjs';
+import {
+  BaseCrudService,
+  convertMetaDataFromDto,
+  convertMetaDataFromDtos,
+  IMetaData,
+} from '@vm-utils';
+import { map, Observable } from 'rxjs';
 
 export interface Event extends IMetaData {
   eventId: number;
@@ -29,7 +34,7 @@ export class EventService extends BaseCrudService<Event> {
   loadForMyArea$(): Observable<Event[]> {
     return this.httpClient
       .get<Event[]>(this.url + '/forMyArea')
-      .pipe(map(event => convertMetaDataFromDtos(event)));
+      .pipe(map((event) => convertMetaDataFromDtos(event)));
   }
 
   loadByIdWithScores$(id: number): Observable<Event> {

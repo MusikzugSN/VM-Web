@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { VmDialogService } from '@vm-utils/dialogs';
 import { AppFolderDataDialog } from './folder-data-dialog.component/app-folder-data-dialog.component';
 import { Folder } from '@vm-utils/services';
-import {AppDeleteFolderDialog} from './deleteDialog/app-delete-folder-dialog';
+import { AppDeleteFolderDialog } from './deleteDialog/app-delete-folder-dialog';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +31,7 @@ export class FolderDialogService {
       ],
       dialogConfig: {
         minWidth: '700px',
-      }
+      },
     });
   }
   async openNewFolderDialog(): Promise<boolean | undefined> {
@@ -44,7 +44,7 @@ export class FolderDialogService {
       ],
       dialogConfig: {
         minWidth: '700px',
-      }
+      },
     });
   }
 }

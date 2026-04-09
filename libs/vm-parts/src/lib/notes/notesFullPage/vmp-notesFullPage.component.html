@@ -1,13 +1,9 @@
 <vmc-toolbar [items]="(toolbarItems$ | async) ?? []" [useNgContentForRightside]="true">
   <div class="gap">
-    <vmc-input-field
-      [formField]="suchleiste"
-    (inputChanged)="filterTermChanged($event)">
+    <vmc-input-field [formField]="suchleiste" (inputChanged)="filterTermChanged($event)">
     </vmc-input-field>
 
-    <vmc-input-field
-      [formField]="filter()"
-      (inputChanged)="filterSelectionChange($event)">
+    <vmc-input-field [formField]="filter()" (inputChanged)="filterSelectionChange($event)">
     </vmc-input-field>
   </div>
 </vmc-toolbar>
@@ -21,4 +17,4 @@
   (selectionChanged)="selectionChanged($event)"
   [rowActions]="rowActions()"
   (clickedAction)="execAction($event)"
-    />
+/>

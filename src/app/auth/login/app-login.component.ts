@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { ConfigService } from '@vm-utils';
 import { filter, map } from 'rxjs';
-import {LoginConfigService} from '@vm-utils/services';
+import { LoginConfigService } from '@vm-utils/services';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +21,7 @@ export class AppLogin {
   readonly #config = inject(ConfigService);
   readonly #loginCofig = inject(LoginConfigService);
 
-  passwordLoginDisabled$ = this.#loginCofig.settings$.pipe(map(x => x.disablePasswordLogin))
+  passwordLoginDisabled$ = this.#loginCofig.settings$.pipe(map((x) => x.disablePasswordLogin));
   oauthProviders$ = this.#config.oauthProviders$;
   bannerLink$ = this.#config.config$.pipe(
     map((x) => x?.images.loginBanner),

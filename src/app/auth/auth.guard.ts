@@ -21,10 +21,12 @@ export const authGuard: CanActivateFn = async () => {
   }
 
   const myInformation = await firstValueFrom(authService.myInformation$);
-  if (myInformation == null || (!myInformation.isAdmin && myInformation.permissions?.length === 0)) {
+  if (
+    myInformation == null ||
+    (!myInformation.isAdmin && myInformation.permissions?.length === 0)
+  ) {
     const noPermissionPath = router.parseUrl('/auth/noPermission');
     return new RedirectCommand(noPermissionPath, { skipLocationChange: false });
-
   }
 
   return true;

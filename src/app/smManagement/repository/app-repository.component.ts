@@ -1,8 +1,23 @@
 import { Component, computed, inject, signal } from '@angular/core';
 
 import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
-import { Folder, FoldersService, PermissionService, PermissionType, Score, ScoreService, } from '@vm-utils/services';
-import { VmcDataGrid, VmcIconButton, VmcInputField, VmColumn, VmcToolbar, VmInputField, VmToolbarItem, } from '@vm-components';
+import {
+  Folder,
+  FoldersService,
+  PermissionService,
+  PermissionType,
+  Score,
+  ScoreService,
+} from '@vm-utils/services';
+import {
+  VmcDataGrid,
+  VmcIconButton,
+  VmcInputField,
+  VmColumn,
+  VmcToolbar,
+  VmInputField,
+  VmToolbarItem,
+} from '@vm-components';
 import { RepositoryDialogService } from './repository-dialog.service';
 import { AsyncPipe } from '@angular/common';
 import { AsPipe, convertToDisplayMinutes, NumDictionary } from '@vm-utils';
@@ -88,8 +103,13 @@ export class AppRepositoryComponent {
   columns: VmColumn<Score>[] = [
     { key: 'title', header: 'Title', field: 'title', filterable: true },
     { key: 'composer', header: 'Komponist', field: 'composer', filterable: true },
-    { key: 'duration', header: 'Länge', field: 'duration', type: 'converter',
-      converter: (score: Score) => convertToDisplayMinutes(score.duration ?? 0) + ' min', },
+    {
+      key: 'duration',
+      header: 'Länge',
+      field: 'duration',
+      type: 'converter',
+      converter: (score: Score) => convertToDisplayMinutes(score.duration ?? 0) + ' min',
+    },
     { key: 'folders', header: 'Mappen', field: 'musicFolders', type: 'template' },
     { key: 'changedAt', header: 'Bearbeitet am', field: 'updatedAt', type: 'date-time' },
     { key: 'changedBy', header: 'Bearbeitet von', field: 'updatedBy' },

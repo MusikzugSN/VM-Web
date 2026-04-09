@@ -8,7 +8,12 @@ import {
 import { NgComponentOutlet, AsyncPipe } from '@angular/common';
 import { VmcButton, VmcIconButton, VmcToolbar } from '@vm-components';
 import { BehaviorSubject } from 'rxjs';
-import { DIALOG_BUTTON_CLICKS, DIALOG_BUTTONS$, DIALOG_DATA, VmDialogButtonConfig } from '@vm-utils/dialogs';
+import {
+  DIALOG_BUTTON_CLICKS,
+  DIALOG_BUTTONS$,
+  DIALOG_DATA,
+  VmDialogButtonConfig,
+} from '@vm-utils/dialogs';
 
 export interface VmDialogConfig<TData> {
   title: string;

@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './app-noPermission.component.html',
   styleUrl: './app-noPermission.component.scss',
 })
-export class AppNoPermission {
-
-}
+export class AppNoPermission {}

@@ -18,15 +18,24 @@ export class AppAdminLayout {
     this.#permissionService.hasPermission$(PermissionType.OpenLoginSettings),
     { initialValue: false },
   );
-  readonly canOpenGroups = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenGroup), {
-    initialValue: false,
-  });
-  readonly canOpenRoles = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenRole), {
-    initialValue: false,
-  });
-  readonly canOpenUsers = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenUser), {
-    initialValue: false,
-  });
+  readonly canOpenGroups = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.OpenGroup),
+    {
+      initialValue: false,
+    },
+  );
+  readonly canOpenRoles = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.OpenRole),
+    {
+      initialValue: false,
+    },
+  );
+  readonly canOpenUsers = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.OpenUser),
+    {
+      initialValue: false,
+    },
+  );
 
   readonly sidebarItems = computed<VmSidebarGroup[]>(() => {
     const sidebarItems: VmSidebarGroup[] = [];

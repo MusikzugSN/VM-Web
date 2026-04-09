@@ -5,9 +5,10 @@ import {
   FoldersService,
   MusicSheet,
   MusicSheetQuerys,
-  MusicSheetService, Score,
+  MusicSheetService,
+  Score,
   ScoreService,
-  VoiceService
+  VoiceService,
 } from '@vm-utils/services';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -17,15 +18,16 @@ import {
   distinctUntilChanged,
   filter,
   map,
-  Observable, of,
+  Observable,
+  of,
   switchMap,
   take,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
-import {AsyncPipe} from '@angular/common';
-import {UnverifiedDialogService} from '../unverified/unverified-dialog.service';
-import {VmRowClickedEvent} from '@vm-components';
+import { AllNotesData, VmpNotesFullPageComponent } from '@vm-parts';
+import { AsyncPipe } from '@angular/common';
+import { UnverifiedDialogService } from '../unverified/unverified-dialog.service';
+import { VmRowClickedEvent } from '@vm-components';
 
 @Component({
   selector: 'app-folders.component',
@@ -46,12 +48,11 @@ export class AppFolderScoreComponent {
 
   readonly #route = inject(ActivatedRoute);
 
-  #folderId = this.#route.paramMap
-    .pipe(
-      map((params) => params.get('folderId')),
-      distinctUntilChanged(),
-      takeUntilDestroyed(),
-    );
+  #folderId = this.#route.paramMap.pipe(
+    map((params) => params.get('folderId')),
+    distinctUntilChanged(),
+    takeUntilDestroyed(),
+  );
 
   #reload = new BehaviorSubject(false);
   #voiceFilter = new BehaviorSubject<number[] | undefined>(undefined);
@@ -66,7 +67,8 @@ export class AppFolderScoreComponent {
       }
 
       const rawUserId =
-        (info as { id?: string | number; userId?: string | number; user_id?: string | number }).id ??
+        (info as { id?: string | number; userId?: string | number; user_id?: string | number })
+          .id ??
         (info as { userId?: string | number }).userId ??
         (info as { user_id?: string | number }).user_id;
 
@@ -89,7 +91,11 @@ export class AppFolderScoreComponent {
       .subscribe((userId) => this.#restoreVoiceFilter(userId));
   }
 
-  sheet$: Observable<MusicSheet[]> = combineLatest([this.#folderId, this.#reload, this.voiceFilter$]).pipe(
+  sheet$: Observable<MusicSheet[]> = combineLatest([
+    this.#folderId,
+    this.#reload,
+    this.voiceFilter$,
+  ]).pipe(
     switchMap(([folderId, _x, filterIds]) => {
       if (folderId === null) {
         return [];
@@ -101,11 +107,15 @@ export class AppFolderScoreComponent {
         queryParam = { voiceIds: filterIds };
       }
 
-      return this.#musicSheetService.loadForFolder$(folderId, queryParam).pipe(catchError(() => of([])))
+      return this.#musicSheetService
+        .loadForFolder$(folderId, queryParam)
+        .pipe(catchError(() => of([])));
     }),
   );
   score$: Observable<Score[]> = this.#reload.pipe(
-    switchMap((_x) => this.#scoreService.load$({ includeMusicFolders: true }).pipe(catchError(() => of([])))),
+    switchMap((_x) =>
+      this.#scoreService.load$({ includeMusicFolders: true }).pipe(catchError(() => of([]))),
+    ),
   );
 
   folders$: Observable<Folder[]> = this.#reload.pipe(
@@ -113,8 +123,10 @@ export class AppFolderScoreComponent {
   );
 
   voices$ = this.#reload.pipe(
-    switchMap(_x => this.#voiceService.load$({ includeInstrumentName: true }).pipe(catchError(() => of([])))),
-  )
+    switchMap((_x) =>
+      this.#voiceService.load$({ includeInstrumentName: true }).pipe(catchError(() => of([]))),
+    ),
+  );
 
   async execAction(action: VmRowClickedEvent<AllNotesData>): Promise<void> {
     if (action.rowData === null) {
@@ -131,7 +143,12 @@ export class AppFolderScoreComponent {
     }
   }
 
-  data$: Observable<AllNotesData[]> = combineLatest([this.sheet$, this.score$, this.folders$, this.voices$]).pipe(
+  data$: Observable<AllNotesData[]> = combineLatest([
+    this.sheet$,
+    this.score$,
+    this.folders$,
+    this.voices$,
+  ]).pipe(
     map(([sheet, score, folders, voices]) => {
       return sheet
         .map((x) => {
@@ -146,7 +163,7 @@ export class AppFolderScoreComponent {
             composer: currentScore.composer,
             folders: currentScore.musicFolders
               .map((z) => {
-                const folder = folders.find(x => x.musicFolderId === z.musicFolderId);
+                const folder = folders.find((x) => x.musicFolderId === z.musicFolderId);
                 //console.log('for ' + x.musicSheetId, currentScore.composer, currentScore.musicFolders)
                 if (folder === undefined) {
                   return;
@@ -154,13 +171,14 @@ export class AppFolderScoreComponent {
 
                 return folder.name + (z.number.trim().length > 0 ? ' (' + z.number + ')' : '');
               })
-              .filter(x => !!x)
+              .filter((x) => !!x)
               .join(', '),
             link: currentScore.link,
             pageCount: x.pageCount,
             voice: voices
-              .filter(voice => voice.voiceId === x.voiceId)
-              .map(voice => voice.instrumentName + ' ' + voice.name).join(', '),
+              .filter((voice) => voice.voiceId === x.voiceId)
+              .map((voice) => voice.instrumentName + ' ' + voice.name)
+              .join(', '),
           } as AllNotesData;
         })
         .filter((x) => x !== undefined);
@@ -228,9 +246,7 @@ export class AppFolderScoreComponent {
 
     const normalized = Array.from(
       new Set(
-        input
-          .map((value) => Number(value))
-          .filter((value) => Number.isInteger(value) && value > 0),
+        input.map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0),
       ),
     );
 

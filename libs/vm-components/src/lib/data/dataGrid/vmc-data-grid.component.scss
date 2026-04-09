@@ -10,7 +10,7 @@
   min-height: 0;
   overflow: auto;
   flex-grow: 1;
-  height: calc(100% - 64px );
+  height: calc(100% - 64px);
   display: flex;
 }
 
@@ -65,4 +65,3 @@ mat-paginator {
 .mat-mdc-table {
   max-height: 300px;
 }
-

@@ -16,7 +16,4 @@ export * from './lib/types/meta-data.type';
 // Pipes
 export * from './lib/pipes/as.pipe';
 
-
 export * from './lib/converter/time.converter';
-
-

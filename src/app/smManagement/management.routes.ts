@@ -1,4 +1,3 @@
-
 import { AppManagementLayout } from './app-management-layout';
 import { AppUnverifiedComponent } from './unverified/app-unverified.component';
 import { AppRepositoryComponent } from './repository/app-repository.component';
@@ -9,9 +8,9 @@ import { AppFolderScoreComponent } from './folders/app-folders.component';
 import { AppFoldersConfComponent } from './folders-conf/app-folders-conf.component';
 import { TagsConfComponent } from './tags-conf/tags-conf.component';
 import { PrintConfComponent } from './print-conf/print-conf.component';
-import {authGuard} from '../auth/auth.guard';
-import {AppCropPdf} from './crop-pdf/app-crop-pdf.component';
-import {AppVerifySheet} from './verify-sheet/app-verify-sheet.component';
+import { authGuard } from '../auth/auth.guard';
+import { AppCropPdf } from './crop-pdf/app-crop-pdf.component';
+import { AppVerifySheet } from './verify-sheet/app-verify-sheet.component';
 
 export const MANAGEMENT_ROUTES: Routes = [
   {

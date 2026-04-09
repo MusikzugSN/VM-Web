@@ -1,8 +1,5 @@
 <vmc-toolbar [items]="items()" [useNgContentForRightside]="true">
-  <vmc-input-field
-    [formField]="suchleiste"
-    (inputChanged)="searchterm.set($event.toString())"
-  >
+  <vmc-input-field [formField]="suchleiste" (inputChanged)="searchterm.set($event.toString())">
   </vmc-input-field>
 </vmc-toolbar>
 

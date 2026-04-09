@@ -1,9 +1,9 @@
-import {Component, computed, inject, signal, Signal} from '@angular/core';
+import { Component, computed, inject, signal, Signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { VmpSidebar } from '@vm-parts';
-import {VmSidebarGroup, VmSidebarItem} from '@vm-components';
-import { FoldersService, PermissionService, PermissionType} from '@vm-utils/services';
-import {toSignal} from '@angular/core/rxjs-interop';
+import { VmSidebarGroup, VmSidebarItem } from '@vm-components';
+import { FoldersService, PermissionService, PermissionType } from '@vm-utils/services';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-management-layout',
@@ -25,7 +25,9 @@ export class AppManagementLayout {
   );
   isVoicesAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenVoice));
   isEventsAllowed = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenEvent));
-  isTagsAllowed: Signal<boolean | undefined> = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenTags));
+  isTagsAllowed: Signal<boolean | undefined> = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.OpenTags),
+  );
   isPrintConfAllowed: Signal<boolean> = signal(false); //Druckeinstellungen sind momentan unsichtbar
 
   folders = toSignal(this.#folderService.load$());
@@ -100,13 +102,10 @@ export class AppManagementLayout {
       }
 
       if (tagsAllowed) {
-        configItems.push(
-          {
-            name: 'Tags',
-            route: '/scores/tags',
-          });
-
-
+        configItems.push({
+          name: 'Tags',
+          route: '/scores/tags',
+        });
       }
 
       if (this.isPrintConfAllowed()) {

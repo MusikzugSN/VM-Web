@@ -3,7 +3,7 @@
     <div class="data-container" style="flex-grow: 1">
       <label class="text-normal">Eventinformationen</label>
       <div class="flex-column"></div>
-        <div class="flex-row gap-medium">
+      <div class="flex-row gap-medium">
         <vmc-input-field
           [formField]="eventNameField"
           [shouldInitChange]="false"
@@ -14,24 +14,24 @@
           [formField]="(groupSelectorField$ | async) ?? groupSelectorFieldPlaceholder"
           [shouldInitChange]="false"
           (inputChanged)="storeChangedValue($event, 'groupId')"
-          />
-        </div>
-          <div class="flex-row">
+        />
+      </div>
+      <div class="flex-row">
         <vmc-input-field
           [formField]="eventDateField"
           [shouldInitChange]="false"
           (inputChanged)="storeChangedValue($event, 'date')"
-          />
-        </div>
-        <div class="position-right">
-          <vmc-input-field
-            [formField]="showInMyAreaField"
-            [shouldInitChange]="false"
-            (inputChanged)="storeBooleanChangedValue($event, 'showInMyArea')"
-          />
-         </div>
-       </div>
+        />
+      </div>
+      <div class="position-right">
+        <vmc-input-field
+          [formField]="showInMyAreaField"
+          [shouldInitChange]="false"
+          (inputChanged)="storeBooleanChangedValue($event, 'showInMyArea')"
+        />
+      </div>
     </div>
+  </div>
 
   <div class="data-container">
     <label class="text-normal">Stücke zuweisen</label>
@@ -72,5 +72,4 @@
       (inputChanged)="storeNewScoreChange($event)"
     />
   </ng-template>
-
 </div>

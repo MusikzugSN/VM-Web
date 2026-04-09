@@ -1,7 +1,6 @@
 <vmc-toolbar [items]="toolbarItems()" [useNgContentForRightside]="true">
   <div class="gap">
-    <vmc-input-field
-      [formField]="suchleiste" (inputChanged)="searchterm.set($event.toString())">
+    <vmc-input-field [formField]="suchleiste" (inputChanged)="searchterm.set($event.toString())">
     </vmc-input-field>
   </div>
 </vmc-toolbar>
@@ -12,7 +11,7 @@
   [filterTerm]="searchterm()"
   [templates]="[
     { keys: ['customActions'], templateRef: actionTemplate },
-    { keys: ['folders'], templateRef: foldersTemplate }
+    { keys: ['folders'], templateRef: foldersTemplate },
   ]"
 />
 
@@ -20,7 +19,7 @@
   @let folder = folderById();
   @let rowData = rowDataRaw | as: ScoreType;
   @for (scoreFoder of rowData.musicFolders; track $index) {
-    {{ (folder[scoreFoder.musicFolderId]?.name ?? 'N/A') }}
+    {{ folder[scoreFoder.musicFolderId]?.name ?? 'N/A' }}
     @if (scoreFoder.number) {
       {{ ' (' + scoreFoder.number + ')' }}
     }

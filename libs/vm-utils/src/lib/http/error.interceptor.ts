@@ -18,7 +18,10 @@ export function httpErrorInterceptor(
         snackbarService.raiseError(
           'Der Server ist nicht erreichbar, wende dich an deinen Administrator.',
         );
-      } else if (error.status === 400 && error.error.title === 'One or more validation errors occurred.') {
+      } else if (
+        error.status === 400 &&
+        error.error.title === 'One or more validation errors occurred.'
+      ) {
         snackbarService.raiseError('Es sind nicht alle Pflichtinformationen angegeben.', 10000);
       } else if (error.status === 422) {
         snackbarService.raiseError('Eine oder mehrere Validierungen sind fehlgeschlagen.', 10000);

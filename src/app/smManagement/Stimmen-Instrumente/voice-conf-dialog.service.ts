@@ -4,7 +4,6 @@ import { AppVoiceDataDialog } from './dataDialog/app-voice-data-dialog.component
 import { Voice } from '@vm-utils/services';
 import { VoiceDeleteDialog } from './deleteDialog/voice-delete-dialog-component';
 
-
 @Injectable({
   providedIn: 'root',
 })

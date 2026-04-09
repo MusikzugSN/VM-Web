@@ -6,8 +6,13 @@
       <label class="headline">Druckeinstellungen</label>
       @for (printconf of (printconfs$ | async) ?? []; track printconf.pageCount) {
         <button class="config-list__btn" (click)="selectConfig(printconf)">
-          {{ "Seite: " + (modeSymbol[printconf.mode] ? modeSymbol[printconf.mode] + ' ' : '') + printconf.pageCount }} <br>
-          {{ "A" + printconf.fileFormat + " - Duplex: " + Duplex[printconf.duplex] }}
+          {{
+            'Seite: ' +
+              (modeSymbol[printconf.mode] ? modeSymbol[printconf.mode] + ' ' : '') +
+              printconf.pageCount
+          }}
+          <br />
+          {{ 'A' + printconf.fileFormat + ' - Duplex: ' + Duplex[printconf.duplex] }}
         </button>
       }
     </div>
@@ -59,4 +64,3 @@
     </div>
   </div>
 </div>
-

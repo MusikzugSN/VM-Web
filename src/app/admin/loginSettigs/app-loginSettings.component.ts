@@ -5,12 +5,13 @@ import {
   VmCheckboxValues,
   VmcInputField,
   VmcSelect,
-  VmcToolbar, VmSelectOption,
+  VmcToolbar,
+  VmSelectOption,
   VmToolbarItem,
-  VmValidFormTypes
+  VmValidFormTypes,
 } from '@vm-components';
-import {GroupService, LoginConfigDto, LoginConfigService, RoleService} from '@vm-utils/services';
-import {SnackbarService} from '@vm-utils/snackbar';
+import { GroupService, LoginConfigDto, LoginConfigService, RoleService } from '@vm-utils/services';
+import { SnackbarService } from '@vm-utils/snackbar';
 
 @Component({
   selector: 'app-config-login',
@@ -28,23 +29,27 @@ export class AppConfigLogin {
 
   config$: Observable<LoginConfigDto> = this.#service.settings$;
 
-  groups$ = this.#groupService.load$().pipe(map(groups => {
-    return groups.map(group => {
-      return {
-        label: group.name,
-        value: group.groupId.toString()
-      } as VmSelectOption
-    });
-  }));
+  groups$ = this.#groupService.load$().pipe(
+    map((groups) => {
+      return groups.map((group) => {
+        return {
+          label: group.name,
+          value: group.groupId.toString(),
+        } as VmSelectOption;
+      });
+    }),
+  );
 
-  roles$ = this.#roleService.load$().pipe(map(groups => {
-    return groups.map(group => {
-      return {
-        label: group.name,
-        value: group.roleId.toString()
-      } as VmSelectOption
-    });
-  }));
+  roles$ = this.#roleService.load$().pipe(
+    map((groups) => {
+      return groups.map((group) => {
+        return {
+          label: group.name,
+          value: group.roleId.toString(),
+        } as VmSelectOption;
+      });
+    }),
+  );
 
   items: VmToolbarItem[] = [
     {
@@ -59,12 +64,11 @@ export class AppConfigLogin {
     },
   ];
 
-
   updateValue(key: keyof LoginConfigDto, value: VmValidFormTypes): void {
     this.#changedValues = { ...this.#changedValues, [key]: value };
   }
 
   updateBoolValue(key: keyof LoginConfigDto, value: VmValidFormTypes | VmCheckboxValues): void {
-    this.#changedValues = { ...this.#changedValues, [key]: value === "checked" };
+    this.#changedValues = { ...this.#changedValues, [key]: value === 'checked' };
   }
 }

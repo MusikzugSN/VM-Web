@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseCrudService, IMetaData } from '@vm-utils';
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface ScoreFolderEntry {
   musicFolderId: number;

@@ -15,4 +15,3 @@ export interface ScoreMusicFolder extends IMetaData {
   musicFolderName: string;
   number: number;
 }
-

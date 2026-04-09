@@ -7,7 +7,7 @@ import {
   VmFormField,
   VmValidFormTypes,
 } from '@vm-components';
-import { Score, ScoreService, Voice} from '@vm-utils/services';
+import { Score, ScoreService, Voice } from '@vm-utils/services';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

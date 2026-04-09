@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EventService, Event } from '@vm-utils/services';
-import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';
+import { distinctUntilChanged, firstValueFrom, map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
+import { AllNotesData, VmpNotesFullPageComponent } from '@vm-parts';
 
 @Component({
   selector: 'app-event.component',

@@ -1,6 +1,6 @@
-import {inject, Injectable} from '@angular/core';
-import {AuthService, PermissionTeaserWithGroupId} from './auth.service';
-import {combineLatest, map, Observable} from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { AuthService, PermissionTeaserWithGroupId } from './auth.service';
+import { combineLatest, map, Observable } from 'rxjs';
 
 export enum PermissionType {
   //Administrator = 0,
@@ -65,42 +65,48 @@ export enum PermissionType {
   CreateMyNotes,
 }
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class PermissionService {
   readonly #authService = inject(AuthService);
 
-  permissions$ = this.#authService.myInformation$
-    .pipe(
-      map(info => info?.permissions ?? []));
+  permissions$ = this.#authService.myInformation$.pipe(map((info) => info?.permissions ?? []));
 
-  isAdmin$ = this.#authService.myInformation$
-    .pipe(map(info => info?.isAdmin ?? false));
+  isAdmin$ = this.#authService.myInformation$.pipe(map((info) => info?.isAdmin ?? false));
 
   hasPermission$(permissionType: PermissionType, groupId?: number): Observable<boolean> {
-    return combineLatest([this.permissions$, this.isAdmin$])
-      .pipe(map(([permissions, isAdmin]) => this.#checkIfOnePermissionIsValid(permissions, isAdmin, [permissionType], groupId)));
+    return combineLatest([this.permissions$, this.isAdmin$]).pipe(
+      map(([permissions, isAdmin]) =>
+        this.#checkIfOnePermissionIsValid(permissions, isAdmin, [permissionType], groupId),
+      ),
+    );
   }
 
   hasPermissionFromMany$(permissionType: PermissionType[], groupId?: number): Observable<boolean> {
-    return combineLatest([this.permissions$, this.isAdmin$])
-      .pipe(map(([permissions, isAdmin]) => this.#checkIfOnePermissionIsValid(permissions, isAdmin, permissionType, groupId)));
+    return combineLatest([this.permissions$, this.isAdmin$]).pipe(
+      map(([permissions, isAdmin]) =>
+        this.#checkIfOnePermissionIsValid(permissions, isAdmin, permissionType, groupId),
+      ),
+    );
   }
 
-  #checkIfOnePermissionIsValid(permissions: PermissionTeaserWithGroupId[], isAdmin: boolean, permissionType: PermissionType[], groupId?: number) {
+  #checkIfOnePermissionIsValid(
+    permissions: PermissionTeaserWithGroupId[],
+    isAdmin: boolean,
+    permissionType: PermissionType[],
+    groupId?: number,
+  ) {
     if (isAdmin) {
       return true;
     }
 
-    const validPermissions = permissions.filter(p => permissionType.includes(p.permissionType));
+    const validPermissions = permissions.filter((p) => permissionType.includes(p.permissionType));
 
     if (groupId !== undefined) {
-      return validPermissions.some(p => p.groupId === groupId);
+      return validPermissions.some((p) => p.groupId === groupId);
     } else {
       return validPermissions.length > 0;
     }
-
   }
 }

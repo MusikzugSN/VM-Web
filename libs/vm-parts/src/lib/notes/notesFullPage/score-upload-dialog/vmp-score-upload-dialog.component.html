@@ -1,5 +1,4 @@
 <div class="flex-column" style="gap: 16px">
-
   <div class="data-container-top">
     <label class="text-normal">Stück auswählen</label>
 
@@ -13,7 +12,7 @@
 
   <div class="data-container">
     <label class="text-normal">Dateien oder Ordner hochladen</label>
-    <vmc-file-uploader [width]="'100%'" (filesChanged)="fileChangeEvent($event)"/>
+    <vmc-file-uploader [width]="'100%'" (filesChanged)="fileChangeEvent($event)" />
   </div>
 
   @let _files = files();
@@ -32,10 +31,10 @@
             [options]="(voices$ | async) ?? []"
             [hideIfNotSelected]="(selectedVoiceIds$ | async) ?? []"
             [enableSearch]="true"
-            (inputChanged)="storeChangedValue($event, file.path)"/>
+            (inputChanged)="storeChangedValue($event, file.path)"
+          />
         </div>
       }
     </div>
   }
 </div>
-

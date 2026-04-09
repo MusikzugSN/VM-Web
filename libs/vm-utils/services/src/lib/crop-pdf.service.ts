@@ -1,7 +1,7 @@
-import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { FileData } from '@vm-components';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 export interface ScoreVoiceRangesDTO {
   scoreId: number;
@@ -11,7 +11,7 @@ export interface ScoreVoiceRangesDTO {
 }
 
 export interface CropPdfByVoicesBatchRequest {
-  file: File
+  file: File;
   items: ScoreVoiceRangesDTO[];
 }
 

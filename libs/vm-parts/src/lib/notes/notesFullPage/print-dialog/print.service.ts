@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, switchMap} from 'rxjs';
-import {ConfigService} from '@vm-utils/services';
+import { map, Observable, switchMap } from 'rxjs';
+import { ConfigService } from '@vm-utils/services';
 
 export interface Printer {
   name: string;
@@ -55,8 +55,10 @@ export class PrintService {
   }
 
   downloadByToken$(downloadUrl: string): Observable<string> {
-    return this.#config.config$.pipe(switchMap(config => {
-      return this.#http.get<string>(config?.backedApiUrl + downloadUrl)
-    }));
+    return this.#config.config$.pipe(
+      switchMap((config) => {
+        return this.#http.get<string>(config?.backedApiUrl + downloadUrl);
+      }),
+    );
   }
 }

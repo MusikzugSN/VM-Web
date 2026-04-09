@@ -65,7 +65,8 @@ export class AppUnverifiedComponent {
 
       // Backend nimmt id oder userId
       const rawUserId =
-        (info as { id?: string | number; userId?: string | number; user_id?: string | number }).id ??
+        (info as { id?: string | number; userId?: string | number; user_id?: string | number })
+          .id ??
         (info as { userId?: string | number }).userId ??
         (info as { user_id?: string | number }).user_id;
 
@@ -102,7 +103,9 @@ export class AppUnverifiedComponent {
   );
 
   score$: Observable<Score[]> = this.#reload.pipe(
-    switchMap(() => this.#scoreService.load$({ includeMusicFolders: true }).pipe(catchError(() => of([])))),
+    switchMap(() =>
+      this.#scoreService.load$({ includeMusicFolders: true }).pipe(catchError(() => of([]))),
+    ),
   );
 
   folders$: Observable<Folder[]> = this.#reload.pipe(
@@ -110,7 +113,9 @@ export class AppUnverifiedComponent {
   );
 
   voices$ = this.#reload.pipe(
-    switchMap(() => this.#voiceService.load$({ includeInstrumentName: true }).pipe(catchError(() => of([])))),
+    switchMap(() =>
+      this.#voiceService.load$({ includeInstrumentName: true }).pipe(catchError(() => of([]))),
+    ),
   );
 
   async execAction(action: VmRowClickedEvent<AllNotesData>): Promise<void> {
@@ -147,7 +152,9 @@ export class AppUnverifiedComponent {
             composer: currentScore.composer,
             folders: currentScore.musicFolders
               .map((z) => {
-                const folder = folders.find((folderItem) => folderItem.musicFolderId === z.musicFolderId);
+                const folder = folders.find(
+                  (folderItem) => folderItem.musicFolderId === z.musicFolderId,
+                );
                 if (folder === undefined) {
                   return;
                 }
@@ -231,9 +238,7 @@ export class AppUnverifiedComponent {
 
     const normalized = Array.from(
       new Set(
-        input
-          .map((value) => Number(value))
-          .filter((value) => Number.isInteger(value) && value > 0),
+        input.map((value) => Number(value)).filter((value) => Number.isInteger(value) && value > 0),
       ),
     );
 

@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +13,6 @@ export class VerifySheetService {
   }
 
   removeId(id: number): void {
-    this.#sheetIds$.next(this.#sheetIds$.getValue().filter(x => x !== id));
+    this.#sheetIds$.next(this.#sheetIds$.getValue().filter((x) => x !== id));
   }
-
 }

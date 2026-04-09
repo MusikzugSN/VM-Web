@@ -4,14 +4,13 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventService, Event } from '@vm-utils/services';
 
-
 @Component({
   selector: 'app-event-delete-dialog.component',
   imports: [],
   templateUrl: './event-delete-dialog.component.html',
   styleUrl: './event-delete-dialog.component.scss',
 })
-export class EventDeleteDialog extends DialogBase<boolean>{
+export class EventDeleteDialog extends DialogBase<boolean> {
   readonly #data = inject<Event>(DIALOG_DATA);
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #eventService = inject(EventService);

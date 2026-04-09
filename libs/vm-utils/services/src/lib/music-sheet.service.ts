@@ -48,12 +48,19 @@ export class MusicSheetService extends BaseCrudService<MusicSheet, MusicSheet, M
     return this.change$({ musicSheetId, tags }, musicSheetId);
   }
 
-  setStatusToMusicSheet$(musicSheetIds: number, status: MusicSheetStatus, scoreId?: number, voiceId?: number): Observable<MusicSheet> {
-    return this.httpClient.patch<MusicSheet>(`${this.url}/${musicSheetIds}/status`, {
-      status,
-      scoreId,
-      voiceId
-    }).pipe(map((musicSheet) => convertMetaDataFromDto(musicSheet)));
+  setStatusToMusicSheet$(
+    musicSheetIds: number,
+    status: MusicSheetStatus,
+    scoreId?: number,
+    voiceId?: number,
+  ): Observable<MusicSheet> {
+    return this.httpClient
+      .patch<MusicSheet>(`${this.url}/${musicSheetIds}/status`, {
+        status,
+        scoreId,
+        voiceId,
+      })
+      .pipe(map((musicSheet) => convertMetaDataFromDto(musicSheet)));
   }
 
   private buildHttpParams(queryParams?: MusicSheetQuerys | undefined): HttpParams {
@@ -61,12 +68,10 @@ export class MusicSheetService extends BaseCrudService<MusicSheet, MusicSheet, M
 
     if (!queryParams) return params;
 
-
     for (const [key, value] of Object.entries(queryParams)) {
       if (value === null || value === undefined) continue;
 
       if (Array.isArray(value)) {
-
         for (const v of value) {
           params = params.append(key, String(v));
         }

@@ -1,9 +1,5 @@
 import { Component, inject } from '@angular/core';
-import {
-  convertToPatch,
-  Dictionary,
-  nameOf,
-} from '@vm-utils';
+import { convertToPatch, Dictionary, nameOf } from '@vm-utils';
 import { firstValueFrom, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmInputField, VmValidFormTypes } from '@vm-components';
@@ -53,7 +49,9 @@ export class AppInstrumentDataDialog extends DialogBase<boolean> {
         const type = (this.#changedValues['type'] ?? '') as string;
 
         if (!LETTERS_ONLY.test(name) || !LETTERS_ONLY.test(type)) {
-          this.#snackbar.raiseError('Nur Buchstaben (inkl. ä, ö, ü, ß) und Leerzeichen sind erlaubt.');
+          this.#snackbar.raiseError(
+            'Nur Buchstaben (inkl. ä, ö, ü, ß) und Leerzeichen sind erlaubt.',
+          );
           this.nameField = { ...this.nameField, value: '' };
           this.typeField = { ...this.typeField, value: '' };
           this.#changedValues = {};
@@ -82,4 +80,3 @@ export class AppInstrumentDataDialog extends DialogBase<boolean> {
     this.#changedValues[key] = newValue as string;
   }
 }
-

@@ -1,10 +1,5 @@
 import { Component, inject } from '@angular/core';
-import {
-  AsPipe,
-  convertToPatch,
-  Dictionary,
-  nameOf,
-} from '@vm-utils';
+import { AsPipe, convertToPatch, Dictionary, nameOf } from '@vm-utils';
 import { BehaviorSubject, firstValueFrom, map, Observable } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
@@ -156,7 +151,9 @@ export class AppVoiceDataDialog extends DialogBase<boolean> {
     if (event.key === 'delete' && event.rowData !== null) {
       const rowData = event.rowData;
       this.#alternativeVoicesData$.next(
-        this.#alternativeVoicesData$.getValue().filter((x) => x.alternative !== rowData.alternative),
+        this.#alternativeVoicesData$
+          .getValue()
+          .filter((x) => x.alternative !== rowData.alternative),
       );
       this.#storeChangedAlternativeValues();
       return;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {BaseCrudService, IMetaData} from '@vm-utils';
+import { BaseCrudService, IMetaData } from '@vm-utils';
 
-export interface Voice extends IMetaData{
+export interface Voice extends IMetaData {
   voiceId: number;
   name: string;
   instrumentId: number;
@@ -21,6 +21,5 @@ export interface VoiceQueryParams {
   providedIn: 'root',
 })
 export class VoiceService extends BaseCrudService<Voice, Voice, VoiceQueryParams> {
-    override url = 'voice';
-
+  override url = 'voice';
 }

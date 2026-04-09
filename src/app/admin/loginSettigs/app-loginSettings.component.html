@@ -2,8 +2,9 @@
 @let config = config$ | async;
 <div
   class="flex-column gap-medium"
-  style="width: 500px; margin-right: auto; margin-left: auto; padding-top: 50px">
-  @if (config !== null){
+  style="width: 500px; margin-right: auto; margin-left: auto; padding-top: 50px"
+>
+  @if (config !== null) {
     <div class="data-container">
       <label class="text-large">Neue OAuth-Benutzer</label>
       <vmc-input-field
@@ -11,7 +12,7 @@
           key: 'oAuthAutoCreateUsers',
           label: 'Neue OAuth Benutzer automatisch erstellen',
           type: 'checkbox',
-          value: config.oAuthAutoCreateUsers ? 'checked' : 'unchecked'
+          value: config.oAuthAutoCreateUsers ? 'checked' : 'unchecked',
         }"
         [shouldInitChange]="false"
         (inputChanged)="updateBoolValue('oAuthAutoCreateUsers', $event)"
@@ -42,7 +43,7 @@
             key: 'oauthAllowPasswordLogin',
             label: 'Passwort Login für OAuth Benutzer erlauben',
             type: 'checkbox',
-            value: config.oAuthAllowPasswordLogin ? 'checked' : 'unchecked'
+            value: config.oAuthAllowPasswordLogin ? 'checked' : 'unchecked',
           }"
           [shouldInitChange]="false"
           (inputChanged)="updateBoolValue('oAuthAllowPasswordLogin', $event)"
@@ -53,7 +54,7 @@
             key: 'oauthDisablePasswordLogin',
             label: 'Passwort Login deaktivieren',
             type: 'checkbox',
-            value: config.disablePasswordLogin ? 'checked' : 'unchecked'
+            value: config.disablePasswordLogin ? 'checked' : 'unchecked',
           }"
           [shouldInitChange]="false"
           (inputChanged)="updateBoolValue('disablePasswordLogin', $event)"
@@ -68,7 +69,7 @@
           key: 'navigationBarText',
           label: 'Text der Navigationsleiste',
           type: 'text',
-          value: config.navigationBarText ?? ''
+          value: config.navigationBarText ?? '',
         }"
         [shouldInitChange]="false"
         (inputChanged)="updateValue('navigationBarText', $event)"
@@ -79,22 +80,22 @@
       <label class="text-large">Rechtliches</label>
       <vmc-input-field
         [formField]="{
-      key: 'useCustomImprint',
-      label: 'Eigenes Impressum nutzen',
-      type: 'checkbox',
-      value: config.useCustomImprint ? 'checked' : 'unchecked'
-    }"
+          key: 'useCustomImprint',
+          label: 'Eigenes Impressum nutzen',
+          type: 'checkbox',
+          value: config.useCustomImprint ? 'checked' : 'unchecked',
+        }"
         [shouldInitChange]="false"
         (inputChanged)="updateBoolValue('useCustomImprint', $event)"
       />
 
       <vmc-input-field
         [formField]="{
-      key: 'customImprintLink',
-      label: 'Link zum Impressum',
-      type: 'text',
-      value: config.customImpressumLink ?? ''
-    }"
+          key: 'customImprintLink',
+          label: 'Link zum Impressum',
+          type: 'text',
+          value: config.customImpressumLink ?? '',
+        }"
         [shouldInitChange]="false"
         (inputChanged)="updateValue('customImpressumLink', $event)"
       />

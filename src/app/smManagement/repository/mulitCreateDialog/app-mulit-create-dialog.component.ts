@@ -1,19 +1,15 @@
-import {Component, inject} from '@angular/core';
-import {DIALOG_BUTTON_CLICKS, DialogBase} from '@vm-utils/dialogs';
-import {BehaviorSubject, firstValueFrom, map, Observable} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {FileData, VmcFileUploader, VmcSelect, VmSelectOption} from '@vm-components';
-import {CreateMultipleScore, ScoreService} from '@vm-utils/services';
-import {AsyncPipe} from '@angular/common';
-import { parse } from "csv-parse/browser/esm/sync";
+import { Component, inject } from '@angular/core';
+import { DIALOG_BUTTON_CLICKS, DialogBase } from '@vm-utils/dialogs';
+import { BehaviorSubject, firstValueFrom, map, Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FileData, VmcFileUploader, VmcSelect, VmSelectOption } from '@vm-components';
+import { CreateMultipleScore, ScoreService } from '@vm-utils/services';
+import { AsyncPipe } from '@angular/common';
+import { parse } from 'csv-parse/browser/esm/sync';
 
 @Component({
   selector: 'app-mulit-create-dialog',
-  imports: [
-    VmcFileUploader,
-    VmcSelect,
-    AsyncPipe
-  ],
+  imports: [VmcFileUploader, VmcSelect, AsyncPipe],
   templateUrl: './app-mulit-create-dialog.component.html',
   styleUrl: './app-mulit-create-dialog.component.scss',
 })
@@ -24,40 +20,34 @@ export class AppScoreMulitCreateDialog extends DialogBase<boolean> {
 
   #file$ = new BehaviorSubject<FileData | undefined>(undefined);
   #fileText$ = new BehaviorSubject<string | undefined>(undefined);
-  headers$ = this.#fileText$.pipe(map(fileText => {
-    if (fileText === undefined) {
-      return undefined;
-    }
+  headers$ = this.#fileText$.pipe(
+    map((fileText) => {
+      if (fileText === undefined) {
+        return undefined;
+      }
 
-    // Erste Zeile extrahieren
-    const firstLine = fileText.split(/\r?\n/)[0];
+      // Erste Zeile extrahieren
+      const firstLine = fileText.split(/\r?\n/)[0];
 
-    if (firstLine === undefined) {
-      return undefined;
-    }
+      if (firstLine === undefined) {
+        return undefined;
+      }
 
-    // CSV Header splitten (einfacher Fall)
-    return firstLine.split(',').map(h => h.trim()).map(h => ({ label: h, value: h } as VmSelectOption));
-  }));
+      // CSV Header splitten (einfacher Fall)
+      return firstLine
+        .split(',')
+        .map((h) => h.trim())
+        .map((h) => ({ label: h, value: h }) as VmSelectOption);
+    }),
+  );
 
-  dtoFields = [
-    'title',
-    'composer',
-    'link',
-    'duration',
-    'folderName',
-    'number'
-  ] as const;
+  dtoFields = ['title', 'composer', 'link', 'duration', 'folderName', 'number'] as const;
 
   mapping$ = new BehaviorSubject<Record<string, string | null>>({});
 
   selectedHeaders$ = this.mapping$.pipe(
-    map(mapObj =>
-      Object.values(mapObj)
-        .filter(v => v !== null) as string[]
-    )
+    map((mapObj) => Object.values(mapObj).filter((v) => v !== null) as string[]),
   );
-
 
   constructor() {
     super();
@@ -75,7 +65,7 @@ export class AppScoreMulitCreateDialog extends DialogBase<boolean> {
       }
     });
 
-    this.#file$.pipe(takeUntilDestroyed()).subscribe(async fileData => {
+    this.#file$.pipe(takeUntilDestroyed()).subscribe(async (fileData) => {
       if (fileData === undefined) {
         return;
       }
@@ -144,7 +134,7 @@ export class AppScoreMulitCreateDialog extends DialogBase<boolean> {
         link: get('link') ?? undefined,
         duration: get('duration') ? Number(get('duration')) : undefined,
         folderName: get('folderName') ?? undefined,
-        number: get('number') ?? undefined
+        number: get('number') ?? undefined,
       });
     }
 

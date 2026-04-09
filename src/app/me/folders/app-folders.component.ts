@@ -2,13 +2,12 @@ import { Component, inject } from '@angular/core';
 import { Folder, FoldersService } from '@vm-utils/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {distinctUntilChanged, firstValueFrom, map} from 'rxjs';
-import {AllNotesData, VmpNotesFullPageComponent} from '@vm-parts';
-
+import { distinctUntilChanged, firstValueFrom, map } from 'rxjs';
+import { AllNotesData, VmpNotesFullPageComponent } from '@vm-parts';
 
 @Component({
   selector: 'app-folders',
-  imports: [ VmpNotesFullPageComponent],
+  imports: [VmpNotesFullPageComponent],
   templateUrl: './app-folders.component.html',
   styleUrl: './app-folders.component.scss',
 })
@@ -27,7 +26,7 @@ export class AppFolderMeComponent {
       .pipe(
         map((params) => params.get('folderId')),
         distinctUntilChanged(),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe(async (folderId) => {
         this.isError = false;

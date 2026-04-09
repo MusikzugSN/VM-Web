@@ -1,7 +1,9 @@
 import { Component, inject } from '@angular/core';
 import {
   VmcButtonToggle,
-  VmcInputField, VmcToolbar, VmFormField,
+  VmcInputField,
+  VmcToolbar,
+  VmFormField,
   VmSelectOption,
   VmToolbarItem,
   VmValidFormTypes,
@@ -83,7 +85,7 @@ export class PrintConfComponent {
           key: nameOf<Printconf>('pageCount'),
           label: 'Seitenanzahl',
           required: true,
-          value: selectedConfig?.pageCount ?? ''
+          value: selectedConfig?.pageCount ?? '',
         }) as VmFormField,
     ),
   );
@@ -105,9 +107,9 @@ export class PrintConfComponent {
           required: true,
           value: selectedConfig?.mode?.toString() ?? '',
           options: this.selectoptions,
-        }) as VmFormField
-    )
-  )
+        }) as VmFormField,
+    ),
+  );
   duplexField = this.selectedConfig$.pipe(
     map(
       (selectedConfig) =>

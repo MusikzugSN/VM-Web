@@ -1,4 +1,9 @@
-<vmc-file-uploader [width]="'100%'" [onlySingleFile]="true" [allowedExtensions]="['csv']" (filesChanged)="filesChanged($event)"/>
+<vmc-file-uploader
+  [width]="'100%'"
+  [onlySingleFile]="true"
+  [allowedExtensions]="['csv']"
+  (filesChanged)="filesChanged($event)"
+/>
 
 @let _headers = (headers$ | async) ?? [];
 
@@ -22,6 +27,3 @@
     }
   </div>
 }
-
-
-

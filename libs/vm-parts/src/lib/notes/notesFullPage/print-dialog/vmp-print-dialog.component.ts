@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { VmcInputField, VmCheckboxValues, VmFormField, VmValidFormTypes } from '@vm-components';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { ConfigService, Dictionary } from '@vm-utils';
-import { firstValueFrom, map, Observable} from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { PrintService } from './print.service';
 import { SnackbarService } from '@vm-utils/snackbar';
 
@@ -162,7 +162,7 @@ export class VmpPrintDialog extends DialogBase<boolean> {
     const fileUrl = new URL(filePath, baseUrl).toString();
 
     const iframe = document.createElement('iframe');
-    iframe.name = 'pdfIframe'
+    iframe.name = 'pdfIframe';
     document.body.appendChild(iframe);
     iframe.style.display = 'none';
     iframe.onload = function (): void {
@@ -173,8 +173,6 @@ export class VmpPrintDialog extends DialogBase<boolean> {
       }, 1);
     };
     iframe.src = fileUrl;
-    this.#snackbar.raiseSuccess("Windowsdruck Service geöffnet")
+    this.#snackbar.raiseSuccess('Windowsdruck Service geöffnet');
   }
-
 }
-

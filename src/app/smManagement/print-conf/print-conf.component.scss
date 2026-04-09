@@ -26,12 +26,12 @@
   gap: 8px;
   width: 260px;
   min-width: 260px;
-  height: 100%;          /* wichtig */
+  height: 100%; /* wichtig */
   padding: 12px;
   border-right: 1px solid rgba(0, 0, 0, 0.12);
   overflow-y: auto;
   overflow-x: hidden;
-  flex: 0 0 260px;       /* bleibt stabil sichtbar */
+  flex: 0 0 260px; /* bleibt stabil sichtbar */
 }
 
 .config-list__btn {
@@ -52,7 +52,7 @@
 .config-panel {
   width: 60%;
   height: 60%;
-  margin: auto;          /* zentriert im rechten Bereich */
+  margin: auto; /* zentriert im rechten Bereich */
   min-width: 0;
   padding: 16px;
   display: flex;

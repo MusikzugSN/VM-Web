@@ -7,7 +7,7 @@
     (selectionChange)="selectCallChangeEvent($event)"
     (openedChange)="onOpened($event)"
   >
-    @if(enableSearch()) {
+    @if (enableSearch()) {
       <mat-option class="search-option" disabled>
         <input
           #searchInput
@@ -23,6 +23,5 @@
     @for (option of (filteredOptions$ | async) ?? []; track option.value) {
       <mat-option [value]="option.value">{{ option.label }}</mat-option>
     }
-
   </mat-select>
 </mat-form-field>

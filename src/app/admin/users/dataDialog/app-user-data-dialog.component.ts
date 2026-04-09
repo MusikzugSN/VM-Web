@@ -24,8 +24,8 @@ import { User, UserUpdate, UserService, UserGroupTeaser } from '@vm-utils/servic
 import { AsyncPipe } from '@angular/common';
 import { Group, GroupService } from '@vm-utils/services';
 import { Role, RoleService } from '@vm-utils/services';
-import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
-import {SnackbarService} from '@vm-utils/snackbar';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
+import { SnackbarService } from '@vm-utils/snackbar';
 
 const noProviderOption: VmSelectOption = {
   label: 'Kein Anbieter',
@@ -260,7 +260,7 @@ export class AppUserDataDialog extends DialogBase<boolean> {
     // der Eintrag existiert bereits in den aktuellen Werten, also muss er nicht erneut hinzugefügt werden
     const currentValues = this.userGroupData$.getValue();
     if (currentValues.find((x) => x.groupId === newValue.groupId && x.roleId === newValue.roleId)) {
-      this.#snackbarService.raiseError("Die Gruppe mit der Rolle ist bereits vorhanden.", 2500);
+      this.#snackbarService.raiseError('Die Gruppe mit der Rolle ist bereits vorhanden.', 2500);
       return;
     }
 

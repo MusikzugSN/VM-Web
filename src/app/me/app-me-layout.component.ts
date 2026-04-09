@@ -2,7 +2,13 @@ import { Component, computed, inject } from '@angular/core';
 import { VmSidebarGroup, VmSidebarItem } from '@vm-components';
 import { RouterOutlet } from '@angular/router';
 import { VmpSidebar } from '@vm-parts';
-import { EventService, FoldersService, PermissionService, PermissionType, TagsService } from '@vm-utils/services';
+import {
+  EventService,
+  FoldersService,
+  PermissionService,
+  PermissionType,
+  TagsService,
+} from '@vm-utils/services';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -21,9 +27,12 @@ export class AppMeLayout {
     this.#permissionService.hasPermission$(PermissionType.OpenMusicFolder),
     { initialValue: false },
   );
-  readonly canOpenEvents = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenEvent), {
-    initialValue: false,
-  });
+  readonly canOpenEvents = toSignal(
+    this.#permissionService.hasPermission$(PermissionType.OpenEvent),
+    {
+      initialValue: false,
+    },
+  );
   readonly canOpenTags = toSignal(this.#permissionService.hasPermission$(PermissionType.OpenTags), {
     initialValue: false,
   });

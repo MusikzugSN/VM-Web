@@ -1,18 +1,14 @@
-import {Component, inject, Signal} from '@angular/core';
-import {
-  FileData,
-  VmcFileUploader,
-  VmSelectOption, VmValidFormTypes,
-} from '@vm-components';
-import {BehaviorSubject, firstValueFrom, map, Observable, shareReplay} from 'rxjs';
-import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
-import {DIALOG_BUTTON_CLICKS, DialogBase} from '@vm-utils/dialogs';
-import {ScoreService, VoiceService} from '@vm-utils/services';
-import {AsyncPipe} from '@angular/common';
-import {Dictionary} from '@vm-utils';
-import {FileService, UploadScoreFilesRequest} from './file.service';
-import {SnackbarService} from '@vm-utils/snackbar';
-import {VmcSelect} from '@vm-components';
+import { Component, inject, Signal } from '@angular/core';
+import { FileData, VmcFileUploader, VmSelectOption, VmValidFormTypes } from '@vm-components';
+import { BehaviorSubject, firstValueFrom, map, Observable, shareReplay } from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { DIALOG_BUTTON_CLICKS, DialogBase } from '@vm-utils/dialogs';
+import { ScoreService, VoiceService } from '@vm-utils/services';
+import { AsyncPipe } from '@angular/common';
+import { Dictionary } from '@vm-utils';
+import { FileService, UploadScoreFilesRequest } from './file.service';
+import { SnackbarService } from '@vm-utils/snackbar';
+import { VmcSelect } from '@vm-components';
 
 @Component({
   selector: 'app-score-upload-step',
@@ -32,31 +28,26 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
   #scoreId = new BehaviorSubject<string | undefined>(undefined);
 
   scoreOptions$: Observable<VmSelectOption[]> = this.#scoreService.load$().pipe(
-    map(x => x.map(s => ({ label: s.title, value: s.scoreId.toString() }))),
-    shareReplay({ bufferSize: 1, refCount: true })
+    map((x) => x.map((s) => ({ label: s.title, value: s.scoreId.toString() }))),
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  voices$ = this.#voiceService.load$({ includeInstrumentName: true })
-    .pipe(shareReplay({ bufferSize: 1, refCount: true}), map(x => {
-      return x.map(v => {
+  voices$ = this.#voiceService.load$({ includeInstrumentName: true }).pipe(
+    shareReplay({ bufferSize: 1, refCount: true }),
+    map((x) => {
+      return x.map((v) => {
         return {
           value: v.voiceId.toString(),
           label: v.instrumentName + ' ' + v.name,
         } as VmSelectOption;
-      })
-    }));
-
-  selectedVoiceIds$ = this.#voiceIdToFilePath$.pipe(
-    map(dict =>
-      Object.keys(dict)
-        .map(k => k)
-    )
+      });
+    }),
   );
 
+  selectedVoiceIds$ = this.#voiceIdToFilePath$.pipe(map((dict) => Object.keys(dict).map((k) => k)));
 
   #files$ = new BehaviorSubject<FileData[]>([]);
   files: Signal<FileData[]> = toSignal<FileData[], FileData[]>(this.#files$, { initialValue: [] });
-
 
   constructor() {
     super();
@@ -67,7 +58,7 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
         const scoreId = this.#scoreId.getValue();
 
         if (scoreId === undefined) {
-          this.#snackbarService.raiseError("Es muss ein Stück ausgewählt sein.")
+          this.#snackbarService.raiseError('Es muss ein Stück ausgewählt sein.');
           return;
         }
 
@@ -75,29 +66,27 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
         const voiceMap = this.#voiceIdToFilePath$.getValue(); // { [voiceId]: filePath }
 
         if (files.length === 0) {
-          this.#snackbarService.raiseError("Es muss eine Datei ausgewählt sein.")
+          this.#snackbarService.raiseError('Es muss eine Datei ausgewählt sein.');
           return;
         }
 
         if (files.length > Object.values(voiceMap).length) {
-          this.#snackbarService.raiseError("Allen Datein muss eine Stimme zugeordnet werden.")
+          this.#snackbarService.raiseError('Allen Datein muss eine Stimme zugeordnet werden.');
           return;
         }
 
         const req: UploadScoreFilesRequest = {
           scoreId: Number(scoreId),
-          files: files.map(f => {
+          files: files.map((f) => {
             // passende voiceId anhand des file.path finden
-            const voiceId = Number(
-              Object.keys(voiceMap).find(v => voiceMap[v] === f.path)
-            );
+            const voiceId = Number(Object.keys(voiceMap).find((v) => voiceMap[v] === f.path));
 
             return {
               fileName: f.file.name,
               voiceId,
-              file: f.file
+              file: f.file,
             };
-          })
+          }),
         };
 
         await firstValueFrom(this.#fileService.uploadScoreFiles$(req));
@@ -110,7 +99,6 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
       }
     });
   }
-
 
   fileChangeEvent(files: FileData[]): void {
     this.#files$.next(files);
@@ -126,5 +114,3 @@ export class VmpScoreUploadDialogComponent extends DialogBase<boolean> {
     this.#scoreId.next(scoreId.toString());
   }
 }
-
-

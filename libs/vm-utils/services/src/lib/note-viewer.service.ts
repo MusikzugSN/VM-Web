@@ -1,9 +1,9 @@
 import { map, Observable } from 'rxjs';
-import {inject, Injectable} from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ConfigService } from '@vm-utils';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotesViewerService {
   readonly #config = inject(ConfigService);

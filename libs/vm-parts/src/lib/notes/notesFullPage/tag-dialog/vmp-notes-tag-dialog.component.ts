@@ -11,12 +11,7 @@ import {
   VmValidFormTypes,
 } from '@vm-components';
 import { AsPipe, nameOf, NumDictionary } from '@vm-utils';
-import {
-  MusicSheetService,
-  MusicSheetTagTeaser,
-  Tag,
-  TagsService,
-} from '@vm-utils/services';
+import { MusicSheetService, MusicSheetTagTeaser, Tag, TagsService } from '@vm-utils/services';
 import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { SnackbarService } from '@vm-utils/snackbar';
 import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable } from 'rxjs';
@@ -47,7 +42,10 @@ export class VmpNotesTagDialogComponent extends DialogBase<boolean> {
 
   noteTagsData$ = new BehaviorSubject<MusicSheetTagTeaser[]>([]);
 
-  #tagOptions$: Observable<VmSelectOption[]> = combineLatest([this.#allTags$, this.noteTagsData$]).pipe(
+  #tagOptions$: Observable<VmSelectOption[]> = combineLatest([
+    this.#allTags$,
+    this.noteTagsData$,
+  ]).pipe(
     map(([allTags, assignedTags]) => {
       const assignedIds = new Set(assignedTags.map((x) => x.tagId));
       return allTags
@@ -61,7 +59,9 @@ export class VmpNotesTagDialogComponent extends DialogBase<boolean> {
   });
 
   #tagsById$: Observable<NumDictionary<Tag>> = this.#allTags$.pipe(
-    map((tags) => tags.reduce((acc, tag) => ({ ...acc, [tag.tagId]: tag }), {} as NumDictionary<Tag>)),
+    map((tags) =>
+      tags.reduce((acc, tag) => ({ ...acc, [tag.tagId]: tag }), {} as NumDictionary<Tag>),
+    ),
   );
 
   tagsById = toSignal<NumDictionary<Tag>, NumDictionary<Tag>>(this.#tagsById$, {
@@ -179,5 +179,3 @@ export class VmpNotesTagDialogComponent extends DialogBase<boolean> {
     this.#storeChangedTagValues();
   }
 }
-
-

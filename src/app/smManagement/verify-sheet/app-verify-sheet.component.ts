@@ -2,7 +2,10 @@ import { Component, computed, inject } from '@angular/core';
 import {
   MagnificationService,
   NavigationService,
-  PdfViewerModule, PrintService, ThumbnailViewService, ToolbarService,
+  PdfViewerModule,
+  PrintService,
+  ThumbnailViewService,
+  ToolbarService,
   ToolbarSettingsModel,
 } from '@syncfusion/ej2-angular-pdfviewer';
 import {
@@ -16,14 +19,15 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   MusicSheet,
-  MusicSheetService, MusicSheetStatus,
+  MusicSheetService,
+  MusicSheetStatus,
   NotesViewerService,
   ScoreService,
   VerifySheetService,
-  VoiceService
+  VoiceService,
 } from '@vm-utils/services';
-import {AsyncPipe, Location} from '@angular/common';
-import {filter, firstValueFrom, map, Observable, switchMap} from 'rxjs';
+import { AsyncPipe, Location } from '@angular/common';
+import { filter, firstValueFrom, map, Observable, switchMap } from 'rxjs';
 
 @Component({
   selector: 'vmp-verify-score-dialog',
@@ -47,12 +51,15 @@ export class AppVerifySheet {
   readonly #location = inject(Location);
 
   #sheetIdsToCheck$ = this.#verifySheetService.sheetsIds$;
-  #sheetId$ = this.#sheetIdsToCheck$.pipe(map(x => x[0]))
-  #sheet$ = this.#sheetId$.pipe(filter(x => x !== undefined), switchMap(x => this.#musicSheetService.loadById$(x)))
+  #sheetId$ = this.#sheetIdsToCheck$.pipe(map((x) => x[0]));
+  #sheet$ = this.#sheetId$.pipe(
+    filter((x) => x !== undefined),
+    switchMap((x) => this.#musicSheetService.loadById$(x)),
+  );
 
   serviceUrl$ = this.#noteViewerService.hostedUrl$;
 
-  documentPath$ = this.#sheetId$.pipe(map(x => `vm-web://${x}`));
+  documentPath$ = this.#sheetId$.pipe(map((x) => `vm-web://${x}`));
   //Component anlegen, query nutzen
 
   readonly #scores = toSignal(this.#scoreService.load$(), { initialValue: [] });
@@ -60,16 +67,12 @@ export class AppVerifySheet {
     initialValue: [],
   });
 
-  readonly #selectedScoreId = toSignal(this.#sheet$.pipe(map(x => x.scoreId)));
-  readonly #selectedVoiceId = toSignal(this.#sheet$.pipe(map(x => x.voiceId)));
-
+  readonly #selectedScoreId = toSignal(this.#sheet$.pipe(map((x) => x.scoreId)));
+  readonly #selectedVoiceId = toSignal(this.#sheet$.pipe(map((x) => x.voiceId)));
 
   customToolbar: ToolbarSettingsModel = {
     showTooltip: true,
-    toolbarItems: [
-      'MagnificationTool',
-      'PageNavigationTool',
-    ],
+    toolbarItems: ['MagnificationTool', 'PageNavigationTool'],
   };
 
   scoreField = computed<VmFormField>(() => {
@@ -127,7 +130,6 @@ export class AppVerifySheet {
         await this.nextSheet();
       },
     },
-
   ];
 
   changedScoreId: number | undefined = undefined;
@@ -142,7 +144,17 @@ export class AppVerifySheet {
   }
 
   setStatus$(status: MusicSheetStatus): Observable<MusicSheet> {
-    return this.#sheetId$.pipe(filter(x => x !== undefined), switchMap(x => this.#musicSheetService.setStatusToMusicSheet$(x, status, this.changedScoreId, this.changedVoiceId)));
+    return this.#sheetId$.pipe(
+      filter((x) => x !== undefined),
+      switchMap((x) =>
+        this.#musicSheetService.setStatusToMusicSheet$(
+          x,
+          status,
+          this.changedScoreId,
+          this.changedVoiceId,
+        ),
+      ),
+    );
   }
 
   async nextSheet() {

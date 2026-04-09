@@ -14,21 +14,16 @@ import {
   VmColumn,
   VmFormField,
   VmRowAction,
-  VmRowClickedEvent, VmSelectOption,
+  VmRowClickedEvent,
+  VmSelectOption,
   VmValidFormTypes,
 } from '@vm-components';
-import {
-  Folder,
-  FoldersService,
-  Score,
-  ScoreFolderEntry,
-  ScoreService,
-} from '@vm-utils/services';
+import { Folder, FoldersService, Score, ScoreFolderEntry, ScoreService } from '@vm-utils/services';
 import { FormsModule } from '@angular/forms';
 import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
-import {takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, combineLatest, firstValueFrom, map, Observable } from 'rxjs';
-import {DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase} from '@vm-utils/dialogs';
+import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs';
 import { SnackbarService } from '@vm-utils/snackbar';
 import { AsyncPipe } from '@angular/common';
 
@@ -54,9 +49,13 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   readonly #snackbarService = inject(SnackbarService);
   readonly #foldersService = inject(FoldersService);
 
-  scoreData$: BehaviorSubject<ScoreFolderEntry[]> = new BehaviorSubject<ScoreFolderEntry[]>(this.#data?.musicFolders ?? []);
+  scoreData$: BehaviorSubject<ScoreFolderEntry[]> = new BehaviorSubject<ScoreFolderEntry[]>(
+    this.#data?.musicFolders ?? [],
+  );
   #folders$: Observable<Folder[]> = this.#foldersService.load$();
-  #scoresWithFolders = toSignal(this.#scoreService.load$({ includeMusicFolders: true }), { initialValue: [] as Score[] });
+  #scoresWithFolders = toSignal(this.#scoreService.load$({ includeMusicFolders: true }), {
+    initialValue: [] as Score[],
+  });
 
   #changedValues: Dictionary<string> = {};
   #changedScoreValues: ScoreFolderEntry[] = [];
@@ -71,12 +70,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     ),
   );
 
-  folderById = toSignal<NumDictionary<Folder>, NumDictionary<Folder>>(
-    this.#folderById$,
-    {
-      initialValue: {},
-    },
-  );
+  folderById = toSignal<NumDictionary<Folder>, NumDictionary<Folder>>(this.#folderById$, {
+    initialValue: {},
+  });
 
   titleField: VmFormField = {
     label: 'Titel',
@@ -162,7 +158,8 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
 
   numberOfScoreField$: Observable<VmFormField> = this.scoreData$.asObservable().pipe(
     map((entries) => {
-      const maxNumber = entries.length > 0 ? Math.max(...entries.map((x) => Number(x.number) || 0)) : 0;
+      const maxNumber =
+        entries.length > 0 ? Math.max(...entries.map((x) => Number(x.number) || 0)) : 0;
 
       return {
         key: nameOf<ScoreFolderEntry>('number'),
@@ -263,13 +260,14 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   }
 
   #computeNextNumberForFolder(folderId: number): string {
-    const maxNumber = this.#scoresWithFolders()
-      .flatMap((score) => score.musicFolders ?? [])
-      .filter((entry) => entry.musicFolderId === folderId)
-      .map((entry) => Number(entry.number))
-      .filter((value) => !Number.isNaN(value))
-      .sort((a, b) => a - b)
-      .at(-1) ?? 0;
+    const maxNumber =
+      this.#scoresWithFolders()
+        .flatMap((score) => score.musicFolders ?? [])
+        .filter((entry) => entry.musicFolderId === folderId)
+        .map((entry) => Number(entry.number))
+        .filter((value) => !Number.isNaN(value))
+        .sort((a, b) => a - b)
+        .at(-1) ?? 0;
 
     return (maxNumber + 1).toString();
   }
@@ -305,7 +303,8 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     const currentValues = this.scoreData$.getValue();
     if (
       currentValues.find(
-        (x) => x.number === normalizedValue.number || x.musicFolderId === normalizedValue.musicFolderId,
+        (x) =>
+          x.number === normalizedValue.number || x.musicFolderId === normalizedValue.musicFolderId,
       )
     ) {
       this.#snackbarService.raiseError(
@@ -318,13 +317,15 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
     // Der Eintrag wurde gelöscht und muss nun wieder hinzugefügt werden, also muss er aus den gelöschten Werten entfernt werden
     if (
       this.#changedScoreValues.find(
-        (x) => x.number === normalizedValue.number || x.musicFolderId === normalizedValue.musicFolderId,
+        (x) =>
+          x.number === normalizedValue.number || x.musicFolderId === normalizedValue.musicFolderId,
       )
     ) {
       this.#changedScoreValues = this.#changedScoreValues.filter(
         (x) =>
           !(
-            (x.number === normalizedValue.number || x.musicFolderId === normalizedValue.musicFolderId) &&
+            (x.number === normalizedValue.number ||
+              x.musicFolderId === normalizedValue.musicFolderId) &&
             x.deleted
           ),
       );
@@ -340,8 +341,7 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
   #storeDeletedScoreValue(deletedValue: ScoreFolderEntry): void {
     if (
       this.#changedScoreValues.find(
-        (x) =>
-          x.number === deletedValue.number && x.musicFolderId === deletedValue.musicFolderId,
+        (x) => x.number === deletedValue.number && x.musicFolderId === deletedValue.musicFolderId,
       )
     ) {
       // Wenn die gelöschte Gruppe bereits in den Änderungen enthalten ist, muss sie entfernt werden, da sie sonst fälschlicherweise als neue Gruppe interpretiert werden könnte
@@ -395,7 +395,9 @@ export class AppRepositoryDataDialog extends DialogBase<boolean> {
       }
 
       if (!this.#folderEntry.number || this.#folderEntry.number === '-1') {
-        this.#folderEntry.number = this.#computeNextNumberForFolder(this.#folderEntry.musicFolderId);
+        this.#folderEntry.number = this.#computeNextNumberForFolder(
+          this.#folderEntry.musicFolderId,
+        );
       }
 
       this.#storeNewGroupValue(this.#folderEntry);

@@ -5,8 +5,10 @@ import {
   filter,
   firstValueFrom,
   map,
-  Observable, of,
-  shareReplay, switchMap,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
 } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { HttpClient } from '@angular/common/http';
@@ -14,7 +16,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService, OAuthProvider } from './config.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import {PermissionType} from './permission.service';
+import { PermissionType } from './permission.service';
 
 const storage = window.sessionStorage;
 const accessTokenKey = 'accessToken';
@@ -65,21 +67,26 @@ export class AuthService {
     shareReplay({ bufferSize: 1, refCount: false }),
   );
 
-  myInformation$ = this.#decodedToken$.pipe(distinctUntilChanged(), filter(token => token !== null), switchMap((token) => {
-    if (token === null) {
-      return of(null);
-    }
+  myInformation$ = this.#decodedToken$.pipe(
+    distinctUntilChanged(),
+    filter((token) => token !== null),
+    switchMap((token) => {
+      if (token === null) {
+        return of(null);
+      }
 
-    if (token.sub !== "-1") {
-      return this.#httpClient.get<MeInformation>('auth/me');
-    } else {
-      return of({
-        id: '-1',
-        username: "Install",
-        isAdmin: true,
-      } as MeInformation);
-    }
-  }), shareReplay({ bufferSize: 1, refCount: true }))
+      if (token.sub !== '-1') {
+        return this.#httpClient.get<MeInformation>('auth/me');
+      } else {
+        return of({
+          id: '-1',
+          username: 'Install',
+          isAdmin: true,
+        } as MeInformation);
+      }
+    }),
+    shareReplay({ bufferSize: 1, refCount: true }),
+  );
 
   constructor() {
     this.#oAuthService.events

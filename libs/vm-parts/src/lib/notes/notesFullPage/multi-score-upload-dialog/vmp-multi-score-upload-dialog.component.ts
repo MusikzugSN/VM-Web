@@ -1,9 +1,6 @@
 import { Component, inject, Signal } from '@angular/core';
 import { DIALOG_BUTTON_CLICKS, DialogBase } from '@vm-utils/dialogs';
-import {
-  FileData,
-  VmcFileUploader
-} from '@vm-components';
+import { FileData, VmcFileUploader } from '@vm-components';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { SnackbarService } from '@vm-utils/snackbar';
@@ -40,13 +37,11 @@ export class VmpMultiScoreUploadDialog extends DialogBase<boolean> {
         super.closeDialog(true);
       }
 
-      if(x === 'close') {
+      if (x === 'close') {
         super.closeDialog(true);
       }
     });
   }
-
-
 
   #files$ = new BehaviorSubject<FileData[]>([]);
   files: Signal<FileData[]> = toSignal<FileData[], FileData[]>(this.#files$, { initialValue: [] });

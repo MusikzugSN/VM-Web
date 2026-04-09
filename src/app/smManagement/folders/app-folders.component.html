@@ -1,6 +1,6 @@
 <vmp-notes-full-page
-  [data]="(data$ | async) ?? [] "
+  [data]="(data$ | async) ?? []"
   [selectedVoiceIds]="(voiceFilter$ | async) ?? []"
   (voiceFilterChanged)="voiceFilterChanged($event)"
-  (buttonClicked)="execAction($event)"/>
-
+  (buttonClicked)="execAction($event)"
+/>

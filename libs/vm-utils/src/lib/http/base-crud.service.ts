@@ -1,9 +1,13 @@
 import { inject } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import {convertMetaDataFromDto, convertMetaDataFromDtos, IMetaData} from '@vm-utils';
+import { convertMetaDataFromDto, convertMetaDataFromDtos, IMetaData } from '@vm-utils';
 
-export abstract class BaseCrudService<TDto extends IMetaData, TChangeDto = TDto, TQuery = undefined> {
+export abstract class BaseCrudService<
+  TDto extends IMetaData,
+  TChangeDto = TDto,
+  TQuery = undefined,
+> {
   readonly httpClient = inject(HttpClient);
 
   abstract url: string;
@@ -33,7 +37,7 @@ export abstract class BaseCrudService<TDto extends IMetaData, TChangeDto = TDto,
 
     return this.httpClient
       .get<TDto[]>(this.url, { params })
-      .pipe(map(groups => convertMetaDataFromDtos(groups)));
+      .pipe(map((groups) => convertMetaDataFromDtos(groups)));
   }
 
   loadById$(id: number): Observable<TDto> {
