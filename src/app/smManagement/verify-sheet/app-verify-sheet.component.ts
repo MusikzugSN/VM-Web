@@ -1,6 +1,8 @@
 import { Component, computed, inject } from '@angular/core';
 import {
-  PdfViewerModule,
+  MagnificationService,
+  NavigationService,
+  PdfViewerModule, PrintService, ThumbnailViewService, ToolbarService,
   ToolbarSettingsModel,
 } from '@syncfusion/ej2-angular-pdfviewer';
 import {
@@ -26,6 +28,13 @@ import {filter, firstValueFrom, map, Observable, switchMap} from 'rxjs';
 @Component({
   selector: 'vmp-verify-score-dialog',
   imports: [PdfViewerModule, VmcInputField, VmcToolbar, AsyncPipe],
+  providers: [
+    ToolbarService,
+    NavigationService,
+    ThumbnailViewService,
+    MagnificationService,
+    PrintService,
+  ],
   templateUrl: './app-verify-sheet.component.html',
   styleUrl: './app-verify-sheet.component.scss',
 })

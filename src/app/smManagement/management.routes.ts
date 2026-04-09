@@ -21,14 +21,8 @@ export const MANAGEMENT_ROUTES: Routes = [
     canActivateChild: [authGuard],
     children: [
       { path: '', redirectTo: 'unverified', pathMatch: 'full' },
-      {
-        path: 'cropPdf',
-        component: AppCropPdf
-      },
-      {
-        path: 'verifySheet',
-        component: AppVerifySheet
-      },
+      { path: 'cropPdf', component: AppCropPdf },
+      { path: 'verifySheet', component: AppVerifySheet },
       { path: 'unverified', component: AppUnverifiedComponent },
       { path: 'repository', component: AppRepositoryComponent },
       { path: 'folders', children: [{ path: ':folderId', component: AppFolderScoreComponent }] },

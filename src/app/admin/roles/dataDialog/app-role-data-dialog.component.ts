@@ -14,7 +14,7 @@ import {
   VmFormField,
 } from '@vm-components';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Permission, PermissionGroup, Role, RoleService } from '@vm-utils/services';
+import {Permission, PermissionGroup, PermissionValue, Role, RoleService} from '@vm-utils/services';
 import { AsyncPipe } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
@@ -137,6 +137,11 @@ export class AppRoleDataDialog extends DialogBase<boolean> {
       map[permission.type.toString()] = permission.value > 0;
     }
     return map;
+  }
+
+  //todo far: Besser machen
+  getPermissionValue(permissionValues: PermissionValue[], index: number): PermissionValue | undefined {
+    return permissionValues.find(x => x.permissionCategory === index);
   }
 
   protected readonly nameOf = nameOf;

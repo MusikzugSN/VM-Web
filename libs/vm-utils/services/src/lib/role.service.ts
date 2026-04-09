@@ -10,7 +10,7 @@ export interface PermissionGroup {
 
 export interface PermissionValue {
   permissionType: number;
-  description: PermissionCategory;
+  permissionCategory: PermissionCategory;
 }
 
 export enum PermissionCategory {

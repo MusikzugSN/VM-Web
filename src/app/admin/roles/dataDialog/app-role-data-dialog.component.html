@@ -24,10 +24,11 @@
 
 <ng-template #permissionCheckbox let-rowDataRaw="rowData" let-index="indexOfColumn">
   @let rowData = (rowDataRaw | as: RowDataType).permissionValues;
+  @let permissionValue = getPermissionValue(rowData, index - 1);
+  @let permissionType = permissionValue?.permissionType ?? -1;
 
-  @let permissionType = rowData[index - 1]?.permissionType;
-  @let shouldBeDisabled = permissionType === undefined || permissionType === null;
-  @let checked = !shouldBeDisabled && permissions[permissionType.toString()];
+  @let shouldBeDisabled = permissionValue === undefined;
+  @let checked = !shouldBeDisabled && permissions[(permissionType ?? 0).toString()];
 
   <mat-checkbox
     [ngModel]="checked"
