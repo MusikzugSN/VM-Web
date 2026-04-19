@@ -4,9 +4,9 @@ import { VmpPrintDialog } from './print-dialog/vmp-print-dialog.component';
 import { VmpScoreUploadDialogComponent } from './score-upload-dialog/vmp-score-upload-dialog.component';
 import { VmpMultiScoreUploadDialog } from './multi-score-upload-dialog/vmp-multi-score-upload-dialog.component';
 import { VmpNotesTagDialogComponent } from './tag-dialog/vmp-notes-tag-dialog.component';
-import { PrintService } from './print-dialog/print.service';
-import { ConfigService } from '@vm-utils';
-import { firstValueFrom } from 'rxjs';
+import {PrintService} from './print-dialog/print.service';
+import {firstValueFrom} from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,7 @@ import { firstValueFrom } from 'rxjs';
 export class VmpNotesFullpageDialogService {
   readonly #dialogService = inject(VmDialogService);
   readonly #printService = inject(PrintService);
-  readonly #config = inject(ConfigService);
+  //readonly #config = inject(ConfigService);
 
   async openPrintDialog(
     selectedIds?: number[],
@@ -35,35 +35,31 @@ export class VmpNotesFullpageDialogService {
       return false;
     }
 
-    const popup = window.open('about:blank', '_blank');
-    if (!popup) {
-      return false;
-    }
+    // We open a popup synchronously to preserve the user gesture (browsers
+    // often block window.print when called asynchronously). The popup is
+    // written with an <embed> of the Blob object URL so the PDF is rendered
+    // inline (no download). We then call print() and close the popup.
+    const popup = window.open('', '_blank');
+    if (!popup) return false;
 
-    try {
-      const filePaths = await firstValueFrom(
-        this.#printService.createPrintUrl$(selectedIds, marschbuch),
-      );
-      const filePath: string = String(Array.isArray(filePaths) && filePaths.length > 0 ? filePaths[0] : '');
-      const config = await firstValueFrom(this.#config.config$);
-      const baseUrl = config?.backedApiUrl ?? window.location.origin;
-      const fileUrl = new URL(filePath as string, baseUrl).toString();
+    const token = await firstValueFrom(this.#printService.createDownloadUrl$(selectedIds, false, marschbuch));
+    const blob = await firstValueFrom(
+      this.#printService.downloadByToken$(token),
+    );
 
-      popup.location.href = fileUrl;
+    const objectUrl = URL.createObjectURL(blob);
 
-      const triggerPrint = (): void => {
+    const mime = blob.type || 'application/pdf';
+    const html = `<!doctype html><html><head><title>Print</title></head><body style="margin:0"><embed width="100%" height="100%" src="${objectUrl}" type="${mime}"></embed></body></html>`;
+    popup.document.open();
+    popup.document.write(html);
+    // Give the embed some time to render, then trigger print and close.
+    setTimeout(() => {
         popup.focus();
         popup.print();
-      };
-
-      popup.onload = triggerPrint;
-      setTimeout(triggerPrint, 1200);
+    }, 700);
 
       return true;
-    } catch {
-      popup.close();
-      return false;
-    }
   }
 
   async openAddNoteSheetDialog(): Promise<boolean | undefined> {

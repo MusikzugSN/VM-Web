@@ -42,9 +42,9 @@ export class PrintService {
   }
 
   // Neuer Endpunkt: POST /api/v1/print/create-download liefert einen einzelnen Download-Token (string)
-  createDownloadUrl$(musicSheetIds: number[], marschbuch = false): Observable<string> {
+  createDownloadUrl$(musicSheetIds: number[], asZip = true,  marschbuch = false): Observable<string> {
     // Antwort ist ein einfacher Token-String
-    return this.#http.post(`${this.API_URL}/print/create-download`, { musicSheetIds, marschbuch, asZip: true }, { responseType: 'text' }).pipe(
+    return this.#http.post(`print/create-download`, { musicSheetIds, marschbuch, asZip }, { responseType: 'text' }).pipe(
       map((token) => token.replace(/^"|"$/g, '')),
     );
   }
@@ -61,12 +61,20 @@ export class PrintService {
     return this.#http.post<PrintResponse>(`${this.API_URL}/print`, payload);
   }
 
-  // Liefert die Rohbytes als Blob. Aktuell liefern wir standardmäßig application/zip zurück.
+  // Liefert die Rohbytes als Blob und setzt den MIME-Type anhand der Response-Header (z.B. application/zip oder application/pdf).
   downloadByToken$(downloadUrl: string) {
     return this.#config.config$.pipe(
       switchMap((config) => {
         const url = (config?.backedApiUrl ?? '') + downloadUrl;
-        return this.#http.get(url, { responseType: 'blob' });
+        return this.#http.get(url, { responseType: 'blob', observe: 'response' as const });
+      }),
+      map((resp) => {
+        const ct = resp.headers.get('content-type');
+        const body = resp.body as Blob;
+        if (ct && body && body.type !== ct) {
+          return new Blob([body], { type: ct });
+        }
+        return body;
       }),
     );
   }

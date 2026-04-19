@@ -6,7 +6,6 @@ import { DIALOG_BUTTON_CLICKS, DIALOG_DATA, DialogBase } from '@vm-utils/dialogs
 import { ConfigService, Dictionary } from '@vm-utils';
 import { firstValueFrom, map, Observable } from 'rxjs';
 import { PrintService } from './print.service';
-import { SnackbarService } from '@vm-utils/snackbar';
 
 interface PrintDialogData {
   selectedIds?: number[];
@@ -23,7 +22,6 @@ export class VmpPrintDialog extends DialogBase<boolean> {
   readonly #buttonClickEvents$ = inject<Observable<string | null>>(DIALOG_BUTTON_CLICKS);
   readonly #printService = inject(PrintService);
   readonly #config = inject(ConfigService);
-  readonly #snackbar = inject(SnackbarService);
 
   filesCount = this.#data?.selectedIds?.length ?? 0;
 
@@ -79,23 +77,6 @@ export class VmpPrintDialog extends DialogBase<boolean> {
         }
 
         const marschbuch = this.#changedValues['marschbuch'] ?? false;
-
-        if (selectedIds.length === 1) {
-          try {
-            const filePaths = await firstValueFrom(
-              this.#printService.createPrintUrl$(selectedIds, marschbuch),
-            );
-
-            // Backend liefert jetzt eine Liste von URLs pro angefragter MusicSheetId.
-            const filePath: string = String(Array.isArray(filePaths) && filePaths.length > 0 ? filePaths[0] : '');
-            await this.#printPdfInline(filePath as string);
-            super.closeDialog(true);
-          } catch {
-            super.closeDialog(false);
-          }
-
-          return;
-        }
 
         let serviceOk: boolean;
         try {
@@ -154,25 +135,5 @@ export class VmpPrintDialog extends DialogBase<boolean> {
 
   #checkboxToBool(value: VmValidFormTypes | VmCheckboxValues): boolean {
     return value === 'checked';
-  }
-
-  async #printPdfInline(filePath: string): Promise<void> {
-    const config = await firstValueFrom(this.#config.config$);
-    const baseUrl = config?.backedApiUrl ?? window.location.origin;
-    const fileUrl = new URL(filePath, baseUrl).toString();
-
-    const iframe = document.createElement('iframe');
-    iframe.name = 'pdfIframe';
-    document.body.appendChild(iframe);
-    iframe.style.display = 'none';
-    iframe.onload = function (): void {
-      setTimeout(function () {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-        URL.revokeObjectURL(fileUrl);
-      }, 1);
-    };
-    iframe.src = fileUrl;
-    this.#snackbar.raiseSuccess('Windowsdruck Service geöffnet');
   }
 }
