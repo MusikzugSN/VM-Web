@@ -19,7 +19,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="dialog__footer">
-  @for (button of (buttons$ | async) ?? []; track button.key) {
+  @for (button of (this.dialogConfig.buttons ?? []); track button.key) {
     <vmc-button
       [type]="button.type ?? 'elevated'"
       [label]="button.text"
