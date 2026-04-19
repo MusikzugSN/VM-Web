@@ -82,11 +82,13 @@ export class VmpPrintDialog extends DialogBase<boolean> {
 
         if (selectedIds.length === 1) {
           try {
-            const filePath = await firstValueFrom(
+            const filePaths = await firstValueFrom(
               this.#printService.createPrintUrl$(selectedIds, marschbuch),
             );
 
-            await this.#printPdfInline(filePath);
+            // Backend liefert jetzt eine Liste von URLs pro angefragter MusicSheetId.
+            const filePath: string = String(Array.isArray(filePaths) && filePaths.length > 0 ? filePaths[0] : '');
+            await this.#printPdfInline(filePath as string);
             super.closeDialog(true);
           } catch {
             super.closeDialog(false);
@@ -114,18 +116,16 @@ export class VmpPrintDialog extends DialogBase<boolean> {
         }
 
         const config = await firstValueFrom(this.#config.config$);
-        const filePath = await firstValueFrom(
+        const filePaths = await firstValueFrom(
           this.#printService.createPrintUrl$(selectedIds, marschbuch),
         );
 
-        await firstValueFrom(
-          this.#printService.printFiles$(this.selectedPrinterName, [
-            {
-              url: (config?.backedApiUrl ?? '') + filePath,
-              filename: `druckauftrag_${Date.now()}.pdf`,
-            },
-          ]),
-        );
+        const files = (filePaths ?? []).map((p, idx) => ({
+          url: (config?.backedApiUrl ?? '') + p,
+          filename: `druckauftrag_${Date.now()}_${idx}.pdf`,
+        }));
+
+        await firstValueFrom(this.#printService.printFiles$(this.selectedPrinterName, files));
 
         super.closeDialog(true);
         return;

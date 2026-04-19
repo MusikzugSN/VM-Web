@@ -36,10 +36,17 @@ export class PrintService {
     return this.#http.get<Printer[]>(`${this.API_URL}/printers`);
   }
 
-  createPrintUrl$(musicSheetIds: number[], marschbuch = false): Observable<string> {
-    return this.#http
-      .post('print', { musicSheetIds, marschbuch }, { responseType: 'text' })
-      .pipe(map((token) => token.replace(/^"|"$/g, '')));
+  // Neuer Endpunkt: POST /api/v1/print liefert jetzt eine Liste von URLs (pro angefragter MusicSheetId)
+  createPrintUrl$(musicSheetIds: number[], marschbuch = false): Observable<string[]> {
+    return this.#http.post<string[]>('print', { musicSheetIds, marschbuch });
+  }
+
+  // Neuer Endpunkt: POST /api/v1/print/create-download liefert einen einzelnen Download-Token (string)
+  createDownloadUrl$(musicSheetIds: number[], marschbuch = false): Observable<string> {
+    // Antwort ist ein einfacher Token-String
+    return this.#http.post(`${this.API_URL}/print/create-download`, { musicSheetIds, marschbuch, asZip: true }, { responseType: 'text' }).pipe(
+      map((token) => token.replace(/^"|"$/g, '')),
+    );
   }
 
   printFiles$(
@@ -54,10 +61,12 @@ export class PrintService {
     return this.#http.post<PrintResponse>(`${this.API_URL}/print`, payload);
   }
 
-  downloadByToken$(downloadUrl: string): Observable<string> {
+  // Liefert die Rohbytes als Blob. Aktuell liefern wir standardmäßig application/zip zurück.
+  downloadByToken$(downloadUrl: string) {
     return this.#config.config$.pipe(
       switchMap((config) => {
-        return this.#http.get<string>(config?.backedApiUrl + downloadUrl);
+        const url = (config?.backedApiUrl ?? '') + downloadUrl;
+        return this.#http.get(url, { responseType: 'blob' });
       }),
     );
   }

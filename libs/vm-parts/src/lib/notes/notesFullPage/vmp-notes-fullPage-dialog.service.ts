@@ -41,12 +41,13 @@ export class VmpNotesFullpageDialogService {
     }
 
     try {
-      const filePath = await firstValueFrom(
+      const filePaths = await firstValueFrom(
         this.#printService.createPrintUrl$(selectedIds, marschbuch),
       );
+      const filePath: string = String(Array.isArray(filePaths) && filePaths.length > 0 ? filePaths[0] : '');
       const config = await firstValueFrom(this.#config.config$);
       const baseUrl = config?.backedApiUrl ?? window.location.origin;
-      const fileUrl = new URL(filePath, baseUrl).toString();
+      const fileUrl = new URL(filePath as string, baseUrl).toString();
 
       popup.location.href = fileUrl;
 
