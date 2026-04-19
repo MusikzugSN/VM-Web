@@ -257,15 +257,12 @@ export class VmpNotesFullPageComponent {
 
   #downloadFiles(ids: number[]): void {
     this.#downloadFileService.downloadFile(ids).subscribe((response) => {
+      console.log(response);
       const headerName = response.headers
-        .get('content-disposition')
-        ?.split(';')
-        .map((x) => x.trim())
-        .find((x) => x.startsWith('filename='))
-        ?.split('=')[1]
-        ?.replace(/"/g, '');
+        .get('content-type');
 
-      const fileName = headerName ?? 'notenblaetter.pdf';
+      const isZip = headerName === 'application/zip';
+      let fileName = isZip ? 'download.zip' : 'download.pdf';
 
       const blob: Blob = response.body as Blob;
       const a = document.createElement('a');

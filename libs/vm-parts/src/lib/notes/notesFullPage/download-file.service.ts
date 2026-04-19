@@ -24,7 +24,7 @@ export class DownloadFileService {
   downloadFile(selectedIds?: number[]): Observable<HttpResponse<Blob>> {
     const ids = selectedIds ?? [];
     return this.#httpClient
-      .post('print', { musicSheetIds: ids, marschbuch: false }, { responseType: 'text' })
+      .post('print/create-download', { musicSheetIds: ids, marschbuch: false, asZip: true }, { responseType: 'text' })
       .pipe(
         switchMap((downloadPath) =>
           this.#configService.config$.pipe(
