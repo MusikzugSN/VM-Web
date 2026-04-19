@@ -3,7 +3,7 @@ import { AuthService, PermissionTeaserWithGroupId } from './auth.service';
 import { combineLatest, map, Observable } from 'rxjs';
 
 export enum PermissionType {
-  //Administrator = 0,
+  Administrator = 0,
 
   OpenUser = 1,
   ListUser,
@@ -98,6 +98,12 @@ export class PermissionService {
     groupId?: number,
   ): boolean {
     if (isAdmin) {
+      return true;
+    }
+
+    const hasAdminPermission = permissions.some((p) => p.permissionType === PermissionType.Administrator);
+
+    if (hasAdminPermission) {
       return true;
     }
 

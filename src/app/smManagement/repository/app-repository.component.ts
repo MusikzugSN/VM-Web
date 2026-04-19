@@ -20,12 +20,12 @@ import {
 } from '@vm-components';
 import { RepositoryDialogService } from './repository-dialog.service';
 import { AsyncPipe } from '@angular/common';
-import { AsPipe, convertToDisplayMinutes, NumDictionary } from '@vm-utils';
+import { convertToDisplayMinutes, NumDictionary } from '@vm-utils';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-repository.component',
-  imports: [VmcDataGrid, VmcInputField, VmcToolbar, AsyncPipe, VmcIconButton, AsPipe],
+  imports: [VmcDataGrid, VmcInputField, VmcToolbar, AsyncPipe, VmcIconButton],
   templateUrl: './app-repository.component.html',
   styleUrl: './app-repository.component.scss',
 })
@@ -106,18 +106,37 @@ export class AppRepositoryComponent {
     {
       key: 'duration',
       header: 'Länge',
-      field: 'duration',
+      field: 'scoreId',
       type: 'converter',
       converter: (score: Score) => convertToDisplayMinutes(score.duration ?? 0) + ' min',
     },
-    { key: 'folders', header: 'Mappen', field: 'musicFolders', type: 'template' },
+    {
+      key: 'folders',
+      header: 'Mappen',
+      field: 'scoreId',
+      type: 'converter',
+      converter: (score: Score)=> this.formatMusicFolders(score),
+      filterable: true
+    },
     { key: 'changedAt', header: 'Bearbeitet am', field: 'updatedAt', type: 'date-time' },
     { key: 'changedBy', header: 'Bearbeitet von', field: 'updatedBy' },
     { key: 'customActions', header: '', type: 'template' },
   ];
 
-  // @ts-ignore
-  ScoreType: Score;
+  formatMusicFolders(
+    rowData: Score
+  ): string {
+    const folder = this.folderById();
+
+    return rowData.musicFolders
+      .map((scoreFolder) => {
+        const name = folder[scoreFolder.musicFolderId]?.name ?? 'N/A';
+        const number = scoreFolder.number ? ` (${scoreFolder.number})` : '';
+        return name + number;
+      })
+      .join(', ');
+  }
+
 
   async execAction(rowData: Score, key: string): Promise<void> {
     if (key === 'edit') {

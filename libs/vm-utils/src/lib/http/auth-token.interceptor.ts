@@ -1,7 +1,7 @@
 import { HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { Observable, switchMap, take } from 'rxjs';
 import { inject } from '@angular/core';
-import { AuthService } from '../../../services/src/lib/auth.service';
+import { AuthService } from '@vm-utils/services';
 
 export function authTokenInterceptor(
   req: HttpRequest<unknown>,
