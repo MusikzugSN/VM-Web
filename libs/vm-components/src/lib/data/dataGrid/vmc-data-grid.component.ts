@@ -174,7 +174,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
           if (!col.field) return false;
           let value = data[col.field]?.toString();
 
-          if (col.type === 'converter') {
+          if (col.type === 'converter' || col.type === 'template') {
             value = this.calculatedColumns()[`${col.key}-${value}`] ?? value;
           }
 
@@ -185,8 +185,15 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     // custom sorting für DataGrid
     this.tableData.sortingDataAccessor = (row: TRow, columnId: string): string => {
       const col = this.columns().find((c) => c.key === columnId);
+
       if (!col?.field) return '';
-      return row[col.field] as unknown as string;
+
+      const value = row[col.field]?.toString() ?? '';
+      if (col?.type === 'converter' || col?.type === 'template') {
+        return this.calculatedColumns()[`${col.key}-${value}`] ?? value;
+      }
+
+      return value;
     };
 
     effect(() => {
@@ -294,7 +301,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
     const dict: Dictionary<string> = {};
 
     columns.forEach((col) => {
-      if (col.type == 'converter') {
+      if (col.type == 'converter' || col.type == 'template') {
         data.forEach((row) => {
           if (col.converter) {
             dict[`${col.key}-${row[col.field as keyof TRow]}`] = col.converter(row);
@@ -303,6 +310,7 @@ export class VmcDataGrid<TRow, TSelectionKey extends keyof TRow> {
       }
     });
 
+    console.log(dict);
     return dict;
   }
 
