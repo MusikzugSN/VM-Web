@@ -42,24 +42,82 @@ export class VmpNotesFullpageDialogService {
     const popup = window.open('', '_blank');
     if (!popup) return false;
 
+    // Write a small HTML into the popup that listens for a postMessage with the
+    // object URL and then embeds it and triggers print. We use postMessage so
+    // the parent can perform async downloads while the popup was opened
+    // synchronously (preserving the user gesture).
+    const popupHtml = `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Drucken</title></head><body style="margin:0;background:#fff"><div id="content"></div><script>
+      (function(){
+        function printBlob(url){
+          try{
+            var iframe = document.createElement('iframe');
+            iframe.style.border = '0';
+            iframe.style.width='100%'; iframe.style.height='100%';
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            iframe.onload = function(){
+              setTimeout(function(){
+                try{ window.focus(); window.print(); }catch(e){}
+                try{ window.close(); }catch(e){}
+              }, 200);
+            };
+          }catch(e){}
+        }
+        window.addEventListener('message', function(e){
+          try{
+            var data = e.data;
+            // accept only our print messages
+            if(data && data.type === 'print' && typeof data.objectUrl === 'string'){
+              printBlob(data.objectUrl);
+            }
+          }catch(e){}
+        }, false);
+        // notify opener that popup is ready to receive the objectUrl
+        try{ if(window.opener) window.opener.postMessage({ type: 'popup-ready' }, '*'); }catch(e){}
+      })();
+    <\/script></body></html>`;
+
+    popup.document.open();
+    popup.document.write(popupHtml);
+    popup.document.close();
+
+    // Start the async download in the parent while the popup is readying.
     const token = await firstValueFrom(this.#printService.createDownloadUrl$(selectedIds, false, marschbuch));
     const blob = await firstValueFrom(
       this.#printService.downloadByToken$(token),
     );
 
     const objectUrl = URL.createObjectURL(blob);
+    const mime = blob.type || 'application/octet-stream';
 
-    const mime = blob.type || 'application/pdf';
-    const html = `<!doctype html><html><head><title>Print</title></head><body style="margin:0"><embed width="100%" height="100%" src="${objectUrl}" type="${mime}"></embed></body></html>`;
-    popup.document.open();
-    popup.document.write(html);
-    // Give the embed some time to render, then trigger print and close.
-    setTimeout(() => {
-        popup.focus();
-        popup.print();
-    }, 700);
-
+    // If the response is not a PDF the popup can't render it — fallback to download
+    if (!mime.includes('pdf')) {
+      // trigger download in opener and close popup
+      try {
+        const ext = mime.includes('zip') ? 'zip' : 'bin';
+        const a = document.createElement('a');
+        a.href = objectUrl;
+        a.download = `noten.${ext}`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch {}
+      try { URL.revokeObjectURL(objectUrl); } catch {}
+      try { popup.close(); } catch {}
       return true;
+    }
+
+    // Fallback: send after 800ms if not already sent
+    setTimeout(() => {
+      try {
+        if (!popup.closed) {
+          popup.postMessage({ type: 'print', objectUrl: objectUrl, mime: mime }, '*');
+        }
+      } catch {}
+    }, 800);
+
+    return true;
   }
 
   async openAddNoteSheetDialog(): Promise<boolean | undefined> {
